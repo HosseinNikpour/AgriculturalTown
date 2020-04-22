@@ -1,0 +1,374 @@
+import React, { Component } from 'react';
+import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { message, Select } from 'antd';
+import Grid from '../../../components/common/grid3';
+import Loading from '../../../components/common/loading';
+import { columns, storeIndex, pageHeder, emptyItem } from './statics'
+import { successDuration, successMessage, errorMessage, errorDuration ,selectDefaultProp} from '../../../components/statics'
+
+
+
+
+class Town extends Component {
+    constructor(props) {
+        super(props);
+        this.formRef = React.createRef();
+
+        this.state = {
+            columns: columns, rows: [], provinces: [],
+            waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],
+            isFetching: true, obj: emptyItem, showPanel: false, status: '',
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+        this.selectChange = this.selectChange.bind(this);
+        this.fileChange = this.fileChange.bind(this);
+        this.newClickHandle = this.newClickHandle.bind(this);
+        this.editClickHandle = this.editClickHandle.bind(this);
+        this.deleteClickHandle = this.deleteClickHandle.bind(this);
+        this.displayClickHandle = this.displayClickHandle.bind(this);
+        this.saveBtnClick = this.saveBtnClick.bind(this);
+        this.cancelBtnClick = this.cancelBtnClick.bind(this);
+    }
+
+    scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
+    scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
+
+    fetchData() {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo')]).then((response) => {
+            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let activities = response[1].data.filter(a => a.groupid === 2).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let ownerships = response[1].data.filter(a => a.groupid === 4).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let waterSupply = response[1].data.filter(a => a.groupid === 5).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let powerSupply = response[1].data.filter(a => a.groupid === 6).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let gasSupply = response[1].data.filter(a => a.groupid === 7).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
+
+            this.setState({
+                isFetching: false, rows: response[0].data, waterSupply: waterSupply,
+                provinces: provinces, activities: activities, ownerships: ownerships, powerSupply: powerSupply,
+                gasSupply: gasSupply, locations: locations
+            });
+        }).catch((error) => console.log(error))
+    }
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    async saveBtnClick() {
+        let obj = this.state.obj;
+         var formData = new FormData();
+         if(obj.f_file_dxf)
+         formData.append("file_dxf",obj.f_file_dxf);
+         if(obj.f_file_kmz)
+         formData.append("file_kmz",obj.f_file_kmz);
+         formData.append("data", JSON.stringify(obj));
+       
+        if (this.state.status === 'new')
+            saveItem(formData, storeIndex,'multipart/form-data').then((response) => {
+              debugger;
+                if (response.data.type !== "Error") {
+                    console.log(response);
+                    message.success(successMessage, successDuration);
+                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                    this.fetchData();
+
+                }
+                else {
+                    message.error(errorMessage, errorDuration);
+                    console.log('error : ', response);
+                }
+            }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
+        else {
+            updateItem(obj, storeIndex).then((response) => {
+                if (response.statusText === "OK") {
+                    message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                    this.fetchData();
+                }
+                else {
+                    message.error(errorMessage, errorDuration);
+                    console.log('error : ', response);
+                }
+            }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
+        }
+    }
+    fileChange(e, name) {
+        let ob = this.state.obj;
+        if (!name)
+            ob[e.target.name] = e.target.files[0];
+        else
+            ob[name] = e;
+        this.setState({ obj: ob });
+    }
+    handleChange(e, name) {
+        let ob = this.state.obj;
+        if (!name)
+            ob[e.target.name] = e.target.value;
+        else
+            ob[name] = e;
+        this.setState({ obj: ob });
+    }
+    selectChange(name, values) {
+        let ob = this.state.obj;
+        ob[name] = values;
+        this.setState({ obj: ob });
+    }
+    editClickHandle(item) {
+        this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+    }
+    displayClickHandle(item) {
+        this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+    }
+    deleteClickHandle(item) {
+        console.log(item)
+        removeItem(item, storeIndex).then((response) => {
+            if (response.statusText === "OK") {
+                this.fetchData();
+                message.success(successMessage, successDuration);
+            }
+            else {
+                message.error(errorMessage, errorDuration);
+                console.log('error : ', response);
+            }
+        }).catch((error) => console.log(error))
+    }
+    newClickHandle() {
+        this.setState({ status: 'new', showPanel: true }, () => { this.scrollToFormRef(); });
+    }
+    cancelBtnClick() {
+        this.setState({ obj: emptyItem, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+    }
+    render() {
+        const { isFetching } = this.state;
+        if (isFetching) {
+            return (<Loading></Loading>)
+        }
+        else {
+            return (
+                <div className="app-main col-12" >
+                    <div className="row" >
+                        <div className="col-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    <div className="row">
+                                        <div className="col">
+                                            {pageHeder}
+                                        </div>
+                                        <div className='col-1  ml-auto'>
+                                            <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="card-body">
+                                    <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.editClickHandle}
+                                        displayClick={this.displayClickHandle}
+                                        deleteClick={this.deleteClickHandle}></Grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ref={(ref) => this.formRef = ref} className={this.state.showPanel ? 'row' : 'row hidden'}>
+                        <div className="col-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
+                                </div>
+                                <div className="card-body">
+                                    <form>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="title" className="">نام شهرک</label>
+                                                    <input name="title" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.title} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="province_id" className="">استان</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}                                   
+                                                        value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}/>
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="city" className="">شهرستان </label>
+                                                    <input name="city" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.city} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="gross_area" className=""> مساحت ناخالص شهرک (مترمربع) </label>
+                                                    <input name="gross_area" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.gross_area} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="pure_area" className="">مساحت خالص واحدها (مترمربع)</label>
+                                                    <input name="pure_area" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.pure_area} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="inityear" className="">سال تاسیس</label>
+                                                    <input name="inityear" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.inityear} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="activity_type_id" className=""> نوع فعالیت</label>
+                                                    <Select {...selectDefaultProp}  options={this.state.activities} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.activity_type_id} onSelect={(values) => this.selectChange("activity_type_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="ownership_type_id" className="">نوع مالکیت</label>
+                                                    <Select {...selectDefaultProp} options={this.state.ownerships}  disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.ownership_type_id} onSelect={(values) => this.selectChange("ownership_type_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="water_supply_id" className=""> منبع تخصیص آب</label>
+                                                    <Select {...selectDefaultProp}  options={this.state.waterSupply} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.water_supply_id} onSelect={(values) => this.selectChange("water_supply_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="water_rate" className="">میزان تخصیص آب (لیتر بر ثانیه)</label>
+                                                    <input name="water_rate" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.water_rate} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="power_supply_id" className=""> منبع تأمین برق</label>
+                                                    <Select {...selectDefaultProp}  options={this.state.powerSupply} disabled={this.state.status === 'display'} 
+                                                        value={this.state.obj.power_supply_id} onSelect={(values) => this.selectChange("power_supply_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="power_rate" className="">میزان برق تخصیص یافته (کیلو وات ساعت)</label>
+                                                    <input name="power_rate" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.power_rate} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="gas_supply_id" className="">منبع تخصیص گاز</label>
+                                                    <Select {...selectDefaultProp}  options={this.state.gasSupply} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.gas_supply_id} onSelect={(values) => this.selectChange("gas_supply_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="gas_rate" className=""> میزان تخصیص مصرف گاز (مترمکعب در ساعت)</label>
+                                                    <input name="gas_rate" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.gas_rate} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="total_units" className="">تعداد کل واحد های تولیدی</label>
+                                                    <input name="total_units" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.total_units} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="used_units" className="">تعداد واحد های قابل بهره برداری</label>
+                                                    <input name="used_units" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.used_units} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="used_number" className=""> تعداد بهره بردار</label>
+                                                    <input name="used_number" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.used_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="location_id" className="">موقعیت (شماره زون)</label>
+                                                    <Select {...selectDefaultProp}  options={this.state.locations} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.location_id} onSelect={(values) => this.selectChange("location_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-6">
+                                                <div className="form-group">
+                                                    <label htmlFor="coordinate_e" className="">مختصات نقظه مرکزی (E)</label>
+                                                    <input name="coordinate_e" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.coordinate_e} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-6">
+                                                <div className="form-group">
+                                                    <label htmlFor="coordinate_n" className="">مختصات نقظه مرکزی (N)</label>
+                                                    <input name="coordinate_n" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.coordinate_n} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-6">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
+                                                    <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
+                                                        disabled={this.state.status === 'display'} />
+                                                    <a href={this.state.obj.file_dxf}></a>
+                                                </div>
+                                            </div>
+                                            <div className="col-6">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_kmz" className="">بارگزاری فایل کروکی KMZ</label>
+                                                    <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
+                                                        disabled={this.state.status === 'display'} />
+                                                         <a href={this.state.obj.file_dxf}></a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
+                                        <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+    }
+
+}
+export default Town;
