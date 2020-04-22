@@ -40,9 +40,9 @@ class SubMenu extends Component {
             case 1:
                 return (<ul>
                     <li className={this.menuClassNames(1)} onMouseEnter={() => this.menuHandleHover(1)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(1)}> <Link to="/company" > شناسنامه شرکتها </Link></li>
-                    <li className={this.menuClassNames(2)} onMouseEnter={() => this.menuHandleHover(2)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(2)}> <Link to="/company" > شناسنامه شهرکها </Link></li>
+                    <li className={this.menuClassNames(2)} onMouseEnter={() => this.menuHandleHover(2)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(2)}> <Link to="/town" > شناسنامه شهرکها </Link></li>
                     <li className={this.menuClassNames(3)} onMouseEnter={() => this.menuHandleHover(3)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(3)}> <Link to="/company" > شناسنامه پروژه </Link></li>
-                    <li className={this.menuClassNames(4)} onMouseEnter={() => this.menuHandleHover(4)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(4)}> <Link to="/company" > شناسنامه قرارداد </Link></li>
+                    <li className={this.menuClassNames(4)} onMouseEnter={() => this.menuHandleHover(4)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(4)}> <Link to="/contract" > شناسنامه قرارداد </Link></li>
                     <li className={this.menuClassNames(5)} onMouseEnter={() => this.menuHandleHover(5)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(5)}> <Link to="/company" > تغیر مقادیر </Link></li>
                     <li className={this.menuClassNames(6)} onMouseEnter={() => this.menuHandleHover(6)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(6)}> <Link to="/company" > ابلاغ افزایش قرارداد </Link></li>
                     <li className={this.menuClassNames(7)} onMouseEnter={() => this.menuHandleHover(7)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(7)}> <Link to="/company" > تمدید مدت قرارداد </Link></li>

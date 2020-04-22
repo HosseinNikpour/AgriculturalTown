@@ -4,7 +4,7 @@ import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration,selectDefaultProp } from '../../../components/statics'
 
 class Company extends Component {
     constructor(props) {
@@ -12,7 +12,7 @@ class Company extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, data: [], rows: [], provinces: [],
+            columns: columns, data: [], rows: [], provinces: [],certificateTypes:[],
             isFetching: true, obj: emptyItem, showPanel: false, status: '',
         }
 
@@ -31,8 +31,9 @@ class Company extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo')]).then((response) => {
-            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { label: a.title, value: a.id } })
-            this.setState({ isFetching: false, rows: response[0].data, provinces: provinces });
+            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } })
+            let certificateTypes = response[1].data.filter(a => a.groupid === 9).map(a => { return { key: a.id, label: a.title, value: a.id } })
+            this.setState({ isFetching: false, rows: response[0].data, provinces: provinces,certificateTypes:certificateTypes});
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -43,8 +44,9 @@ class Company extends Component {
         let obj = this.state.obj;
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -54,8 +56,9 @@ class Company extends Component {
             }).catch((error) => console.log(error));
         else {
             updateItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -79,9 +82,12 @@ class Company extends Component {
         this.setState({ obj: ob });
     }
     editClickHandle(item) {
+        item = JSON.parse(JSON.stringify(item).replace(/\:null/gi, "\:\"\"")); 
+       // console.log(item)
         this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
+        item = JSON.parse(JSON.stringify(item).replace(/\:null/gi, "\:\"\"")); 
         this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
@@ -183,18 +189,15 @@ class Company extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="registration_province_id" className="">استان محل ثبت شرکت </label>
-                                                    <Select showSearch className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} filterOption={true} options={this.state.provinces}
-                                                        value={this.state.obj.registration_province_id}// onChange={(values) => this.selectChange("registration_province_id", values)}
-                                                        onSelect={(values) => this.selectChange("registration_province_id", values)}
+                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}
+                                                        value={this.state.obj.registration_province_id} onSelect={(values) => this.selectChange("registration_province_id", values)}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="province_id" className="">استان</label>
-                                                    <Select showSearch options={this.state.provinces} name="registrationProvinceId" className="form-control"
-                                                        direction="rtl" placeholder='انتخاب ...' disabled={this.state.status === 'display'} filterOption={true}
+                                                    <Select {...selectDefaultProp} options={this.state.provinces} name="registrationProvinceId" disabled={this.state.status === 'display'}
                                                         value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}
                                                     />
                                                 </div>
@@ -242,9 +245,10 @@ class Company extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="certificate_type" className="">نوع گواهینامه</label>
-                                                    <input name="certificate_type" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.certificate_type} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="certificate_type_id" className="">نوع گواهینامه</label>
+                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.certificateTypes}
+                                                        value={this.state.obj.certificate_type_id} onSelect={(values) => this.selectChange("certificate_type_id", values)}
+                                                    />
                                                 </div>
                                             </div>
                                             <div className="col-4">

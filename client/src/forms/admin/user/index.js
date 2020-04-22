@@ -33,8 +33,8 @@ class User extends Component {
         getAllItem(storeIndex).then((response) => {
             let data = response.data;
             data.forEach(e => {
-                e.last_login = moment(e.last_login).format('jYYYY/jMM/DD HH:mm');
-                e.created_on = moment(e.created_on).format('jYYYY/jMM/DD HH:mm');
+                e.last_login = moment(e.last_login).format('jYYYY/jMM/jDD HH:mm');
+                e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
             });
            // console.log(data);
             this.setState({ data: data, isFetching: false, rows: data.filter(a => a.enabled) });

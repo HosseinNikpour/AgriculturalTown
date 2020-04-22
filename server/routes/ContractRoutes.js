@@ -2,7 +2,7 @@ const pool = require('../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../functions/index');
-const name = "Company";
+const name = "Contract";
 
 router.get(`/`, function (req, res) {
     let query = `SELECT * FROM vw_${name} order by id desc  `;
@@ -27,8 +27,19 @@ router.get(`/:id`, function (req, res) {
         });
 });
 router.post('/', function (req, res) {
-    let query = func.queryGen(name, 'insert', req.body);
-    // let query = `INSERT INTO public.company(title,full_title,meli_code,economic_code,registration_number,registration_province_id,certificate_type,province_id,city,address,postalcode,tell,fax,rating1,rating2)  Values('${req.body.title}','${req.body.full_title}','${req.body.meli_code}','${req.body.economic_code}','${req.body.registration_number}',${req.body.registration_province_id},'${req.body.certificate_type}',${req.body.province_id},'${req.body.city}','${req.body.address}','${req.body.postalcode}','${req.body.tell}','${req.body.fax}','${req.body.rating1}','${req.body.rating2}')`;
+
+    let data = JSON.parse(req.body.data);
+    let files = req.files;
+  //  console.log(files.file_agreement);
+    let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.title) : '';
+    let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.title) : '';
+    let file_delivery = files && files.file_delivery ? func.saveFile(files.file_delivery, name, 'file_delivery', data.title) : '';
+    data["file_agreement"] = file_agreement;
+    data["file_announcement"] = file_announcement;
+    data["file_delivery"] = file_delivery;
+
+    let query=func.queryGen(name,'insert',data);
+   
     console.log(query)
     pool.query(query)
         .then((results) => {
@@ -39,10 +50,8 @@ router.post('/', function (req, res) {
         });
 });
 router.put('/:id', function (req, res) {
-    let query = func.queryGen(name, 'update', req.body);
-   // let query = `UPDATE public.company SET title='${req.body.title}',full_title='${req.body.full_title}',meli_code='${req.body.meli_code}',economic_code='${req.body.economic_code}',registration_number='${req.body.registration_number}',registration_province_id=${req.body.registration_province_id},certificate_type='${req.body.certificate_type}',province_id=${req.body.province_id},city='${req.body.city}',address='${req.body.address}',postalcode='${req.body.postalcode}',tell='${req.body.tell}',fax='${req.body.fax}',rating1='${req.body.rating1}',rating2='${req.body.rating2}' WHERE  id=${req.body.id}    `;
-
-    console.log(query);
+   
+    let query=func.queryGen(name,'update',req.body);
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);
@@ -52,7 +61,9 @@ router.put('/:id', function (req, res) {
         });
 });
 router.delete('/:id', function (req, res) {
-    let query = `delete from public.company WHERE  id=${req.params.id};    `;
+
+    console.log(req.body);
+    let query = `delete from public.${name} WHERE  id=${req.params.id};    `;
     console.log(query);
     pool.query(query)
         .then((results) => {
@@ -63,4 +74,6 @@ router.delete('/:id', function (req, res) {
         });
 });
 module.exports = router;
+
+
 

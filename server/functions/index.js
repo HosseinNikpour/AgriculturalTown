@@ -5,12 +5,15 @@ const saveFile = (file, entityName, fieldName, title) => {
         fs.mkdir(dir, { recursive: true }, e => {
             if (e)
                 console.error(e);
+            
         });
 
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     //console.log(fileName);
-    fs.writeFileSync(fileName, file.data);
-    return (fileName);
+    fs.writeFile(fileName, file.data, () => {
+        return (fileName);
+    });
+
 }
 
 const queryGen = (name, type, row) => {
@@ -19,9 +22,11 @@ const queryGen = (name, type, row) => {
         Object.keys(row).forEach(key => {
             if (row[key] && !key.startsWith('f_')) {
                 insertQuery += key + ',';
-                if (typeof (row[key] == 'number') || typeof (row[key] == 'boolean'))
+                // console.log(typeof (row[key]));
+                if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     insertValues += `${row[key]},`;
                 else {
+
                     insertValues += `'${row[key]}',`
                 }
             }
@@ -35,17 +40,17 @@ const queryGen = (name, type, row) => {
     else if (type == 'update') {
         updateQuery = `UPDATE public.${name} SET `
         Object.keys(row).forEach(key => {
-            if (row[key] && !key.startsWith('f_')) {
+            if (row[key] && !key.startsWith('f_') && key != 'id') {
 
-                if (typeof (row[key] == 'number') || typeof (row[key] == 'boolean'))
-                    updateQuery += row[key] + "=${req.body." + row[key] + "},";
+                if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
+                    updateQuery += `${key} =${row[key]},`;
                 else {
-                    updateQuery += row[key] + "='${req.body." + row[key] + "}',";
+                    updateQuery += `${key} ='${row[key]}',`;
                 }
             }
         })
         updateQuery = updateQuery.slice(0, -1);
-        updateQuery = updateQuery + ' WHERE  id=${req.body.id}'
+        updateQuery = updateQuery + ` WHERE  id=${row['id']}`
         return updateQuery;
     }
 }

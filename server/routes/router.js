@@ -7,7 +7,7 @@ router.use('/Company', require('./CompanyRoutes'));
 router.use('/User', require('./UserRoutes'));
 router.use('/PermissionStructure', require('./PermissionStructureRoutes'));
 router.use('/Town', require('./TownRoutes'));
-// router.use('/User', require('./UserRoutes'));
-// router.use('/User', require('./UserRoutes'));
+router.use('/Contract', require('./ContractRoutes'));
+router.use('/Project', require('./ProjectRoutes'));
 
 module.exports = router;

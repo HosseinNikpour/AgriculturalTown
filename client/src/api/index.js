@@ -24,18 +24,24 @@ export const getItem = (id, storeIndex) => axios.get(
 )
 
 export const saveItem = (data, storeIndex, ct) => {
-    if (ct)  header['Content-Type'] = ct;
-    console.log(URL + "api/" + storeIndex);
+    if (ct) header['Content-Type'] = ct;
+    data['creator_id'] = JSON.parse(localStorage.getItem('user')).id;
+    data['create_date'] = new Date();
     return axios.post(
         URL + "api/" + storeIndex, data,
         header
     )
 }
 
-export const updateItem = (data, storeIndex) => axios.put(
-    URL + "api/" + storeIndex + "/" + data.id, data,
-    header
-)
+export const updateItem = (data, storeIndex) => {
+    data['editor_id'] = JSON.parse(localStorage.getItem('user')).id;
+    data['edit_date'] = new Date();
+
+    return axios.put(
+        URL + "api/" + storeIndex + "/" + data.id, data,
+        header
+    )
+}
 
 export const removeItem = (id, storeIndex) => axios.delete(
     URL + "api/" + storeIndex + "/" + id,

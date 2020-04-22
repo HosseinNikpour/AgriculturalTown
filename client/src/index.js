@@ -3,21 +3,18 @@ import ReactDOM from 'react-dom';
 //import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// import PrivateRoute from './components/security/PrivateRoute'
-// import Login from './components/security/login'
+
+// import { LocaleProvider } from 'antd';
+// import fa_IR from 'antd/lib/locale-provider/fa_IR';
+// import 'moment/locale/fa';
+// import moment from 'moment';
+// moment.locale('fa');
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <Router>
-      <Switch>
-        <PrivateRoute path="/" component={App} />
-        <Route path="/login">
-                <Login />
-              </Route>
-      </Switch>
-     
-    </Router> */}
-     <App />
+     {/* <LocaleProvider locale={fa_IR}> */}
+        <App />
+    {/* </LocaleProvider> */}
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -83,8 +83,8 @@ router.delete('/:id', function (req, res) {
     console.log(query);
     pool.query(query)
         .then((results) => {
-            fs.unlinkSync(filePath1);
-            fs.unlinkSync(filePath2);
+         //   fs.unlinkSync(filePath1);
+        //    fs.unlinkSync(filePath2);
             return res.send(results.rows);
         })
         .catch((err) => {
