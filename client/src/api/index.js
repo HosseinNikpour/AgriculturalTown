@@ -27,6 +27,7 @@ export const saveItem = (data, storeIndex, ct) => {
     if (ct) header['Content-Type'] = ct;
     data['creator_id'] = JSON.parse(localStorage.getItem('user')).id;
     data['create_date'] = new Date();
+  //  console.log(data);
     return axios.post(
         URL + "api/" + storeIndex, data,
         header

@@ -21,6 +21,9 @@ export const columns = [
  //{ dataIndex: 'file_delivery',key: 'file_delivery', title: 'صورتجلسه تحویل زمین' },
  //{ dataIndex: 'project_manager_name',key: 'project_manager_name', title: 'مدیر پروژه' },
  //{ dataIndex: 'project_manager_contacts',key: 'project_manager_contacts', title: 'تلفن همراه مدیر پروژه' },
+ { dataIndex: 'contractor_user',key: 'contractor_user', title: 'کابر پیمانکار' },
+ { dataIndex: 'engineer_user',key: 'engineer_user', title: 'کاربر مشاور' },
+ { dataIndex: 'manager_user',key: 'manager_user', title: 'کاربر مدیراستان' },
 ];
 export const storeIndex = "Contract";
 export const pageHeder = 'شناسنامه قرارداد';
@@ -29,7 +32,7 @@ export const emptyItem = {title : '' ,full_title : '' ,contract_no : '' ,project
 colleague1_id : '' ,colleague2_id : '' ,contract_type_id : '' ,contract_date : undefined ,announcement_date : '' ,
 land_delivery_date : '' ,end_date : '' ,duration : '' ,initial_amount : undefined ,client_initial_amount : undefined ,
 coefficient : undefined ,file_agreement : '' ,file_announcement : '' ,file_delivery : '' ,project_manager_name : '' ,
-project_manager_contacts : '' }
+project_manager_contacts : '',contractor_user_id :'',engineer_user_id:'' ,manager_user_id:''  }
 
 
 

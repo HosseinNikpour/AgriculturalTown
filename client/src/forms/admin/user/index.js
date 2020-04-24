@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { message } from 'antd';
+import { message,Select } from 'antd';
 import moment from 'moment-jalaali'
 import { saveItem, getAllItem, updateItem, removeItem, updatePassword } from '../../../api/index'
 
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder, genPass, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
+import { columns, storeIndex, pageHeder, genPass, emptyItem,roles } from './statics'
+import { successDuration, successMessage, errorMessage, errorDuration,selectDefaultProp } from '../../../components/statics'
 
 moment.loadPersian()
 class User extends Component {
@@ -18,6 +18,7 @@ class User extends Component {
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.selectChange = this.selectChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -43,7 +44,11 @@ class User extends Component {
     componentDidMount() {
         this.fetchData();
     }
-
+    selectChange(name, values) {
+        let ob = this.state.obj;
+        ob[name] = values;
+        this.setState({ obj: ob });
+    }
     saveBtnClick() {
         let obj = this.state.obj;
         if (this.state.status === 'new')
@@ -181,6 +186,16 @@ class User extends Component {
                                                             value={this.state.obj.name} type="text" disabled={this.state.status === 'display'} />
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div className='row'>
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label htmlFor="role" className="">نقش </label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={roles}
+                                                        value={this.state.obj.role} onSelect={(values) => this.selectChange("role", values)}
+                                                    />
+                                                </div>
+                                            </div>
                                             </div>
                                             <div className='row'>
                                                 <div className="col">

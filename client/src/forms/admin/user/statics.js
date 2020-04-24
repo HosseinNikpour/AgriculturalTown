@@ -3,16 +3,20 @@ export const columns = [
     { sorter: true, key: 'id', dataIndex: 'id', title: 'شناسه' },
     { sorter: true, key: 'username', dataIndex: 'username', title: 'نام کاربری' },
     { sorter: true, key: 'name', dataIndex: 'name', title: 'نام' },
-    { sorter: true, key: 'enabled', dataIndex: 'enabled', title: 'فعال؟',render:function(text, record, index) {return text?'بلی':'خیر'} },
+    { sorter: true, key: 'enabled', dataIndex: 'enabled', title: 'فعال؟', render: function (text, record, index) { return text ? 'بلی' : 'خیر' } },
     { sorter: true, key: 'last_login', dataIndex: 'last_login', title: 'آخرین اتصال', type: 'date' },
-   // { sorter: true, key: 'created_on', dataIndex: 'created_on', title: 'تاریخ ایجاد', type: 'date' },
+    // { sorter: true, key: 'created_on', dataIndex: 'created_on', title: 'تاریخ ایجاد', type: 'date' },
 
 ];
 
+export const roles = [ { key: 'admin', label: 'ادمین', value: 'admin' },
+                        { key: 'manager', label: 'مدیر استان', value: 'manager' },
+                        { key: 'engineer', label: 'مشاور', value: 'engineer' },
+                        { key: 'contractor', label: 'پیمانکار', value: 'contractor' }]
 export const storeIndex = "User";
 export const pageHeder = 'اطلاعات کاربران';
 
-export const emptyItem = { username: '', name: '', last_login: '', created_on: '',password:'',enabled:true };
+export const emptyItem = { username: '', name: '', last_login: '', roles: '', password: '', enabled: true };
 
 export const genPass = (len) => {
     len = len ? len : 8;

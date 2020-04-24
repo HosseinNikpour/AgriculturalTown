@@ -17,7 +17,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], contractTypes: [],
-            companies: [], projects: [],
+            companies: [], projects: [],users:[],
             isFetching: true, obj: emptyItem, showPanel: false, status: '',
         }
 
@@ -37,52 +37,38 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'), getAllItem('project')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'), 
+        getAllItem('project'),getAllItem('user')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let projects = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
-                let contract_date=e.contract_date;
-                let announcement_date=e.announcement_date;
-                let land_delivery_date=e.land_delivery_date;
-                let end_date=e.end_date;
-
-                e.contract_date_v = moment(contract_date);
-                e.announcement_date_v = moment(announcement_date);
-                e.land_delivery_date_v = moment(land_delivery_date);
-                e.end_date_v = moment(end_date);
-
-                e.contract_date = moment(contract_date).format('jYYYY/jMM/jDD');
-                e.announcement_date = moment(announcement_date).format('jYYYY/jMM/jDD');
-                e.land_delivery_date =moment(land_delivery_date).format('jYYYY/jMM/jDD');
-                e.end_date =  moment(end_date).format('jYYYY/jMM/jDD');
-
-
                
+                e.contract_date = moment(e.contract_date);
+                e.announcement_date = moment(e.announcement_date);
+                e.land_delivery_date = moment(e.land_delivery_date);
+                e.end_date = moment(e.end_date);             
 
             });
             
             this.setState({
                 isFetching: false, rows: data, contractTypes: contractTypes,
-                companies: companies, projects: projects
+                companies: companies, projects: projects,users:users
             });
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
         this.fetchData();
-       
-    //    let m=moment('2020-04-19T19:30:00.000Z');
-    //     console.log(m.format('YYYY MM DD'))
-    //     console.log(m.format('jYYYY/jMM/jDD'))
     }
 
     async saveBtnClick() {
         let obj = this.state.obj;
-        delete obj.contract_date_v;
-        delete obj.announcement_date_v;
-        delete obj.land_delivery_date_v;
-        delete obj.end_date_v;
+         obj.contract_date=obj.contract_date.format();
+         obj.announcement_date=obj.announcement_date.format();
+         obj.land_delivery_date=obj.land_delivery_date.format();
+         obj.end_date=obj.end_date.format();
         var formData = new FormData();
 
         if (obj.f_file_delivery)
@@ -144,14 +130,10 @@ class Town extends Component {
 
         this.setState({ obj: ob });
     }
-    dateChange(name, dateString, m) {
+    dateChange(name, value) {
         let ob = this.state.obj;
-//debugger;
-        // ob[name] = moment(dateString, 'jYYYY/jMM/jDD');
-        // ob[name + '_v'] = dateString;
-        //  ob[name] = m.format('jYYYY/jMM/jDD');
-       // ob[name + '_v'] = m;
-       // this.setState({ obj: ob });
+        ob[name] = value;
+        this.setState({ obj: ob });
     }
     selectChange(name, values) {
         let ob = this.state.obj;
@@ -291,7 +273,8 @@ class Town extends Component {
                              
                                                     <label htmlFor="contract_date" className="">تاریخ قرارداد/پیمان </label>
                                                  
-                                                    <DatePicker onChange={(ts, d) => this.dateChange('contract_date_v', d, ts)} value={this.state.obj.contract_date_v}
+                                                    <DatePicker onChange={value => this.dateChange('contract_date', value)} 
+                                                    value={this.state.obj.contract_date}
                                                     disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
@@ -300,23 +283,23 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="announcement_date" className="">تاریخ ابلاغ قرارداد/پیمان</label>{this.state.obj.announcement_date_v}
-                                                    <DatePicker onChange={(ts, d) => this.dateChange('announcement_date_v', d, ts)} value={this.state.obj.announcement_date_v}
-                                                    
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                    <DatePicker onChange={value => this.dateChange('announcement_date',value)} 
+                                                    value={this.state.obj.announcement_date}
+                                                    disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="land_delivery_date" className="">تاریخ تحویل زمین</label>
-                                                    <DatePicker onChange={(ts, d) => this.dateChange('land_delivery_date', d, ts)}  {...datePickerDefaultProp}
-                                                        value={this.state.obj.land_delivery_date_v} disabled={this.state.status === 'display'} />
+                                                    <DatePicker onChange={value => this.dateChange('land_delivery_date', value)}  {...datePickerDefaultProp}
+                                                        value={this.state.obj.land_delivery_date} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ اولیه اتمام </label>
-                                                    <DatePicker onChange={(ts, d) => this.dateChange('end_date', d, ts)}  {...datePickerDefaultProp}
-                                                        value={this.state.obj.end_date_v} disabled={this.state.status === 'display'} />
+                                                    <DatePicker onChange={value => this.dateChange('end_date', value)}  {...datePickerDefaultProp}
+                                                        value={this.state.obj.end_date} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>
@@ -389,6 +372,32 @@ class Town extends Component {
                                                     <input name="f_file_delivery" className="form-control" onChange={this.fileChange} type='file'
                                                         disabled={this.state.status === 'display'} />
 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="contractor_user_id" className="">کاربر پیمانکار </label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a=>a.label.endsWith('.c'))}
+                                                        value={this.state.obj.contractor_user_id} onSelect={(values) => this.selectChange("contractor_user_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="engineer_user_id" className="">کاربر مشاور  </label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a=>a.label.endsWith('.e'))}
+                                                        value={this.state.obj.engineer_user_id} onSelect={(values) => this.selectChange("engineer_user_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="manager_user_id" className="">کاربر مدیر استان </label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a=>a.label.endsWith('.m'))}
+                                                        value={this.state.obj.manager_user_id} onSelect={(values) => this.selectChange("manager_user_id", values)}
+                                                    />
                                                 </div>
                                             </div>
                                         </div>

@@ -197,7 +197,7 @@ class Company extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="province_id" className="">استان</label>
-                                                    <Select {...selectDefaultProp} options={this.state.provinces} name="registrationProvinceId" disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.provinces}  disabled={this.state.status === 'display'}
                                                         value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}
                                                     />
                                                 </div>
