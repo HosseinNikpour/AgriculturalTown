@@ -52,6 +52,7 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
    
     let query=func.queryGen(name,'update',req.body);
+    console.log(query);
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

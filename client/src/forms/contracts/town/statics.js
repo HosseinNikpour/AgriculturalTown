@@ -27,5 +27,9 @@ export const storeIndex = "Town";
 export const pageHeder = 'شناسنامه شهرک ها';
 
 export const emptyItem = {
-    title : '' ,province_id : '' ,city : '' ,gross_area : '' ,pure_area : '' ,inityear : '' ,activity_type_id : '' ,ownership_type_id : '' ,water_supply_id : '' ,water_rate : '' ,power_supply_id : '' ,power_rate : '' ,gas_supply_id : '' ,gas_rate : '' ,total_units : '' ,used_units : '' ,used_number : '' ,location_id : '' ,coordinate_e : '' ,coordinate_n : '' ,file_dxf : '' ,file_kmz : '' ,f_file_dxf : '' ,f_file_kmz : ''
+    title : '' ,province_id : '' ,city : '' ,gross_area : '' ,pure_area : '' ,inityear : '' ,
+    activity_type_id : '' ,ownership_type_id : '' ,water_supply_id : '' ,water_rate : '' ,
+    power_supply_id : '' ,power_rate : '' ,gas_supply_id : '' ,gas_rate : '' ,total_units : '' ,
+    used_units : '' ,used_number : '' ,location_id : '' ,coordinate_e : '' ,coordinate_n : '' ,
+    file_dxf : '' ,file_kmz : '' ,f_file_dxf : '' ,f_file_kmz : ''
 };

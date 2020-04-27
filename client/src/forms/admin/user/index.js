@@ -35,7 +35,7 @@ class User extends Component {
             let data = response.data;
             data.forEach(e => {
                 e.last_login = moment(e.last_login).format('jYYYY/jMM/jDD HH:mm');
-                e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
+               // e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
             });
            // console.log(data);
             this.setState({ data: data, isFetching: false, rows: data.filter(a => a.enabled) });
@@ -51,11 +51,13 @@ class User extends Component {
     }
     saveBtnClick() {
         let obj = this.state.obj;
+        console.log(obj)
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -64,9 +66,10 @@ class User extends Component {
             }).catch((error) => console.log(error));
         else if (this.state.status === 'edit')
             updateItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -75,8 +78,10 @@ class User extends Component {
             }).catch((error) => console.log(error));
         else {
             updatePassword({id:obj.id ,password:obj.password}).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                   // this.fetchData();
+                    this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -84,7 +89,7 @@ class User extends Component {
                 }
             }).catch((error) => console.log(error));
         }
-        this.setState({ obj: emptyItem, status: '', showPanel: false });
+      
 
     }
     handleChange(e, name) {
@@ -117,7 +122,7 @@ class User extends Component {
     }
     deleteClickHandle(item) {
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 this.fetchData();
                 message.success(successMessage, successDuration);
             }
@@ -201,7 +206,7 @@ class User extends Component {
                                                 <div className="col">
                                                     <div className="form-group">
                                                         <label htmlFor="enabled" className="">غعال ؟</label>
-                                                        {console.log(this.state.obj.enabled)}
+                                                     
                                                         <input name="enabled" className="form-control1" onChange={this.handleChange}
                                                             checked={this.state.obj.enabled} type="checkbox" disabled={this.state.status === 'display'} />
                                                     </div>

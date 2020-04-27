@@ -55,6 +55,9 @@ class Company extends Component {
                 }
             }).catch((error) => console.log(error));
         else {
+            delete obj.registration_province;
+            delete obj.province;
+            delete obj.certificate_type;
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
@@ -92,7 +95,7 @@ class Company extends Component {
     }
     deleteClickHandle(item) {
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 this.fetchData();
                 message.success(successMessage, successDuration);
             }

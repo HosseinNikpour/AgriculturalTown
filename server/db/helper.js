@@ -53,11 +53,11 @@ const createQueries = (table_name) => {
             updateQuery = updateQuery.slice(0, -1);
 
             insertQuery = insertQuery + ' Values(' + insertValues + ')';
-            console.log("insertQuery");
-            console.log(insertQuery);
-            updateQuery = updateQuery + ' WHERE  id=${req.body.id}'
-            console.log("updateQuery");
-            console.log(updateQuery);
+            // console.log("insertQuery");
+            // console.log(insertQuery);
+            // updateQuery = updateQuery + ' WHERE  id=${req.body.id}'
+            // console.log("updateQuery");
+            // console.log(updateQuery);
             console.log("emptyObj");
             console.log(emptyObj);
             console.log("gridColumn");
@@ -70,5 +70,5 @@ const createQueries = (table_name) => {
         });
 };
 
-createQueries('contract');
+createQueries('operation');
 

@@ -29,7 +29,7 @@
 
 
 .ant-table-tbody tr:nth-child(2n) td {
-   
+    background: #f4fff3a6;
 }
 
 .card-body {
@@ -71,7 +71,7 @@
     font-size: 20px;
     font-weight: 600;
     font-style: italic;
-    background: #0493d036;
+    background: #ffdc5db3;
 }
 .card {
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -85,18 +85,18 @@
 
 .logoName {
     font-family: 'IranNastaliq';
-    font-size: 28px;
+    font-size: 26px;
     display: inline-block;
     width: 223px;
     margin-right: 20px;
     margin-top: 0px;
-    color: #06066f;
+    color: #0990d6;
     padding-top: 38px;
 
 }
-
+td .ant-table-cell {line-height: 23px;}
 .activeMenu  {
- color: #536dfe!important;
+    color: #3ba1dc!important;
 }
 
 .activeSubMenu {
@@ -109,7 +109,7 @@
 }
 
 .navagition {
-    background: #f9f9f9;
+    background: #fff3e0;
     font-family: 'iran_sansregular';
     height: 95px;
 }
@@ -142,7 +142,7 @@
 
 .navagition ul li div {
     display: grid;
-    color: rgb(146, 146, 146);
+    color: rgb(243, 165, 24);
     margin: 0 auto;
     cursor: pointer;
 }
@@ -213,8 +213,8 @@
     font-weight: bold;
     box-shadow: 5px 5px #c2c2c2;
 }
-.main-ribon{    font-family: 'iran_sansregular';
-    background: #0493d0;
+.main-ribon{       font-family: 'iran_sansregular';
+    background: #ffbe5d;
     height: 31px;
     width: 100%;
     text-align: center;
@@ -237,15 +237,39 @@
             line-height: 40px;
     width: 58px;}
 	
-	.activeMenu i {color: #536dfe!important;}
-	.farmlogo{ -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-  filter: grayscale(100%);}
+	.activeMenu i {  color: #3ba1dc!important;}
+	.farmlogo{ }
 
 
 .ant-table-cell div {text-align: center;}
 
-.ant-table-cell i {    font-size: 13px;}
-	
+.ant-table-cell i {       margin: 2px;
+    font-size: 15px;}
+
+    .fa-plus-circle:before {
+
+    }
+    .add-button {
+
+    }
+    
+    .fa-edit:before {
+        color: #dc5cdec9;
+    }
+        .fa-trash-alt:before {
+            color: #ff7272;
+        }
+        .fa-eye:before {
+            color: #95bff3;
+        }
+        .ant-table-tbody > tr > td {
+
+            line-height: 21px;
+        }
+        .fa-plus-circle:before {
+            cursor: pointer;
+        }
+
 @font-face {
     font-family: 'BYekan';
     src: url('../fonts/BYekan.eot?#') format('eot'), url('../fonts/BYekan.woff') format('woff'), url('../fonts/BYekan.ttf') format('truetype');

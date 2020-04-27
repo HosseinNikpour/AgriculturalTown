@@ -15,7 +15,7 @@ export const columns = [
  //{ dataIndex: 'duration',key: 'duration', title: 'مدت' },
  { dataIndex: 'initial_amount',key: 'initial_amount', title: 'مبلغ اولیه' }, 
  //{ dataIndex: 'client_initial_amount',key: 'client_initial_amount', title: 'مبلغ برآورد اولیه کارفرما' }, 
- //{ dataIndex: 'coefficient',key: 'coefficient', title: 'ضریب ' },
+ { dataIndex: 'coefficient',key: 'coefficient', title: 'ضریب ' , render: function (text) { return parseFloat(text).toFixed(2) } },
  //{ dataIndex: 'file_agreement',key: 'file_agreement', title: 'موافقتنامه ' },
  //{ dataIndex: 'file_announcement',key: 'file_announcement', title: 'صورتجلسه ابلاغ' },
  //{ dataIndex: 'file_delivery',key: 'file_delivery', title: 'صورتجلسه تحویل زمین' },

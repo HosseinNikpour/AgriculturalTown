@@ -23,5 +23,7 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 7, label: 'منبع تخصیص گاز' },
 { value: 8, label: 'نوع قرارداد' },
 { value: 9, label: 'نوع گواهینامه' },
+{ value: 11, label: 'واحد ها' },
+{ value: 12, label: 'گروه عملیات اجرایی' },
 ]
 export const emptyItem = { title: '', sort: '' };

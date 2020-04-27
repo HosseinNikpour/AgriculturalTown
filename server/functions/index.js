@@ -1,18 +1,17 @@
 const fs = require('fs');
 const saveFile = (file, entityName, fieldName, title) => {
-    let dir = `.\\files\\${entityName}\\${fieldName}`;
+    let dir = `.\\Docs\\files\\${entityName}\\${fieldName}`;
     if (!fs.existsSync(dir))
         fs.mkdir(dir, { recursive: true }, e => {
             if (e)
                 console.error(e);
-            
         });
 
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     //console.log(fileName);
-    fs.writeFile(fileName, file.data, () => {
-        return (fileName);
-    });
+    fs.writeFileSync(fileName, file.data);//, () => {
+    return (fileName.replace('.\\Docs',''));
+    //  });
 
 }
 

@@ -9,5 +9,8 @@ router.use('/PermissionStructure', require('./PermissionStructureRoutes'));
 router.use('/Town', require('./TownRoutes'));
 router.use('/Contract', require('./ContractRoutes'));
 router.use('/Project', require('./ProjectRoutes'));
+router.use('/Period', require('./PeriodRoutes'));
+router.use('/WBS', require('./WBSRoutes'));
+router.use('/Operation', require('./OperationRoutes'));
 
 module.exports = router;

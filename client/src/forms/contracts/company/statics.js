@@ -4,7 +4,7 @@ export const columns = [
     { dataIndex: 'meli_code', key: 'meli_code', title: 'شناسه ملی' },
     { dataIndex: 'economic_code', key: 'economic_code', title: 'کد اقتصادی' },
     { dataIndex: 'registration_number', key: 'registration_number', title: 'شماره ثبت' },
-    { dataIndex: 'certificate_type_id', key: 'certificate_type_id', title: 'نوع گواهینامه' },
+    { dataIndex: 'certificate_type', key: 'certificate_type_id', title: 'نوع گواهینامه' },
     { dataIndex: 'province', key: 'province', title: 'استان' },
     { dataIndex: 'city', key: 'city', title: 'شهرستان' },
     { dataIndex: 'tell', key: 'tell', title: 'تلفن' },

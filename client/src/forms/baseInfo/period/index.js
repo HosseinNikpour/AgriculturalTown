@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
+import moment from 'moment-jalaali';
+import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder, emptyItem, entities } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
+import { columns, storeIndex, pageHeder, emptyItem } from './statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
-class PermissionStructure extends Component {
+class Period extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
+
         this.state = {
-            columns: columns, rows: [], users: [], entities,
+            columns: columns, rows: [],
             isFetching: true, obj: emptyItem, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
-        this.selectChange = this.selectChange.bind(this);
-      //  this.selectMultiChange = this.selectMultiChange.bind(this);
+        this.dateChange = this.dateChange.bind(this);
+
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -30,12 +33,16 @@ class PermissionStructure extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('User')]).then((response) => {
-            let users = response[1].data.map(a => ({ key: a.id,value: a.id,  label: a.username }));
-            users.unshift({ key: -1,value:-1, label: 'پیمانکار' }, { key: -2,value:-2, label: 'مشاور' }, {Key: -3,value:-3, label: 'مدیر شهرستان' })
-           let r=response[0].data;
-           console.log(r);
-            this.setState({ isFetching: false, rows: r, users: users });
+        getAllItem(storeIndex).then((response) => {
+            let data = response.data;
+            data.forEach(e => {
+                e.start_date = moment(e.start_date);
+                e.end_date = moment(e.end_date);
+            });
+            console.log(data)
+            this.setState({
+                isFetching: false, rows: data
+            });
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -44,41 +51,49 @@ class PermissionStructure extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-        // obj.item_creator=obj.item_creator.map(a=>a.value).toString();
-        // obj.item_approver=obj.item_approver.map(a=>a.value).toString();
-        // obj.item_viewer=obj.item_viewer.map(a=>a.value).toString();
-        // obj.item_editor=obj.item_editor.map(a=>a.value).toString();
+        obj.start_date = obj.start_date.format();
+        obj.end_date = obj.end_date.format();
+
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                debugger;
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-                //todo : handel error handeling
-            }).catch((error) => console.log(error));
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
             updateItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => console.log(error));
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+
     handleChange(e, name) {
         let ob = this.state.obj;
         if (!name)
             ob[e.target.name] = e.target.value;
         else
             ob[name] = e;
+
+        this.setState({ obj: ob });
+    }
+    dateChange(name, value) {
+        let ob = this.state.obj;
+        ob[name] = value;
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
@@ -87,18 +102,18 @@ class PermissionStructure extends Component {
         this.setState({ obj: ob });
     }
     editClickHandle(item) {
-        console.log(item)
-
         this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
+        console.log(item);
         this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
+        console.log(item)
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
-                message.success(successMessage, successDuration);
+            if (response.data.type !== "Error") {
                 this.fetchData();
+                message.success(successMessage, successDuration);
             }
             else {
                 message.error(errorMessage, errorDuration);
@@ -119,7 +134,9 @@ class PermissionStructure extends Component {
         }
         else {
             return (
+
                 <div className="app-main col-12" >
+
                     <div className="row" >
                         <div className="col-12">
                             <div className="card">
@@ -151,60 +168,36 @@ class PermissionStructure extends Component {
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
-                                            <div className="col-6">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="entity_name" className="">نام سند</label>
-                                                    <Select showSearch className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} filterOption={true} options={this.state.entities}
-                                                        value={this.state.obj.entity_name}
-                                                        onSelect={(values) => this.selectChange("entity_name", values)}
-                                                    />
+                                                    <label htmlFor="title" className="">عنوان</label>
+                                                    <input name="title" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-
-                                            <div className="col-6">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_creator" className=""> ایجاد کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_creator} 
-                                                        onChange={(values) => this.selectChange("item_creator", values)}
-                                                    />
-                                                   
+                                                    <label htmlFor="start_date" className="">تاریخ شروع</label>
+                                                    <DatePicker onChange={value => this.dateChange('start_date', value)}
+                                                        value={this.state.obj.start_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_approver" className="">تایید کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_approver} 
-                                                        onChange={(values) => this.selectChange("item_approver", values)}
-                                                    />
+                                                    <label htmlFor="end_date" className="">تاریخ پایان</label>
+                                                    <DatePicker onChange={value => this.dateChange('end_date', value)}
+                                                        value={this.state.obj.end_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-6">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_viewer" className="">مشاهده کننده گان </label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_viewer}
-                                                        onChange={(values) => this.selectChange("item_viewer", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-6">
-                                                <div className="form-group">
-                                                    <label htmlFor="item_editor" className=""> ویرایش کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_editor}  
-                                                        onChange={(values) => this.selectChange("item_editor", values)}
-                                                    />
+                                                    <label htmlFor="month" className="">ماه</label>
+                                                    <input name="month" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.month} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>
@@ -217,9 +210,10 @@ class PermissionStructure extends Component {
                         </div>
                     </div>
                 </div>
+
             )
         }
     }
 
 }
-export default PermissionStructure;
+export default Period;

@@ -48,13 +48,14 @@ router.post(`/signin`, function (req, res) {
                             expiresIn: 60 * 60 * 24 // expires in 24 hours
                         });
                         let query = `UPDATE public.${name}
-                        SET last_login='${new Date()}'
+                        SET last_login='${new Date().toLocaleString()}'
                          WHERE  id=${results.rows[0].id}    `;
                         pool.query(query)
                             .then((results) => {
                                 return res.status(200).json({
                                     error: false,
                                     message: "ok",
+                                    
                                     user,
                                     token
                                 });
@@ -68,7 +69,7 @@ router.post(`/signin`, function (req, res) {
                                 });
                             });
 
-                       
+
                     } else {
                         return res.status(401).json({
                             error: true,
@@ -114,7 +115,7 @@ router.post('/verifyToken', function (req, res) {
     });
 });
 router.get(`/`, function (req, res) {
-    let query = `SELECT id, username, name, last_login, created_on,enabled FROM public.${name} order by id desc  `;
+    let query = `SELECT id, username, name, last_login,enabled,role FROM public.${name} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -130,8 +131,9 @@ router.post('/', function (req, res) {
     bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash(req.body.password, salt, function (err, hash) {
 
-            let query = `INSERT INTO public.${name} (username, name, password,enabled)  
-                         Values('${req.body.username}','${req.body.name}','${hash}',${req.body.en})`;
+            let query = `INSERT INTO public.${name} (username, name, password,enabled,role,creator_id, create_date)  
+                         Values('${req.body.username}','${req.body.name}','${hash}',${req.body.enabled},'${req.body.role}',${req.body.creator_id},'${req.body.create_date}')`;
+            console.log(query);
             pool.query(query)
                 .then((results) => {
                     return res.send(results.rows);
@@ -145,7 +147,12 @@ router.post('/', function (req, res) {
 });
 router.put('/:id', function (req, res) {
     let query = `UPDATE public.${name}
-            SET name='${req.body.name}',username='${req.body.username}'
+            SET name='${req.body.name}',
+                username='${req.body.username}',
+                role='${req.body.role}',
+                enabled=${req.body.enabled},
+                editor_id=${req.body.editor_id}, 
+                edit_date='${req.body.edit_date}'
              WHERE  id=${req.body.id}    `;
 
 

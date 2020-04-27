@@ -47,9 +47,10 @@ class Project extends Component {
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 // console.log('new save res', response);
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -57,11 +58,13 @@ class Project extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
+            delete obj.town;
             updateItem(obj, storeIndex).then((response) => {
                 //console.log('new save res', response);
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
 
                 else {
@@ -70,7 +73,7 @@ class Project extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
-        this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+       
 
     }
     handleChange(e, name) {
@@ -97,7 +100,7 @@ class Project extends Component {
     }
     deleteClickHandle(item) {
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 message.success(successMessage, successDuration);
                 this.fetchData();
             }

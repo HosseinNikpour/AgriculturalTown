@@ -1,11 +1,30 @@
 import React, { Component } from 'react';
 import moment from 'moment-jalaali'
 import DatePicker from 'react-datepicker2';
+import { createGroupedOptions } from '../functions/index'
+import { message, Select } from 'antd';
+import { getAllItem } from '../api/index';
+import { selectDefaultProp } from './statics'
+
 
 class Test extends Component {
     constructor(prop) {
         super(prop);
-        this.state = { value: moment('2020-04-22 13:13:09.404+04:30') };
+        this.state = {
+            value: moment('2020-04-22 13:13:09.404+04:30'),
+            selectOptions: []
+        };
+    }
+
+    componentDidMount() {
+        // Promise.all([getAllItem('company'),getAllItem('contract'),getAllItem('user')]).then((response) => {
+        // });
+
+        getAllItem('baseinfo').then(response => {
+            let d=response.data.map(a=>({value:a.id,label:a.title,groupid:a.groupid}));
+            let x = createGroupedOptions(d, 'groupid');
+            this.setState({ selectOptions: x });
+        })
     }
     render() {
         return (<div className="mainContent">
@@ -15,25 +34,12 @@ class Test extends Component {
             </div>
             <div className='boxContent'>
 
-
-                dsffs
-                DASFSDFSDFS
-                DASFSDFSDFSSF
-            <br />
-            SDF
-            SD      <br />
-            fromSDF      <br />
-            DS
-            fromSDFDS      <br />
-            F
-            DS      <br />
-            fromSDFDSF      <br />
-            SD
-            F      <br />
-            dsffsFD      <br />
-            F
-            SD      <br />
             </div>
+{console.log( this.state.selectOptions)}
+contract : <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
+                filterOption={true} optionFilterProp="children" showSearch={true}>
+                {this.state.selectOptions}
+            </Select>
 
             <DatePicker
                 isGregorian={false}

@@ -1,23 +1,24 @@
 import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
+
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder, emptyItem, entities } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
+import { columns, storeIndex, pageHeder, emptyItem } from './statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
 
-class PermissionStructure extends Component {
+class Operation extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
+
         this.state = {
-            columns: columns, rows: [], users: [], entities,
+            columns: columns, rows: [], categoies: [],units:[],
             isFetching: true, obj: emptyItem, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
-      //  this.selectMultiChange = this.selectMultiChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -30,12 +31,14 @@ class PermissionStructure extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('User')]).then((response) => {
-            let users = response[1].data.map(a => ({ key: a.id,value: a.id,  label: a.username }));
-            users.unshift({ key: -1,value:-1, label: 'پیمانکار' }, { key: -2,value:-2, label: 'مشاور' }, {Key: -3,value:-3, label: 'مدیر شهرستان' })
-           let r=response[0].data;
-           console.log(r);
-            this.setState({ isFetching: false, rows: r, users: users });
+        Promise.all([getAllItem(storeIndex), getAllItem('baseInfo')]).then((response) => {
+            let data = response[0].data;
+            let categoies = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let units = response[1].data.filter(a => a.groupid === 11).map(a => { return { key: a.id, label: a.title, value: a.id } })
+            console.log(data)
+            this.setState({
+                isFetching: false, rows: data, categoies,units
+            });
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -44,41 +47,51 @@ class PermissionStructure extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-        // obj.item_creator=obj.item_creator.map(a=>a.value).toString();
-        // obj.item_approver=obj.item_approver.map(a=>a.value).toString();
-        // obj.item_viewer=obj.item_viewer.map(a=>a.value).toString();
-        // obj.item_editor=obj.item_editor.map(a=>a.value).toString();
+        // obj.start_date = obj.start_date.format();
+        // obj.end_date = obj.end_date.format();
+debugger;
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-                //todo : handel error handeling
-            }).catch((error) => console.log(error));
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
+            delete obj.unit;
+            delete obj.category;
+            
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => console.log(error));
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+
     handleChange(e, name) {
         let ob = this.state.obj;
         if (!name)
             ob[e.target.name] = e.target.value;
         else
             ob[name] = e;
+
+        this.setState({ obj: ob });
+    }
+    dateChange(name, value) {
+        let ob = this.state.obj;
+        ob[name] = value;
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
@@ -87,18 +100,18 @@ class PermissionStructure extends Component {
         this.setState({ obj: ob });
     }
     editClickHandle(item) {
-        console.log(item)
-
         this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
+        console.log(item);
         this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
+        console.log(item)
         removeItem(item.id, storeIndex).then((response) => {
             if (response.data.type !== "Error") {
-                message.success(successMessage, successDuration);
                 this.fetchData();
+                message.success(successMessage, successDuration);
             }
             else {
                 message.error(errorMessage, errorDuration);
@@ -119,7 +132,7 @@ class PermissionStructure extends Component {
         }
         else {
             return (
-                <div className="app-main col-12" >
+               <div className="app-main col-12" >
                     <div className="row" >
                         <div className="col-12">
                             <div className="card">
@@ -151,63 +164,41 @@ class PermissionStructure extends Component {
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
-                                            <div className="col-6">
+                                            <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="entity_name" className="">نام سند</label>
-                                                    <Select showSearch className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} filterOption={true} options={this.state.entities}
-                                                        value={this.state.obj.entity_name}
-                                                        onSelect={(values) => this.selectChange("entity_name", values)}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="col-6">
-                                                <div className="form-group">
-                                                    <label htmlFor="item_creator" className=""> ایجاد کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_creator} 
-                                                        onChange={(values) => this.selectChange("item_creator", values)}
-                                                    />
-                                                   
+                                                    <label htmlFor="title" className="">عنوان</label>
+                                                    <input name="title" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-12">
+                                        <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_approver" className="">تایید کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_approver} 
-                                                        onChange={(values) => this.selectChange("item_approver", values)}
+                                                    <label htmlFor="unit_id" className="">واحد</label>
+                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.units}
+                                                        value={this.state.obj.unit_id} onSelect={(values) => this.selectChange("unit_id", values)}
                                                     />
                                                 </div>
                                             </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="category_id" className="">گروه</label>
+                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.categoies}
+                                                        value={this.state.obj.category_id} onSelect={(values) => this.selectChange("category_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="sort" className="">ترتیب</label>
+                                                    <input name="sort" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.sort} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            
                                         </div>
-                                        <div className="row">
-                                            <div className="col-6">
-                                                <div className="form-group">
-                                                    <label htmlFor="item_viewer" className="">مشاهده کننده گان </label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_viewer}
-                                                        onChange={(values) => this.selectChange("item_viewer", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-6">
-                                                <div className="form-group">
-                                                    <label htmlFor="item_editor" className=""> ویرایش کننده گان</label>
-                                                    <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
-                                                        disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_editor}  
-                                                        onChange={(values) => this.selectChange("item_editor", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
@@ -217,9 +208,10 @@ class PermissionStructure extends Component {
                         </div>
                     </div>
                 </div>
+
             )
         }
     }
 
 }
-export default PermissionStructure;
+export default Operation;

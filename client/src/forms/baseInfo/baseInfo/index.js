@@ -49,9 +49,10 @@ class BaseInfo extends Component {
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 // console.log('new save res', response);
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -61,9 +62,10 @@ class BaseInfo extends Component {
         else {
             updateItem(obj, storeIndex).then((response) => {
                 //console.log('new save res', response);
-                if (response.statusText === "OK") {
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
 
                 else {
@@ -72,7 +74,7 @@ class BaseInfo extends Component {
                 }
             }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
         }
-        this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+      
 
     }
     handleChange(e, name) {
@@ -100,7 +102,7 @@ class BaseInfo extends Component {
     }
     deleteClickHandle(item) {
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 message.success(successMessage, successDuration);
                 this.fetchData();
             }

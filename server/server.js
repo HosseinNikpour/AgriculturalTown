@@ -19,7 +19,7 @@ app.use(cors());
 const REST_API_ROOT = '/api';
 app.use(REST_API_ROOT, require('./routes/router'));
 
-//app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, '/Docs')));
 
 // // Handles any requests that don't match the ones above
 // app.get('*', (req,res) =>{

@@ -52,7 +52,9 @@ class Town extends Component {
                 e.end_date = moment(e.end_date);             
 
             });
-            
+            console.log(contractTypes)
+            console.log(projects)
+
             this.setState({
                 isFetching: false, rows: data, contractTypes: contractTypes,
                 companies: companies, projects: projects,users:users
@@ -65,6 +67,7 @@ class Town extends Component {
 
     async saveBtnClick() {
         let obj = this.state.obj;
+        console.log(obj);
          obj.contract_date=obj.contract_date.format();
          obj.announcement_date=obj.announcement_date.format();
          obj.land_delivery_date=obj.land_delivery_date.format();
@@ -96,8 +99,18 @@ class Town extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
+            delete obj.project;
+            delete obj.company;
+            delete obj.colleague1;
+            delete obj.colleague2;
+            delete obj.contract_type;
+            delete obj.contractor_user;
+            delete obj.engineer_user;
+            delete obj.manager_user;
+
             updateItem(obj, storeIndex).then((response) => {
-                if (response.statusText === "OK") {
+                debugger;
+                if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
@@ -150,7 +163,7 @@ class Town extends Component {
     deleteClickHandle(item) {
         console.log(item)
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 this.fetchData();
                 message.success(successMessage, successDuration);
             }
@@ -233,39 +246,39 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پروژه</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.project}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.projects}
                                                         value={this.state.obj.project_id} onSelect={(values) => this.selectChange("project_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="company_id" className="">شرکت</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.company}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.companies}
                                                         value={this.state.obj.company_id} onSelect={(values) => this.selectChange("company_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="company_id" className="">شرکت همکار1</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.company}
-                                                        value={this.state.obj.company_id} onSelect={(values) => this.selectChange("company_id", values)} />
+                                                    <label htmlFor="colleague1_id" className="">شرکت همکار1</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.companies}
+                                                        value={this.state.obj.colleague1_id} onSelect={(values) => this.selectChange("colleague1_id", values)} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="company_id" className="">شرکت همکار2</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.company}
-                                                        value={this.state.obj.company_id} onSelect={(values) => this.selectChange("company_id", values)}
+                                                    <label htmlFor="colleague2_id" className="">شرکت همکار2</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.companies}
+                                                        value={this.state.obj.colleague2_id} onSelect={(values) => this.selectChange("colleague2_id", values)}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">نوع قرارداد/پیمان</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contract}
-                                                        value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
+                                                    <label htmlFor="contract_type_id" className="">نوع قرارداد/پیمان</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contractTypes}
+                                                        value={this.state.obj.contract_type_id} onSelect={(values) => this.selectChange("contract_type_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -330,8 +343,9 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="coefficient" className="">ضریب </label>
-                                                    <input name="coefficient" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.coefficient} disabled={true} />
+                                                    <input name="coefficient" className="form-control" onChange={this.handleChange} 
+                                                        value={parseFloat(this.state.obj.coefficient).toFixed(2)} disabled={true} />
+                                                        
                                                 </div>
                                             </div>
                                             <div className="col-4">

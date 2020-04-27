@@ -16,7 +16,7 @@ export const roles = [ { key: 'admin', label: 'ادمین', value: 'admin' },
 export const storeIndex = "User";
 export const pageHeder = 'اطلاعات کاربران';
 
-export const emptyItem = { username: '', name: '', last_login: '', roles: '', password: '', enabled: true };
+export const emptyItem = { username: '', name: '', last_login: '', role: '', password: '', enabled: true };
 
 export const genPass = (len) => {
     len = len ? len : 8;

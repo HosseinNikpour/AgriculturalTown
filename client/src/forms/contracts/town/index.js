@@ -43,7 +43,7 @@ class Town extends Component {
             let powerSupply = response[1].data.filter(a => a.groupid === 6).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let gasSupply = response[1].data.filter(a => a.groupid === 7).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
-
+console.log(response[0].data);
             this.setState({
                 isFetching: false, rows: response[0].data, waterSupply: waterSupply,
                 provinces: provinces, activities: activities, ownerships: ownerships, powerSupply: powerSupply,
@@ -56,7 +56,7 @@ class Town extends Component {
     }
 
     async saveBtnClick() {
-        debugger;
+        
         let obj = this.state.obj;
          var formData = new FormData();
          if(obj.f_file_dxf)
@@ -81,6 +81,14 @@ class Town extends Component {
                 }
             }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
         else {
+            delete obj.province;
+            delete obj.activity_type;
+            delete obj.ownership_type;
+            delete obj.water_supply;
+            delete obj.power_supply;
+            delete obj.gas_supply;
+            delete obj.location;
+
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
@@ -124,7 +132,7 @@ class Town extends Component {
     deleteClickHandle(item) {
         console.log(item)
         removeItem(item.id, storeIndex).then((response) => {
-            if (response.statusText === "OK") {
+            if (response.data.type !== "Error") {
                 this.fetchData();
                 message.success(successMessage, successDuration);
             }
@@ -326,14 +334,14 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="coordinate_e" className="">مختصات نقظه مرکزی (E)</label>
+                                                    <label htmlFor="coordinate_e" className="">مختصات نقطه مرکزی (E)</label>
                                                     <input name="coordinate_e" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.coordinate_e} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="coordinate_n" className="">مختصات نقظه مرکزی (N)</label>
+                                                    <label htmlFor="coordinate_n" className="">مختصات نقطه مرکزی (N)</label>
                                                     <input name="coordinate_n" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.coordinate_n} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -346,7 +354,7 @@ class Town extends Component {
                                                     <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
                                                     <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
                                                         disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <a href={this.state.obj.file_dxf}>{this.state.obj.file_dxf}</a>
                                                 </div>
                                             </div>
                                             <div className="col-6">
@@ -354,7 +362,7 @@ class Town extends Component {
                                                     <label htmlFor="f_file_kmz" className="">بارگزاری فایل کروکی KMZ</label>
                                                     <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
                                                         disabled={this.state.status === 'display'} />
-                                                         <a href={this.state.obj.file_dxf}></a>
+                                                         <a href={this.state.obj.file_dxf}>{this.state.obj.file_dxf}</a>
                                                 </div>
                                             </div>
 

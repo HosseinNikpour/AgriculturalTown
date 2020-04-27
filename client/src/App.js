@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link,Redirect } from "react-router-dom";
-// import { verifyToken } from './api/index';
-// import { withRouter } from "react-router";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
 
 import './assets/css/bootstrapV441.rtl.css';
 import './assets/css/fontawesome.css';
-//import './assets/css/animate.css';
 
 import './assets/css/custom.css';
 
@@ -22,6 +20,9 @@ import Login from './components/security/login'
 //admin level
 import User from './forms/admin/user/index';
 import BaseInfo from './forms/baseInfo/baseInfo/index';
+import Period from './forms/baseInfo/period/index';
+import Operation from './forms/baseInfo/operation/index'
+import WBS from './forms/execution/wbs/index'
 import PermissionStructure from './forms/admin/perStructure/index'
 
 //user level
@@ -65,13 +66,6 @@ class App extends Component {
   }
   componentDidMount() {
     this.onLogin();
-    // var originalSetItem = localStorage.setItem;
-    // localStorage.setItem = function () {
-    //   document.createEvent('Event').initEvent('itemInserted', true, true);
-    //   originalSetItem.apply(this, arguments);
-    // //  this.onLogin();
-    // }
-
   }
   settingClick() {
     this.setState(prevState => ({
@@ -96,126 +90,126 @@ class App extends Component {
     return names.join(' ');
   }
   render() {
-    // if (!this.state.currentUser.name){
-    //   console.log('22222')
-    //   return (<Router><Switch><Redirect to={{ pathname: '/login', state: { from: '/' } }}/></Switch></Router>)
-    // }
-    // else
-      return (
-        <Router>
-          <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
-          <div className='container-fluid' dir="RTL">
-            <div className='row topRiboon'>
+    return (
+      <Router>
+        <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
+        <div className='container-fluid' dir="RTL">
+          <div className='row topRiboon'>
 
-              <div className="col-1 ml-auto">
+            <div className="col-1 ml-auto">
 
-                <i className="fas fa-tools" style={{ margin: '12px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
+              <i className="fas fa-tools" style={{ margin: '12px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
 
-                <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"}>
-                  <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/baseinfo" >اطلاعات پایه</Link>
-                  <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/user" >مدیریت کاربران ها</Link>
-                  <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/permissionStructure" >مدیریت دسترسی ها</Link>
-                </div>
-
+              <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"}>
+                <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/baseinfo" >اطلاعات پایه</Link>
+                <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/period" >دوره ها</Link>
+                <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/operation" >عملیات اجرایی</Link>
+                <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/user" >مدیریت کاربران </Link>
+                {/* <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/permissionStructure" >مدیریت دسترسی ها</Link> */}
               </div>
-              <div className="col-1">
-                <div className='top-left'>
-                  <i className="fas fa-user" style={{ color: '#bdbdbd', margin: '11px 10px 7px' }}></i>
-                  {this.state.currentUser.name}
-                </div>
-                {this.state.currentUser.name && <div className="logout" onClick={this.onLogout} style={{ marginTop: '-34px' }}>
-                  خروج
-            </div>}
-              </div>
+
             </div>
-            <div className='row navagition'>
-              <div className='col-3'>
-                <img src={logo} style={{ width: '50px', marginTop: '-24px' }} />
-                <div className='logoName'> مهندسین مشاور آبگستران میهن</div>
-
+            <div className="col-1">
+              <div className='top-left'>
+                <i className="fas fa-user" style={{ color: '#bdbdbd', margin: '11px 10px 7px' }}></i>
+                {this.state.currentUser.name}
               </div>
-              <div className='col-7'>
-                <ul>
-                  <li >
-                    <div className={this.menuClassNames(0)} onMouseEnter={() => this.topMenuHandleHover(0)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(0)}>
-                      <i className="fa fa-home" ></i>
+              {this.state.currentUser.name && <div className="logout" onClick={this.onLogout} style={{ marginTop: '-34px' }}>
+                خروج
+            </div>}
+            </div>
+          </div>
+          <div className='row navagition'>
+            <div className='col-3'>
+              <img src={logo} style={{ width: '50px', marginTop: '-24px' }} />
+              <div className='logoName'> مهندسین مشاور آبگستران میهن</div>
+
+            </div>
+            <div className='col-7'>
+              <ul>
+                <li >
+                  <div className={this.menuClassNames(0)} onMouseEnter={() => this.topMenuHandleHover(0)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(0)}>
+                    <i className="fa fa-home" ></i>
                     خانه
                   </div>
-                  </li>
-                  <li >
-                    <div className={this.menuClassNames(1)} onMouseEnter={() => this.topMenuHandleHover(1)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(1)}>
-                      <i className="far fa-file-contract" ></i>
+                </li>
+                <li >
+                  <div className={this.menuClassNames(1)} onMouseEnter={() => this.topMenuHandleHover(1)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(1)}>
+                    <i className="far fa-file-contract" ></i>
                     قراردادها
                   </div>
-                  </li>
-                  <li >
-                    <div className={this.menuClassNames(2)} onMouseEnter={() => this.topMenuHandleHover(2)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(2)}>
-                      <i className="fa fa-wrench" ></i>
+                </li>
+                <li >
+                  <div className={this.menuClassNames(2)} onMouseEnter={() => this.topMenuHandleHover(2)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(2)}>
+                    <i className="fa fa-wrench" ></i>
                         پیشرفت
                   </div>
-                  </li>
-                  <li>
-                    <div className={this.menuClassNames(3)} onMouseEnter={() => this.topMenuHandleHover(3)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(3)}>
-                      <i className="fa fa-handshake"></i>
+                </li>
+                <li>
+                  <div className={this.menuClassNames(3)} onMouseEnter={() => this.topMenuHandleHover(3)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(3)}>
+                    <i className="fa fa-handshake"></i>
                         تحویل
                   </div>
-                  </li>
-                  <li>
-                    <div className={this.menuClassNames(4)} onMouseEnter={() => this.topMenuHandleHover(4)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(4)}>
-                      <i className="fas fa-university" ></i>
+                </li>
+                <li>
+                  <div className={this.menuClassNames(4)} onMouseEnter={() => this.topMenuHandleHover(4)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(4)}>
+                    <i className="fas fa-university" ></i>
                         مالی
                   </div>
-                  </li>
-                  <li>
-                    <div className={this.menuClassNames(5)} onMouseEnter={() => this.topMenuHandleHover(5)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(5)}>
-                      <i className="fa fa-balance-scale" ></i>
+                </li>
+                <li>
+                  <div className={this.menuClassNames(5)} onMouseEnter={() => this.topMenuHandleHover(5)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(5)}>
+                    <i className="fa fa-balance-scale" ></i>
                           مناقصه
                   </div>
-                  </li>
-                  <li>
-                    <div className={this.menuClassNames(6)} onMouseEnter={() => this.topMenuHandleHover(6)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(6)}>
-                      <i className="fas fa-chart-bar" ></i>
+                </li>
+                <li>
+                  <div className={this.menuClassNames(6)} onMouseEnter={() => this.topMenuHandleHover(6)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(6)}>
+                    <i className="fas fa-chart-bar" ></i>
                   گزارشات
                   </div>
-                  </li>
+                </li>
 
 
-                </ul>
-              </div>
-              <div className='col-2'>
-                <img className='farmlogo' src={farm} style={{ width: '77px', marginTop: "10px" }} />
-              </div>
+              </ul>
             </div>
-            <div className='row subNavagition'>
-              <SubMenu type={this.state.topMenuClicked}></SubMenu>
+            <div className='col-2'>
+              <img className='farmlogo' src={farm} style={{ width: '77px', marginTop: "10px" }} />
             </div>
-            <div className='row content'>
-              <Switch>
-                <PrivateRoute path="/baseInfo" component={BaseInfo} role="admin" />
-                <PrivateRoute path="/user" component={User} role="admin" />
-                <PrivateRoute path="/permissionStructure" component={PermissionStructure} role="admin" />
+          </div>
+          <div className='row subNavagition'>
+            <SubMenu type={this.state.topMenuClicked}></SubMenu>
+          </div>
+          <div className='row content'>
+            <Switch>
+              <PrivateRoute path="/baseInfo" component={BaseInfo} role="admin" />
+              <PrivateRoute path="/period" component={Period} role="admin" />
+              <PrivateRoute path="/operation" component={Operation} role="admin" />
+              <PrivateRoute path="/wbs" component={WBS} role="admin" />
+              <PrivateRoute path="/user" component={User} role="admin" />
+              <PrivateRoute path="/permissionStructure" component={PermissionStructure} role="admin" />
 
-                <PrivateRoute path="/company" component={Company} />
-                <PrivateRoute path="/town" component={Town} />
-                <PrivateRoute path="/contract" component={Contract} />
-                <PrivateRoute path="/project" component={Project} />
-                <Route path="/test">
-                  <Test />
-                </Route>
-                <Route path="/login">
-                  <Login />
-                </Route>
-                <PrivateRoute path="/" component={Home} onLogin={this.onLogin} />
-                {/* <Route path="/">
+              <PrivateRoute path="/company" component={Company} />
+              <PrivateRoute path="/town" component={Town} />
+              <PrivateRoute path="/contract" component={Contract} />
+              <PrivateRoute path="/project" component={Project} />
+              <Route path="/test">
+                <Test />
+              </Route>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <PrivateRoute path="/" component={Home} onLogin={this.onLogin} />
+              {/* <Route path="/">
                 <Home />
               </Route> */}
 
-              </Switch>
-            </div>
+            </Switch>
           </div>
-        </Router>
+        </div>
+      </Router>
 
-      );
+    );
   }
 
 
