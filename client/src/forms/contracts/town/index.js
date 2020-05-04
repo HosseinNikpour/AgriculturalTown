@@ -4,10 +4,7 @@ import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration ,selectDefaultProp} from '../../../components/statics'
-
-
-
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -17,7 +14,7 @@ class Town extends Component {
         this.state = {
             columns: columns, rows: [], provinces: [],
             waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],
-            isFetching: true, obj: emptyItem, showPanel: false, status: '',
+            isFetching: true, obj: {...emptyItem}, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -29,6 +26,7 @@ class Town extends Component {
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
@@ -43,11 +41,12 @@ class Town extends Component {
             let powerSupply = response[1].data.filter(a => a.groupid === 6).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let gasSupply = response[1].data.filter(a => a.groupid === 7).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
-console.log(response[0].data);
+                 //console.log(emptyItem);
             this.setState({
                 isFetching: false, rows: response[0].data, waterSupply: waterSupply,
                 provinces: provinces, activities: activities, ownerships: ownerships, powerSupply: powerSupply,
-                gasSupply: gasSupply, locations: locations
+                gasSupply: gasSupply, locations: locations,
+                obj: {...emptyItem}, isEdit: false, showPanel: false
             });
         }).catch((error) => console.log(error))
     }
@@ -56,50 +55,51 @@ console.log(response[0].data);
     }
 
     async saveBtnClick() {
-        
+
         let obj = this.state.obj;
-         var formData = new FormData();
-         if(obj.f_file_dxf)
-         formData.append("file_dxf",obj.f_file_dxf);
-         if(obj.f_file_kmz)
-         formData.append("file_kmz",obj.f_file_kmz);
-         formData.append("data", JSON.stringify(obj));
-       
+        // if (obj.province) delete obj.province;
+        // if (obj.activity_type) delete obj.activity_type;
+        // if (obj.ownership_type) delete obj.ownership_type;
+        // if (obj.water_supply) delete obj.water_supply;
+        // if (obj.power_supply) delete obj.power_supply;
+        // if (obj.gas_supply) delete obj.gas_supply;
+        // if (obj.location) delete obj.location;
+        let formData = new FormData();
+        if (obj.f_file_dxf)
+            formData.append("file_dxf", obj.f_file_dxf);
+        if (obj.f_file_kmz)
+            formData.append("file_kmz", obj.f_file_kmz);
+        formData.append("data", JSON.stringify(obj));
+
         if (this.state.status === 'new')
-            saveItem(formData, storeIndex,'multipart/form-data').then((response) => {
-             // debugger;
+            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                // debugger;
                 if (response.data.type !== "Error") {
-                    console.log(response);
+              //      console.log(response);
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
-                    this.fetchData();
 
+                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                    this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            delete obj.province;
-            delete obj.activity_type;
-            delete obj.ownership_type;
-            delete obj.water_supply;
-            delete obj.power_supply;
-            delete obj.gas_supply;
-            delete obj.location;
 
-            updateItem(obj, storeIndex).then((response) => {
+
+            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                   // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
     fileChange(e, name) {
@@ -121,6 +121,11 @@ console.log(response[0].data);
     selectChange(name, values) {
         let ob = this.state.obj;
         ob[name] = values;
+        this.setState({ obj: ob });
+    }
+    deleteFile(name) {
+        let ob = this.state.obj;
+        ob[name] = false;
         this.setState({ obj: ob });
     }
     editClickHandle(item) {
@@ -146,7 +151,7 @@ console.log(response[0].data);
         this.setState({ status: 'new', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
-        this.setState({ obj: emptyItem, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+        this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
         const { isFetching } = this.state;
@@ -197,8 +202,8 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="province_id" className="">استان</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}                                   
-                                                        value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}/>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}
+                                                        value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -236,7 +241,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="activity_type_id" className=""> نوع فعالیت</label>
-                                                    <Select {...selectDefaultProp}  options={this.state.activities} disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.activities} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.activity_type_id} onSelect={(values) => this.selectChange("activity_type_id", values)}
                                                     />
                                                 </div>
@@ -244,7 +249,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="ownership_type_id" className="">نوع مالکیت</label>
-                                                    <Select {...selectDefaultProp} options={this.state.ownerships}  disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.ownerships} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.ownership_type_id} onSelect={(values) => this.selectChange("ownership_type_id", values)}
                                                     />
                                                 </div>
@@ -252,7 +257,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="water_supply_id" className=""> منبع تخصیص آب</label>
-                                                    <Select {...selectDefaultProp}  options={this.state.waterSupply} disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.waterSupply} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.water_supply_id} onSelect={(values) => this.selectChange("water_supply_id", values)}
                                                     />
                                                 </div>
@@ -269,7 +274,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="power_supply_id" className=""> منبع تأمین برق</label>
-                                                    <Select {...selectDefaultProp}  options={this.state.powerSupply} disabled={this.state.status === 'display'} 
+                                                    <Select {...selectDefaultProp} options={this.state.powerSupply} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.power_supply_id} onSelect={(values) => this.selectChange("power_supply_id", values)}
                                                     />
                                                 </div>
@@ -286,7 +291,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="gas_supply_id" className="">منبع تخصیص گاز</label>
-                                                    <Select {...selectDefaultProp}  options={this.state.gasSupply} disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.gasSupply} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.gas_supply_id} onSelect={(values) => this.selectChange("gas_supply_id", values)}
                                                     />
                                                 </div>
@@ -324,7 +329,7 @@ console.log(response[0].data);
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="location_id" className="">موقعیت (شماره زون)</label>
-                                                    <Select {...selectDefaultProp}  options={this.state.locations} disabled={this.state.status === 'display'}
+                                                    <Select {...selectDefaultProp} options={this.state.locations} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.location_id} onSelect={(values) => this.selectChange("location_id", values)}
                                                     />
                                                 </div>
@@ -352,17 +357,21 @@ console.log(response[0].data);
                                             <div className="col-6">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
-                                                    <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}>{this.state.obj.file_dxf}</a>
+                                                    {this.state.status !== 'display' && <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_dxf && <div><a target="_blank" href={this.state.obj.file_dxf}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_dxf')}></i>}</div>}
                                                 </div>
                                             </div>
                                             <div className="col-6">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_kmz" className="">بارگزاری فایل کروکی KMZ</label>
-                                                    <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                         <a href={this.state.obj.file_dxf}>{this.state.obj.file_dxf}</a>
+                                                    {this.state.status !== 'display' && <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_kmz && <div><a target="_blank" href={this.state.obj.file_kmz}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_kmz')}></i>}</div>}
                                                 </div>
                                             </div>
 

@@ -14,7 +14,7 @@ class User extends Component {
         super(props);
 
         this.state = {
-            columns: columns, rows: [], isFetching: true, obj: emptyItem, status: '', showPanel: false
+            columns: columns, rows: [], isFetching: true, obj: {...emptyItem}, status: '', showPanel: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -38,7 +38,8 @@ class User extends Component {
                // e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
             });
            // console.log(data);
-            this.setState({ data: data, isFetching: false, rows: data.filter(a => a.enabled) });
+            this.setState({ data: data, isFetching: false, rows: data.filter(a => a.enabled) 
+            , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -57,7 +58,7 @@ class User extends Component {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, status: '', showPanel: false });
+                   // this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -69,7 +70,7 @@ class User extends Component {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, status: '', showPanel: false });
+                 //   this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -81,7 +82,7 @@ class User extends Component {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                    // this.fetchData();
-                    this.setState({ obj: emptyItem, status: '', showPanel: false });
+                   // this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);

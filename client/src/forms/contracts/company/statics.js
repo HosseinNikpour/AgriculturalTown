@@ -1,5 +1,6 @@
 
 export const columns = [
+    { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
     { dataIndex: 'title', key: 'title', title: 'نام اختصاری' },
     { dataIndex: 'meli_code', key: 'meli_code', title: 'شناسه ملی' },
     { dataIndex: 'economic_code', key: 'economic_code', title: 'کد اقتصادی' },

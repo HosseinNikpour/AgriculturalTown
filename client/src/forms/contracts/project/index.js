@@ -4,19 +4,17 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder, types, emptyItem } from './statics'
+import { columns, storeIndex, pageHeder, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
 
 
 class Project extends Component {
     constructor(props) {
         super(props);
-        //  this.formRef = React.createRef();
-        //  this.gridRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], towns: [],
-            isFetching: true, obj: emptyItem, isEdit: false, showPanel: false
+            columns: columns, rows: [], towns: [],status:'',
+            isFetching: true, obj: {...emptyItem},  showPanel: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -33,7 +31,9 @@ class Project extends Component {
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem("town")]).then((response) => {
             let towns = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            this.setState({ isFetching: false, rows: response[0].data, towns: towns });
+           
+            this.setState({ isFetching: false, rows: response[0].data, towns: towns 
+                , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -42,15 +42,13 @@ class Project extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-
-        console.log(obj)
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 // console.log('new save res', response);
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -58,13 +56,13 @@ class Project extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            delete obj.town;
+          //  delete obj.town;
             updateItem(obj, storeIndex).then((response) => {
                 //console.log('new save res', response);
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
 
                 else {
@@ -117,7 +115,7 @@ class Project extends Component {
 
     }
     cancelBtnClick() {
-        this.setState({ obj: emptyItem, status: '', showPanel: false });
+        this.setState({ obj: {...emptyItem}, status: '', showPanel: false });
     }
     render() {
         const { isFetching } = this.state;
@@ -169,7 +167,7 @@ class Project extends Component {
                                                     <div className="form-group">
                                                         <label htmlFor="full_title" className="">نام کامل</label>
                                                         <input name="full_title" className="form-control" onChange={this.handleChange}
-                                                            value={this.state.obj.title} disabled={this.state.status === 'display'} />
+                                                            value={this.state.obj.full_title} disabled={this.state.status === 'display'} />
                                                     </div>
                                                 </div>
                                             </div><div className="row">

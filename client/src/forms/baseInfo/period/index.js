@@ -15,7 +15,7 @@ class Period extends Component {
 
         this.state = {
             columns: columns, rows: [],
-            isFetching: true, obj: emptyItem, showPanel: false, status: '',
+            isFetching: true, obj: {...emptyItem}, showPanel: false, status: '',            
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -36,12 +36,12 @@ class Period extends Component {
         getAllItem(storeIndex).then((response) => {
             let data = response.data;
             data.forEach(e => {
-                e.start_date = moment(e.start_date);
-                e.end_date = moment(e.end_date);
+                e.start_date =e.start_date? moment(e.start_date):undefined;
+                e.end_date =e.end_date? moment(e.end_date):undefined;
             });
-            console.log(data)
+        ///    console.log(data)
             this.setState({
-                isFetching: false, rows: data
+                isFetching: false, rows: data, obj: {...emptyItem},  showPanel: false,status: ''
             });
         }).catch((error) => console.log(error))
     }
@@ -56,10 +56,10 @@ class Period extends Component {
 
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
-                debugger;
+               // debugger;
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -71,7 +71,7 @@ class Period extends Component {
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -125,7 +125,7 @@ class Period extends Component {
         this.setState({ status: 'new', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
-        this.setState({ obj: emptyItem, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+        this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
         const { isFetching } = this.state;

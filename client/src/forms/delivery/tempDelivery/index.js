@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
+import moment from 'moment-jalaali';
+import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
-class Company extends Component {
+class Town extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, data: [], rows: [], provinces: [], certificateTypes: [],
+            columns: columns, rows: [], contract: [], project:'',hasDefect:[],
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.dateChange = this.dateChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
+        this.fileChange = this.fileChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -30,12 +34,25 @@ class Company extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo')]).then((response) => {
-            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } })
-            let certificateTypes = response[1].data.filter(a => a.groupid === 9).map(a => { return { key: a.id, label: a.title, value: a.id } })
-      
-            this.setState({ isFetching: false, rows: response[0].data, provinces: provinces, certificateTypes: certificateTypes 
-                , obj: {...emptyItem},  showPanel: false,status: ''});
+        Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
+            let contract = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+           
+            let hasDefect=[{ key:1, label: 'بلی', value: 1 },{ key: 2, label: 'خیر', value: 2}]
+            let data = response[0].data;
+            data.forEach(e => {
+                //اینجا فیلدهای تاریخ میان
+                e.contractor_date =  e.contractor_date?moment(e.contractor_date):'';
+                e.consultant_date =  e.consultant_date?moment(e.consultant_date):'';
+                e.branch_date = e.branch_date?moment(e.branch_date):'';
+                e.manager_date = e.manager_date?moment(e.manager_date):'';
+                e.commision_date = e.commision_date?moment(e.commision_date):'';
+                e.remove_defect_date = e.remove_defect_date?moment(e.remove_defect_date):'';
+            });
+
+            this.setState({
+                isFetching: false, rows: data, contract,hasDefect
+                , obj: { ...emptyItem }, showPanel: false, status: ''
+            });
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -44,31 +61,55 @@ class Company extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+
+        obj.contractor_date = obj.contractor_date ? obj.contractor_date.format() : '';
+        obj.consultant_date = obj.consultant_date ? obj.consultant_date.format() : '';
+        obj.branch_date = obj.branch_date ? obj.branch_date.format() : '';
+        obj.manager_date = obj.manager_date ? obj.manager_date.format() : '';
+        obj.commision_date = obj.commision_date ? obj.commision_date.format() : '';
+        obj.remove_defect_date = obj.remove_defect_date ? obj.remove_defect_date.format() : '';
+
+        var formData = new FormData();
+
+        if (obj.f_file_defect) formData.append("file_defect", obj.f_file_defect);
+        if (obj.f_file_record) formData.append("file_record", obj.f_file_record);
+        if (obj.f_file_signification) formData.append("file_signification", obj.f_file_signification);
+
+        formData.append("data", JSON.stringify(obj));
+
         if (this.state.status === 'new')
-            saveItem(obj, storeIndex).then((response) => {
+            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
+                   // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
-                    //   this.setState({ obj: empty  ,status:'', showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => console.log(error) );
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            updateItem(obj, storeIndex).then((response) => {
+            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    //       this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+              //      this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
                     message.error(errorMessage, errorDuration);
                     console.log('error : ', response);
                 }
-            }).catch((error) => console.log(error));
+            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
+    }
+    fileChange(e, name) {
+        let ob = this.state.obj;
+        if (!name)
+            ob[e.target.name] = e.target.files[0];
+        else
+            ob[name] = e;
+        this.setState({ obj: ob });
     }
     handleChange(e, name) {
         let ob = this.state.obj;
@@ -76,23 +117,31 @@ class Company extends Component {
             ob[e.target.name] = e.target.value;
         else
             ob[name] = e;
+
+        this.setState({ obj: ob });
+    }
+    dateChange(name, value) {
+        let ob = this.state.obj;
+        ob[name] = value;
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
         let ob = this.state.obj;
         ob[name] = values;
-        this.setState({ obj: ob });
+        let prj = this.state.prj;
+        if (name === 'contract_id')
+            prj = this.state.obj.contract_id && this.state.contracts.find(a => a.key == this.state.obj.contract_id) ? this.state.contracts.find(a => a.key == this.state.obj.contract_id).project : '';
+        this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
-    //    item = JSON.parse(JSON.stringify(item).replace(/\:null/gi, "\:\"\""));
-        // console.log(item)
         this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-     //   item = JSON.parse(JSON.stringify(item).replace(/\:null/gi, "\:\"\""));
+        console.log(item);
         this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
+       // console.log(item)
         removeItem(item.id, storeIndex).then((response) => {
             if (response.data.type !== "Error") {
                 this.fetchData();
@@ -118,7 +167,7 @@ class Company extends Component {
         else {
             return (
                 <div className="app-main col-12" >
-                    <div className="row" >
+                   <div className="row" >
                         <div className="col-12">
                             <div className="card">
                                 <div className="card-header">
@@ -151,123 +200,108 @@ class Company extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className="">نام اختصاری</label>
-                                                    <input name="title" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.title} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contract}
+                                                        value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="full_title" className="">نام کامل</label>
-                                                    <input name="full_title" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.full_title} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="project_id" className="">نام پروژه</label>
+                                                    <label className="form-control">{this.state.project}</label>
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="contractor_date" className="">تاریخ درخواست پیمانکار</label>
+                                                    <DatePicker onChange={value => this.dateChange('contractor_date', value)}
+                                                        value={this.state.obj.contractor_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="meli_code" className="">شناسه ملی </label>
-                                                    <input name="meli_code" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.meli_code} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="consultant_date" className="">تاریخ درخواست مشاور</label>
+                                                    <DatePicker onChange={value => this.dateChange('consultant_date', value)}
+                                                        value={this.state.obj.consultant_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="economic_code" className="">کد اقتصادی</label>
-                                                    <input name="economic_code" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.economic_code} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="branch_date" className="">تاریخ درخواست مدیر شعبه</label>
+                                                    <DatePicker onChange={value => this.dateChange('branch_date', value)}
+                                                        value={this.state.obj.branch_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="registration_number" className="">شماره ثبت</label>
-                                                    <input name="registration_number" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.registration_number} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="manager_date" className="">تاریخ درخواست مدیر طرح</label>
+                                                    <DatePicker onChange={value => this.dateChange('manager_date', value)}
+                                                        value={this.state.obj.manager_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="registration_province_id" className="">استان محل ثبت شرکت </label>
-                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}
-                                                        value={this.state.obj.registration_province_id} onSelect={(values) => this.selectChange("registration_province_id", values)}
-                                                    />
+
+                                                    <label htmlFor="commision_date" className="">تاریخ تشکیل کمیسیون</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('commision_date', value)}
+                                                        value={this.state.obj.commision_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="province_id" className="">استان</label>
-                                                    <Select {...selectDefaultProp} options={this.state.provinces} disabled={this.state.status === 'display'}
-                                                        value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}
-                                                    />
+                                                    <label htmlFor="with_defect" className="">تحویل با نقص</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.hasDefect}
+                                                        value={this.state.obj.with_defect} onSelect={(values) => this.selectChange("with_defect", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="city" className="">شهرستان</label>
-                                                    <input name="city" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.city} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12">
-                                                <div className="form-group">
-                                                    <label htmlFor="address" className="">نشانی کامل</label>
-                                                    <input name="address" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.address} disabled={this.state.status === 'display'} />
+
+                                                    <label htmlFor="remove_defect_date" className="">آخرین مهلت تعیین شده برای رفع نقص</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('remove_defect_date', value)}
+                                                        value={this.state.obj.remove_defect_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="postalcode" className="">کد پستی</label>
-                                                    <input name="postalcode" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.postalcode} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="file_record" className="">سند صورتجلسه</label>
+                                                    <input name="file_record" className="form-control" onChange={this.fileChange} type='file'
+                                                        disabled={this.state.status === 'display'} />
+                                                    <a href={this.state.obj.file_dxf}></a>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="tell" className="">تلفن</label>
-                                                    <input name="tell" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.tell} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="file_defect" className="">لیست نواقص</label>
+                                                    <input name="file_defect" className="form-control" onChange={this.fileChange} type='file'
+                                                        disabled={this.state.status === 'display'} />
+                                                    <a href={this.state.obj.file_dxf}></a>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="fax" className="">فکس</label>
-                                                    <input name="fax" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.fax} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="file_signification" className="">سند ابلاغ صورتجلسه</label>
+                                                    <input name="file_signification" className="form-control" onChange={this.fileChange} type='file'
+                                                        disabled={this.state.status === 'display'} />
+                                                    <a href={this.state.obj.file_dxf}></a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="row">
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="certificate_type_id" className="">نوع گواهینامه</label>
-                                                    <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.certificateTypes}
-                                                        value={this.state.obj.certificate_type_id} onSelect={(values) => this.selectChange("certificate_type_id", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="rating1" className="">رتبه های اخذ شده مشاور</label>
-                                                    <input name="rating1" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.rating1} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="rating2" className="">رتبه های اخذ شده پیمانکار</label>
-                                                    <input name="rating2" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.rating2} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                        </div>
+
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
                                     </form>
@@ -276,9 +310,10 @@ class Company extends Component {
                         </div>
                     </div>
                 </div>
+
             )
         }
     }
 
 }
-export default Company;
+export default Town;

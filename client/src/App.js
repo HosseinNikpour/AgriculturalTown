@@ -30,6 +30,10 @@ import Company from './forms/contracts/company/index'
 import Town from './forms/contracts/town/index'
 import Contract from './forms/contracts/contract/index'
 import Project from './forms/contracts/project/index'
+import Extension from './forms/contracts/extension/index'
+import Delivery from './forms/delivery/delivery/index'
+import TempDelivery from './forms/delivery/tempDelivery/index'
+
 
 import Home from './components/home'
 import Test from './components/test'
@@ -47,6 +51,8 @@ class App extends Component {
       showSettingMenu: false,
       currentUser: {}
     };
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.topMenuHandleBlur = this.topMenuHandleBlur.bind(this);
     this.topMenuHandleHover = this.topMenuHandleHover.bind(this);
     this.topMenuHandleClick = this.topMenuHandleClick.bind(this);
@@ -61,12 +67,17 @@ class App extends Component {
   onLogin() {
     const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : undefined;
     if (user)
-      this.setState({ currentUser: { name: user.name, lastLoginDate: user.last_login } });
+      this.setState({ currentUser: { name: user.name, lastLoginDate: user.last_login, role: user.role } });
 
   }
   componentDidMount() {
     this.onLogin();
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
   settingClick() {
     this.setState(prevState => ({
       showSettingMenu: !prevState.showSettingMenu
@@ -89,6 +100,19 @@ class App extends Component {
       names.push('activeMenu');
     return names.join(' ');
   }
+
+
+  setWrapperRef(node) {
+    this.wrapperRef = node;
+  }
+  handleClickOutside(event) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      // console.log('You clicked outside of me!');
+      //console.log(event.target)
+      if (this.state.showSettingMenu)
+        this.setState({ showSettingMenu: false })
+    }
+  }
   render() {
     return (
       <Router>
@@ -96,11 +120,12 @@ class App extends Component {
         <div className='container-fluid' dir="RTL">
           <div className='row topRiboon'>
 
-            <div className="col-1 ml-auto">
+            <div className="col-1 ml-auto" >
 
-              <i className="fas fa-tools" style={{ margin: '12px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
+              <i className={this.state.currentUser.role && this.state.currentUser.role.indexOf('admin') > -1 ? "fas fa-tools" : 'hidden'}
+                style={{ margin: '12px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
 
-              <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"}>
+              <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"} ref={this.setWrapperRef}>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/baseinfo" >اطلاعات پایه</Link>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/period" >دوره ها</Link>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/operation" >عملیات اجرایی</Link>
@@ -193,6 +218,9 @@ class App extends Component {
               <PrivateRoute path="/town" component={Town} />
               <PrivateRoute path="/contract" component={Contract} />
               <PrivateRoute path="/project" component={Project} />
+              <PrivateRoute path="/extension" component={Extension} />
+              <PrivateRoute path="/tempDelivery" component={TempDelivery} />
+              <PrivateRoute path="/delivery" component={Delivery} />
               <Route path="/test">
                 <Test />
               </Route>

@@ -6,9 +6,9 @@
 // ];
 
 export const columns = [
-    { sorter: true, key: 'id', dataIndex: 'id', title: 'شناسه' },
-    { sorter: true, key: 'title', dataIndex: 'title', title: 'عنوان' },
-    { sorter: true, key: 'sort', dataIndex: 'sort', title: 'ترتیب' },
+    { key: 'id', dataIndex: 'id', title: 'شناسه' },
+    { key: 'title', dataIndex: 'title', title: 'عنوان' },
+    { key: 'sort', dataIndex: 'sort', title: 'ترتیب' },
 
 ];
 
@@ -25,5 +25,6 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 9, label: 'نوع گواهینامه' },
 { value: 11, label: 'واحد ها' },
 { value: 12, label: 'گروه عملیات اجرایی' },
+{ value: 13, label: 'شماره های تمدید' },
 ]
 export const emptyItem = { title: '', sort: '' };

@@ -34,10 +34,10 @@ router.post('/', function (req, res) {
     let file_kmz = files && files.file_kmz ? func.saveFile(files.file_kmz, name, 'file_kmz', data.title) : '';
     data["file_dxf"] = file_dxf;
     data["file_kmz"] = file_kmz;
-   // console.log(data);
+    // console.log(data);
     let query = func.queryGen(name, 'insert', data);
     //console.log(query)
-   
+
     console.log(query)
     pool.query(query)
         .then((results) => {
@@ -48,8 +48,16 @@ router.post('/', function (req, res) {
         });
 });
 router.put('/:id', function (req, res) {
-    let data = req.body;
+    let data = JSON.parse(req.body.data);
+
+    let files = req.files;
+    let file_dxf = files && files.file_dxf ? func.saveFile(files.file_dxf, name, 'file_dxy', data.title) : '';
+    let file_kmz = files && files.file_kmz ? func.saveFile(files.file_kmz, name, 'file_kmz', data.title) : '';
+    data["file_dxf"] = data['file_dxf'] == false ? '**d**' : file_dxf;
+    data["file_kmz"] = data['file_kmz'] == false ? '**d**' : file_kmz;
+
     let query = func.queryGen(name, 'update', data);
+    console.log(query);
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

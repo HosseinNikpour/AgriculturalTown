@@ -13,11 +13,11 @@ function compareValues(key, order = 'asc') {
     // const varB = b[key];
     const varA = (Number(a[key])) ?Number(a[key]) : a[key];
     const varB = (Number(b[key])) ?Number(b[key]) : b[key];
-    //console.log(Number(a[key]));
+   // console.log(varA);
     let comparison = 0;
     if (varA > varB) {
       comparison = 1;
-    } else if (varA < varB) {
+    } else  if (varA < varB) {
       comparison = -1;
     }
     return (
@@ -45,10 +45,11 @@ const Grid = (props) => {
     })
     let cc = cols.filter(a => a.dataIndex === 'operation');
     //  console.log(props);
-    if (cc >= 0 && props.editClick || props.displayClick || props.deleteClick) {
+    if (cc >= 0 && (props.editClick || props.displayClick || props.deleteClick)) {
       cols.push({
         title: '',
         dataIndex: 'operation',
+        width:'120px',
         render: (text, record) =>
           props.rows.length >= 1 ? (<div>
             {props.editClick && <i className="fa fa-edit" onClick={() => props.editClick(record)}  ></i>}
@@ -62,13 +63,13 @@ const Grid = (props) => {
       });
     }
     setColumns(cols)
-  }, []);
+  },[]);
 
 
   const onSearch = (searchText) => {
     //debugger;
-    console.log(searchText);
-    if (searchText == '')
+   // console.log(searchText);
+    if (searchText === '')
       setRows(orgRows)
     else {
 
@@ -76,7 +77,7 @@ const Grid = (props) => {
       orgRows.forEach(record => {
         columns.filter(a => a.dataIndex !== 'operation').forEach(c => {
           //    console.log(record[c.dataIndex]);
-          if (record[c.dataIndex].toString().indexOf(searchText) >= 0) {
+          if (record[c.dataIndex] && record[c.dataIndex].toString().indexOf(searchText) >= 0) {
             matched.push(record);
             return;
           }

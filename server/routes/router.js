@@ -12,5 +12,9 @@ router.use('/Project', require('./ProjectRoutes'));
 router.use('/Period', require('./PeriodRoutes'));
 router.use('/WBS', require('./WBSRoutes'));
 router.use('/Operation', require('./OperationRoutes'));
+router.use('/Delivery', require('./DeliveryRoutes'));
+router.use('/TempDelivery', require('./TempDeliveryRoutes'));
+router.use('/Extension', require('./ExtensionRoutes'));
+
 
 module.exports = router;

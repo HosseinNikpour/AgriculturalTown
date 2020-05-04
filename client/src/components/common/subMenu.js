@@ -36,7 +36,7 @@ class SubMenu extends Component {
     render() {
         switch (this.state.type) {
             case 0:
-                return (<div style={{ paddingTop:'8px' ,marginRight: '50px', fontSize: '13px' }}> .آخرین ورود شما در 1399/01/21 14:28 می باشد</div>)
+                return (<div style={{ paddingTop:'8px' ,marginRight: '50px', fontSize: '13px' }}> </div>)
             case 1:
                 return (<ul>
                     <li className={this.menuClassNames(1)} onMouseEnter={() => this.menuHandleHover(1)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(1)}> <Link to="/company" > شناسنامه شرکتها </Link></li>

@@ -70,5 +70,5 @@ const createQueries = (table_name) => {
         });
 };
 
-createQueries('operation');
+createQueries('temp_delivery');
 

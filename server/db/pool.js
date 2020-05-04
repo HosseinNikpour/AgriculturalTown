@@ -9,7 +9,7 @@ const pg = require('pg');
 const databaseConfig = {
     user: 'postgres',
     host: 'DBPM',
-    database: 'AgriculturalTown2',
+    database: 'test',//'AgriculturalTown2',
     password: 'abg@@123',
     port: 5432,
 };

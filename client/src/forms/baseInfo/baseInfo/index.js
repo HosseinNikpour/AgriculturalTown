@@ -8,17 +8,11 @@ import { columns, storeIndex, pageHeder, types, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
 
 
-
-
-
 class BaseInfo extends Component {
     constructor(props) {
         super(props);
-        //  this.formRef = React.createRef();
-        //  this.gridRef = React.createRef();
-
         this.state = {
-            columns: columns, data: [], rows: [], type: 1, isFetching: true, obj: emptyItem, isEdit: false, showPanel: false
+            columns: columns, data: [], rows: [], type: 1, isFetching: true, obj: {...emptyItem}, isEdit: false, showPanel: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -35,7 +29,8 @@ class BaseInfo extends Component {
     fetchData() {
         getAllItem(storeIndex).then((response) => {
             let data = response.data;
-            this.setState({ data: data, isFetching: false, rows: data.filter(a => a.groupid == this.state.type) });
+            this.setState({ data: data, isFetching: false, rows: data.filter(a => a.groupid == this.state.type) 
+                , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -52,7 +47,7 @@ class BaseInfo extends Component {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -65,7 +60,7 @@ class BaseInfo extends Component {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
 
                 else {
@@ -119,7 +114,7 @@ class BaseInfo extends Component {
 
     }
     cancelBtnClick() {
-        this.setState({ obj: emptyItem, status: '', showPanel: false });
+        this.setState({ obj: {...emptyItem}, status: '', showPanel: false });
     }
     render() {
         const { isFetching } = this.state;

@@ -10,12 +10,23 @@ const saveFile = (file, entityName, fieldName, title) => {
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     //console.log(fileName);
     fs.writeFileSync(fileName, file.data);//, () => {
-    return (fileName.replace('.\\Docs',''));
+    return (fileName.replace('.\\Docs', ''));
     //  });
 
 }
 
 const queryGen = (name, type, row) => {
+//   console.log('****************');
+//     console.log(row);
+//     console.log('****************');
+    Object.keys(row).forEach(key => {
+        if (key.endsWith('_id')) {
+            let x = key.replace('_id', '');
+            if (row[x]) delete row[x];
+        }
+
+    });
+  
     if (type == 'insert') {
         let insertQuery = `INSERT INTO public.${name}(`, insertValues = '';
         Object.keys(row).forEach(key => {
@@ -44,7 +55,10 @@ const queryGen = (name, type, row) => {
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;
                 else {
-                    updateQuery += `${key} ='${row[key]}',`;
+                    if (row[key] === '**d**')
+                        updateQuery += `${key} = null,`;
+                    else
+                        updateQuery += `${key} ='${row[key]}',`;
                 }
             }
         })

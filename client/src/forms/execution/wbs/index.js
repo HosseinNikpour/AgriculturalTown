@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getItem, saveItem, getAllItem, removeItem, updateItem,upsertItem } from '../../../api/index';
+import { getItem, saveItem, getAllItem, removeItem, updateItem, upsertItem } from '../../../api/index';
 import { message, Select } from 'antd'
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
@@ -14,7 +14,7 @@ class WBS extends Component {
             columns: columns, rows: [],
             contracts: [], units: [], opGroups: [], operations: [],
             contract_id: '', opGroup_id: '',
-            isFetching: true, obj: emptyItem, showPanel: false, status: '',
+            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -29,7 +29,7 @@ class WBS extends Component {
 
     fetchData() {
         Promise.all([getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('operation')]).then((response) => {
-           response[0].data .forEach(a=>console.log( a.contract_no + ' - ' + a.company));
+            response[0].data.forEach(a => console.log(a.contract_no + ' - ' + a.company));
             let units = response[1].data.filter(a => a.groupid === 11).map(a => { return { key: a.id, label: a.title, value: a.id } })
             let opGroups = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } })
             let contracts = response[0].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id } })
@@ -47,49 +47,30 @@ class WBS extends Component {
         if (rows.length === 0)
             alert('انتخاب حداقل یک ردیف الزامیست')
         else {
-              let sum=0;
-              rows.forEach(r => {
-                  sum+=parseInt(r.price_change);
-              });  
-              console.log(sum);
-              rows.forEach(r => {
-               r.user_id=JSON.parse(localStorage.getItem('user')).id;
-               
-                r.contract_id=this.state.contract_id;
-                r.price_diff=(r.price_change-r.price);
-                r.value_diff=(r.value_change-r.value);
-                r.wieght=(r.price_change/sum*100).toFixed(2);
-            }); 
-       //     this.setState({rows})
+            let sum = 0;
+            rows.forEach(r => {
+                sum += parseInt(r.price_change);
+            });
+            console.log(sum);
+            rows.forEach(r => {
+                r.user_id = JSON.parse(localStorage.getItem('user')).id;
 
+                r.contract_id = this.state.contract_id;
+                r.price_diff = (r.price_change - r.price);
+                r.value_diff = (r.value_change - r.value);
+                r.wieght = (r.price_change / sum * 100).toFixed(2);
+            });
         }
-        // if (this.state.status === 'new')
-        
-        upsertItem({rows:rows}, storeIndex).then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
-                  //  this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => console.log(error));
-        // else {
-        //     updateItem(obj, storeIndex).then((response) => {
-        //         if (response.data.type !== "Error") {
-        //             message.success(successMessage, successDuration);
-        //             this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
-        //             this.fetchData();
-        //         }
-        //         else {
-        //             message.error(errorMessage, errorDuration);
-        //             console.log('error : ', response);
-        //         }
-        //     }).catch((error) => console.log(error));
-        // }
-    }
+        upsertItem({ rows: rows }, storeIndex).then((response) => {
+            if (response.data.type !== "Error") {
+                message.success(successMessage, successDuration);
+            }
+            else {
+                message.error(errorMessage, errorDuration);
+                console.log('error : ', response);
+            }
+        }).catch((error) => console.log(error));
+     }
     handleChange(e, i) {
         //debugger;
         let rows = this.state.rows;
@@ -122,7 +103,7 @@ class WBS extends Component {
         this.setState({ rows });
 
     }
-    deleteRecord(i) {
+    deleteRecord(e,i) {
         debugger;
         let rows = this.state.rows;
         rows.splice(i, 1);
@@ -136,7 +117,7 @@ class WBS extends Component {
             response.data.forEach(e => {
                 rows.push({
                     operation_id: e.id, unit_id: e.unit_id,
-                  //  operation: e.title, unit: e.unit,
+                    //  operation: e.title, unit: e.unit,
                     value: '', value_change: '', value_diff: '',
                     price: '', price_change: '', price_diff: '',
                     wieght: '', sort: e.sort

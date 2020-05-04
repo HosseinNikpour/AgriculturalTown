@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import { verifyToken } from '../../api/index'
 
 class PrivateRoute extends Component {
@@ -22,9 +22,18 @@ class PrivateRoute extends Component {
                 //todo : handel permission for admin role ===>props.role=='admin'
                 //todo : check the response and then if it is  ok set state
                 ///    console.log(response);
-                if (typeof this.props.onLogin === 'function') 
-                this.props.onLogin(5);
-                this.setState({ authenticated: 1 });
+              //  console.log("user.role", user);
+             //   console.log("page.role", this.props.role);
+
+                if (typeof this.props.onLogin === 'function')
+                    this.props.onLogin(5);
+                if (this.props.role && this.props.role === 'admin')
+                    if (user.role === 'admin' || user.role === 'superadmin')
+                        this.setState({ authenticated: 1 });
+                    else
+                        this.setState({ authenticated: -1 });
+                else
+                    this.setState({ authenticated: 1 });
             }).catch((error) => {
                 console.log(error);
                 this.setState({ authenticated: -1 });

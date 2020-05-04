@@ -14,7 +14,7 @@ class Operation extends Component {
 
         this.state = {
             columns: columns, rows: [], categoies: [],units:[],
-            isFetching: true, obj: emptyItem, showPanel: false, status: '',
+            isFetching: true, obj: {...emptyItem}, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -37,7 +37,8 @@ class Operation extends Component {
             let units = response[1].data.filter(a => a.groupid === 11).map(a => { return { key: a.id, label: a.title, value: a.id } })
             console.log(data)
             this.setState({
-                isFetching: false, rows: data, categoies,units
+                isFetching: false, rows: data, categoies,units,
+                obj: {...emptyItem},  showPanel: false,status: ''
             });
         }).catch((error) => console.log(error))
     }
@@ -49,12 +50,12 @@ class Operation extends Component {
         let obj = this.state.obj;
         // obj.start_date = obj.start_date.format();
         // obj.end_date = obj.end_date.format();
-debugger;
+//debugger;
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -63,13 +64,11 @@ debugger;
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            delete obj.unit;
-            delete obj.category;
             
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                 //   this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -123,7 +122,7 @@ debugger;
         this.setState({ status: 'new', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
-        this.setState({ obj: emptyItem, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+        this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
         const { isFetching } = this.state;
