@@ -1,8 +1,8 @@
-const pool = require('../db/pool');
+const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
-const func = require('../functions/index');
-const name = "temp_delivery";
+const func = require('../../functions/index');
+const name = "extension";
 
 router.get(`/`, function (req, res) {
     let query = `SELECT * FROM vw_${name} order by id desc  `;
@@ -30,11 +30,11 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.title) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
+   
+    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    data["file_record"] = file_defect;
-    data["file_record"] = file_record;
+    
+    data["file_late"] = file_late;
     data["file_signification"] = file_signification;
     // console.log(data);
     let query = func.queryGen(name, 'insert', data);
@@ -52,11 +52,10 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.title) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
+    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    data["file_defect"] = data['file_defect'] == false ? '**d**' : file_defect;
-    data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
+    
+    data["file_late"] = data['file_late'] == false ? '**d**' : file_late;
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
 
     let query = func.queryGen(name, 'update', data);

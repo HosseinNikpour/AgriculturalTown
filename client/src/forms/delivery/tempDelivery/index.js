@@ -14,7 +14,7 @@ class Town extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contract: [], project:'',hasDefect:[],
+            columns: columns, rows: [], contracts: [], project:'',hasDefect:[],
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -28,6 +28,7 @@ class Town extends Component {
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
@@ -35,7 +36,7 @@ class Town extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
-            let contract = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
            
             let hasDefect=[{ key:1, label: 'بلی', value: 1 },{ key: 2, label: 'خیر', value: 2}]
             let data = response[0].data;
@@ -50,7 +51,7 @@ class Town extends Component {
             });
 
             this.setState({
-                isFetching: false, rows: data, contract,hasDefect
+                isFetching: false, rows: data, contracts,hasDefect
                 , obj: { ...emptyItem }, showPanel: false, status: ''
             });
         }).catch((error) => console.log(error))
@@ -129,8 +130,11 @@ class Town extends Component {
         let ob = this.state.obj;
         ob[name] = values;
         let prj = this.state.prj;
-        if (name === 'contract_id')
-            prj = this.state.obj.contract_id && this.state.contracts.find(a => a.key == this.state.obj.contract_id) ? this.state.contracts.find(a => a.key == this.state.obj.contract_id).project : '';
+        if (name === 'contract_id'){
+            // debugger  ;
+         let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+             prj =  cont&&cont.project? cont.project : '';
+         }
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
@@ -158,6 +162,11 @@ class Town extends Component {
     }
     cancelBtnClick() {
         this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+    }
+    deleteFile(name) {
+        let ob = this.state.obj;
+        ob[name] = false;
+        this.setState({ obj: ob });
     }
     render() {
         const { isFetching } = this.state;
@@ -201,7 +210,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contract}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
@@ -286,18 +295,22 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_defect" className="">لیست نواقص</label>
-                                                    <input name="file_defect" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <label htmlFor="f_file_defect" className="">لیست نواقص</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_defect" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_defect && <div><a target="_blank" href={this.state.obj.file_defect}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_defect')}></i>}</div>}
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_signification" className="">سند ابلاغ صورتجلسه</label>
-                                                    <input name="file_signification" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <label htmlFor="f_file_signification" className="">سند ابلاغ صورتجلسه</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_signification && <div><a target="_blank" href={this.state.obj.file_signification}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_signification')}></i>}</div>}
                                                 </div>
                                             </div>
                                         </div>

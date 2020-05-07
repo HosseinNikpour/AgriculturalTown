@@ -1,4 +1,4 @@
-const pool = require('../db/pool');
+const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -145,7 +145,27 @@ router.post('/', function (req, res) {
     })
 
 });
+router.put('/updatePassword', function (req, res) {
+  //  console.log(req.body);
+    bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(req.body.password, salt, function (err, hash) {
+            let query = `UPDATE public.${name}
+            SET password='${hash}'  WHERE  id=${req.body.id}    `;
+
+
+            //console.log(query);
+            pool.query(query)
+                .then((results) => {
+                    return res.send(results.rows);
+                })
+                .catch((err) => {
+                    return res.send({ type: "Error", message: err.message })
+                });
+        })
+    })
+});
 router.put('/:id', function (req, res) {
+  //  console.log('in update')
     let query = `UPDATE public.${name}
             SET name='${req.body.name}',
                 username='${req.body.username}',
@@ -165,24 +185,6 @@ router.put('/:id', function (req, res) {
             return res.send({ type: "Error", message: err.message })
         });
 
-});
-router.put('/updatePassword', function (req, res) {
-    bcrypt.genSalt(10, function (err, salt) {
-        bcrypt.hash(req.body.password, salt, function (err, hash) {
-            let query = `UPDATE public.${name}
-            SET password='${hash}'  WHERE  id=${req.body.id}    `;
-
-
-            // console.log(query);
-            pool.query(query)
-                .then((results) => {
-                    return res.send(results.rows);
-                })
-                .catch((err) => {
-                    return res.send({ type: "Error", message: err.message })
-                });
-        })
-    })
 });
 router.delete('/:id', function (req, res) {
     let query = `delete from public.${name} WHERE  id=${req.params.id};    `;

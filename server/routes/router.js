@@ -2,19 +2,27 @@ const express = require('express');
 const router = express.Router();
 
 /* API routes */
-router.use('/BaseInfo', require('./BaseInfoRoutes'));
-router.use('/Company', require('./CompanyRoutes'));
-router.use('/User', require('./UserRoutes'));
-router.use('/PermissionStructure', require('./PermissionStructureRoutes'));
-router.use('/Town', require('./TownRoutes'));
-router.use('/Contract', require('./ContractRoutes'));
-router.use('/Project', require('./ProjectRoutes'));
-router.use('/Period', require('./PeriodRoutes'));
-router.use('/WBS', require('./WBSRoutes'));
-router.use('/Operation', require('./OperationRoutes'));
-router.use('/Delivery', require('./DeliveryRoutes'));
-router.use('/TempDelivery', require('./TempDeliveryRoutes'));
-router.use('/Extension', require('./ExtensionRoutes'));
+router.use('/BaseInfo', require('./baseinfo/BaseInfoRoutes'));
+router.use('/Operation', require('./baseinfo/OperationRoutes'));
+router.use('/Period', require('./baseinfo/PeriodRoutes'));
+
+router.use('/Company', require('./contract/CompanyRoutes'));
+router.use('/Town', require('./contract/TownRoutes'));
+router.use('/Contract', require('./contract/ContractRoutes'));
+router.use('/Project', require('./contract/ProjectRoutes'));
+router.use('/Extension', require('./contract/ExtensionRoutes'));
+
+router.use('/User', require('./perm/UserRoutes'));
+router.use('/PermissionStructure', require('./perm/PermissionStructureRoutes'));
+
+router.use('/Delivery', require('./delivery/DeliveryRoutes'));
+router.use('/TempDelivery', require('./delivery/TempDeliveryRoutes'));
+
+router.use('/WBS', require('./execution/WBSRoutes'));
+router.use('/WeeklyOperation', require('./execution/WeeklyOperationRoutes'));
+router.use('/WeeklyOperationDetail', require('./execution/WeeklyOperationDetailRoutes'));
+
+
 
 
 module.exports = router;

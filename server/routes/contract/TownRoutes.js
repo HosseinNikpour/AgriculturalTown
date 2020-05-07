@@ -1,8 +1,8 @@
-const pool = require('../db/pool');
-const express = require('express');
+const pool = require('../../db/pool');
+const express = require('express'); 
 const router = express.Router();
-const func = require('../functions/index');
-const name = "extension";
+const func = require('../../functions/index');
+const name = "Town";
 
 router.get(`/`, function (req, res) {
     let query = `SELECT * FROM vw_${name} order by id desc  `;
@@ -30,15 +30,13 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
-   
-    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    
-    data["file_late"] = file_late;
-    data["file_signification"] = file_signification;
+    let file_dxf = files && files.file_dxf ? func.saveFile(files.file_dxf, name, 'file_dxy', data.title) : '';
+    let file_kmz = files && files.file_kmz ? func.saveFile(files.file_kmz, name, 'file_kmz', data.title) : '';
+    data["file_dxf"] = file_dxf;
+    data["file_kmz"] = file_kmz;
     // console.log(data);
     let query = func.queryGen(name, 'insert', data);
-    console.log(query)
+    //console.log(query)
 
     console.log(query)
     pool.query(query)
@@ -51,14 +49,15 @@ router.post('/', function (req, res) {
 });
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
+
     let files = req.files;
-    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    
-    data["file_late"] = data['file_late'] == false ? '**d**' : file_late;
-    data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
+    let file_dxf = files && files.file_dxf ? func.saveFile(files.file_dxf, name, 'file_dxy', data.title) : '';
+    let file_kmz = files && files.file_kmz ? func.saveFile(files.file_kmz, name, 'file_kmz', data.title) : '';
+    data["file_dxf"] = data['file_dxf'] == false ? '**d**' : file_dxf;
+    data["file_kmz"] = data['file_kmz'] == false ? '**d**' : file_kmz;
 
     let query = func.queryGen(name, 'update', data);
+    console.log(query);
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);
@@ -69,12 +68,15 @@ router.put('/:id', function (req, res) {
 });
 router.delete('/:id', function (req, res) {
 
+    let filePath1 = req.body.file_dxf,
+        filePath2 = req.body.file_kmz;
     console.log(req.body);
     let query = `delete from public.${name} WHERE  id=${req.params.id};    `;
     console.log(query);
     pool.query(query)
         .then((results) => {
-
+            //   fs.unlinkSync(filePath1);
+            //    fs.unlinkSync(filePath2);
             return res.send(results.rows);
         })
         .catch((err) => {

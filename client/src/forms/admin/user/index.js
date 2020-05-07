@@ -34,7 +34,7 @@ class User extends Component {
         getAllItem(storeIndex).then((response) => {
             let data = response.data;
             data.forEach(e => {
-                e.last_login = moment(e.last_login).format('jYYYY/jMM/jDD HH:mm');
+                e.last_login =e.last_login? moment(e.last_login):undefined;
                // e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
             });
            // console.log(data);
@@ -53,6 +53,7 @@ class User extends Component {
     saveBtnClick() {
         let obj = this.state.obj;
         console.log(obj)
+       
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {

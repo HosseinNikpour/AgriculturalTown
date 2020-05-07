@@ -41,7 +41,8 @@ const Grid = (props) => {
 
     let cols = props.columns;
     cols.forEach(c => {
-      c.sorter = compareValues(c.key)
+      c.sorter = compareValues(c.key);
+     // if(c.width)c
     })
     let cc = cols.filter(a => a.dataIndex === 'operation');
     //  console.log(props);

@@ -1,7 +1,7 @@
-const pool = require('../db/pool');
+const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
-const func = require('../functions/index');
+const func = require('../../functions/index');
 const name = "Contract";
 
 router.get(`/`, function (req, res) {

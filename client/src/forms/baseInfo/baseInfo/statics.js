@@ -17,7 +17,7 @@ export const pageHeder = 'اطلاعات پایه';
 export const types = [{ value: 1, label: 'استان ها' },
 { value: 2, label: 'نوع شهرک' },
 { value: 3, label: 'موقعیت (زون)' },
-{ value: 4, label: 'نو ع مالیکیت' },
+{ value: 4, label: 'نو ع مالکیت' },
 { value: 5, label: 'منبع تخصیص آب' },
 { value: 6, label: 'منبع تخصیص برق' },
 { value: 7, label: 'منبع تخصیص گاز' },

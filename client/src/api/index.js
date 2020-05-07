@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-//export const URL = 'http://localhost:5000/'
-export const URL = '/'
+export const URL = 'http://localhost:5000/'
+//export const URL = '/'
 export const header = {
     headers: {
         "Accept": "application/json;odata=verbose",
@@ -90,6 +90,6 @@ export const verifyToken = (data) => axios.post(
     header
 )
 export const updatePassword = (data) => axios.put(
-    URL + "api/User/updatePassword/", data,
+    URL + "api/User/updatePassword", data,
     header
 )

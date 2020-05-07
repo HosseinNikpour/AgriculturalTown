@@ -32,7 +32,7 @@ export const pageHeder = 'شناسنامه قرارداد';
 export const emptyItem = {
     title: '', full_title: '', contract_no: '', project_id: '', company_id: '',
     colleague1_id: '', colleague2_id: '', contract_type_id: '', contract_date: undefined, announcement_date: '',
-    land_delivery_date: '', end_date: '', duration: '', initial_amount: undefined, client_initial_amount: undefined,
+    land_delivery_date: '', end_date: '', duration: '', initial_amount: "", client_initial_amount: '',
     coefficient: undefined, file_agreement: '', file_announcement: '', file_delivery: '', project_manager_name: '',
     project_manager_contacts: '', contractor_user_id: '', engineer_user_id: '', manager_user_id: ''
 }

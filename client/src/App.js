@@ -33,14 +33,10 @@ import Project from './forms/contracts/project/index'
 import Extension from './forms/contracts/extension/index'
 import Delivery from './forms/delivery/delivery/index'
 import TempDelivery from './forms/delivery/tempDelivery/index'
-
+import WeeklyOperation from './forms/execution/weeklyOperation/index'
 
 import Home from './components/home'
 import Test from './components/test'
-
-
-
-
 
 class App extends Component {
   constructor(prop) {
@@ -221,6 +217,7 @@ class App extends Component {
               <PrivateRoute path="/extension" component={Extension} />
               <PrivateRoute path="/tempDelivery" component={TempDelivery} />
               <PrivateRoute path="/delivery" component={Delivery} />
+              <PrivateRoute path="/weeklyOperation" component={WeeklyOperation} />
               <Route path="/test">
                 <Test />
               </Route>

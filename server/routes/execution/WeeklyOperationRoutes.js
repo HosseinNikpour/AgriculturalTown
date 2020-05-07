@@ -1,11 +1,15 @@
-const pool = require('../db/pool');
+const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
-const func = require('../functions/index');
-const name = "Delivery";
+const func = require('../../functions/index');
+const name = "Weekly_Operation";
+
+
+
+
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by id desc  `;
+    let query = `SELECT * FROM vw_${name} order by period_id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -28,16 +32,9 @@ router.get(`/:id`, function (req, res) {
 });
 router.post('/', function (req, res) {
 
-    let data = JSON.parse(req.body.data);
-    let files = req.files;
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    data["file_record"] = file_record;
-    data["file_signification"] = file_signification;
-    // console.log(data);
-    let query = func.queryGen(name, 'insert', data);
-    console.log(query)
+    let data = req.body;
 
+    let query=func.queryGen(name,'insert',data);
     console.log(query)
     pool.query(query)
         .then((results) => {
@@ -48,14 +45,9 @@ router.post('/', function (req, res) {
         });
 });
 router.put('/:id', function (req, res) {
-    let data = JSON.parse(req.body.data);
-    let files = req.files;
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
-    data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
-    data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
-
-    let query = func.queryGen(name, 'update', data);
+   let data=req.body;
+    let query=func.queryGen(name,'update',data);
+    console.log(query);
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);
@@ -66,12 +58,10 @@ router.put('/:id', function (req, res) {
 });
 router.delete('/:id', function (req, res) {
 
-    console.log(req.body);
     let query = `delete from public.${name} WHERE  id=${req.params.id};    `;
     console.log(query);
     pool.query(query)
-        .then((results) => {
-
+        .then((results) => {      
             return res.send(results.rows);
         })
         .catch((err) => {

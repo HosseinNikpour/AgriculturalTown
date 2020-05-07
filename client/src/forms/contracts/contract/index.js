@@ -31,6 +31,7 @@ class Town extends Component {
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
@@ -46,13 +47,13 @@ class Town extends Component {
             let data = response[0].data;
             data.forEach(e => {
 
-                e.contract_date =e.contract_date? moment(e.contract_date):undefined;
-                e.announcement_date = e.announcement_date?moment(e.announcement_date):undefined;
-                e.land_delivery_date = e.land_delivery_date?moment(e.land_delivery_date):undefined;
-                e.end_date = e.end_date ? moment(e.end_date):undefined;
- 
+                e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
+                e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
+                e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
+                e.end_date = e.end_date ? moment(e.end_date) : undefined;
+
             });
-//console.log(data);
+            //console.log(data);
             this.setState({
                 isFetching: false, rows: data, contractTypes: contractTypes,
                 companies: companies, projects: projects, users: users
@@ -66,7 +67,7 @@ class Town extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
- 
+       // debugger;
         obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
         obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
         obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
@@ -74,7 +75,7 @@ class Town extends Component {
 
         var formData = new FormData();
 
-        if (obj.f_file_delivery)formData.append("file_delivery", obj.f_file_delivery);
+        if (obj.f_file_delivery) formData.append("file_delivery", obj.f_file_delivery);
         if (obj.f_file_announcement) formData.append("file_announcement", obj.f_file_announcement);
         if (obj.f_file_agreement) formData.append("file_agreement", obj.f_file_agreement);
 
@@ -161,6 +162,11 @@ class Town extends Component {
     }
     cancelBtnClick() {
         this.setState({ obj: { ...emptyItem }, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+    }
+    deleteFile(name) {
+        let ob = this.state.obj;
+        ob[name] = false;
+        this.setState({ obj: ob });
     }
     render() {
         const { isFetching } = this.state;
@@ -328,7 +334,6 @@ class Town extends Component {
                                                     <label htmlFor="coefficient" className="">ضریب </label>
                                                     <input name="coefficient" className="form-control" onChange={this.handleChange}
                                                         value={parseFloat(this.state.obj.coefficient).toFixed(2)} disabled={true} />
-
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -352,8 +357,9 @@ class Town extends Component {
                                                     <label htmlFor="f_file_agreement" className="">موافقتنامه </label>
                                                     {this.state.status !== 'display' && <input name="f_file_agreement" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
-                                                    {this.state.obj.file_agreement && <a target="_blank" href={this.state.obj.file_agreement}>مشاهده فایل</a>}
-
+                                                    {this.state.obj.file_agreement && <div><a target="_blank" href={this.state.obj.file_agreement}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_agreement')}></i>}</div>}
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -361,7 +367,9 @@ class Town extends Component {
                                                     <label htmlFor="f_file_announcement" className="">صورتجلسه ابلاغ</label>
                                                     {this.state.status !== 'display' && <input name="f_file_announcement" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
-                                                    {this.state.obj.file_announcement && <a target="_blank" href={this.state.obj.file_announcement}>مشاهده فایل</a>}
+                                                    {this.state.obj.file_announcement && <div><a target="_blank" href={this.state.obj.file_announcement}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_announcement')}></i>}</div>}
 
                                                 </div>
                                             </div>
@@ -370,7 +378,9 @@ class Town extends Component {
                                                     <label htmlFor="f_file_delivery" className="">صورتجلسه تحویل زمین</label>
                                                     {this.state.status !== 'display' && <input name="f_file_delivery" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
-                                                    {this.state.obj.file_delivery && <a target="_blank" href={this.state.obj.file_delivery}>مشاهده فایل</a>}
+                                                    {this.state.obj.file_delivery && <div><a target="_blank" href={this.state.obj.file_delivery}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_delivery')}></i>}</div>}
 
                                                 </div>
                                             </div>

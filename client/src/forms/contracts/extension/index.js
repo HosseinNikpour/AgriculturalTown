@@ -28,6 +28,7 @@ class Extension extends Component {
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
@@ -35,8 +36,7 @@ class Extension extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('baseinfo')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
-            // let projects = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project ,duration:a.duration} });         
             let exNo = response[2].data.filter(a => a.groupid === 13).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
@@ -55,7 +55,6 @@ class Extension extends Component {
     componentDidMount() {
         this.fetchData();
     }
-
     saveBtnClick() {
         let obj = this.state.obj;
         //   console.log(obj);
@@ -128,9 +127,15 @@ class Extension extends Component {
         let ob = this.state.obj;
         ob[name] = values;
         let prj = this.state.prj;
-      //  debugger;
-        if (name === 'contract_id')
-            prj = this.state.obj.contract_id &&this.state.contracts.find(a => a.key == this.state.obj.contract_id)? this.state.contracts.find(a => a.key == this.state.obj.contract_id).project : '';
+
+        if (name === 'contract_id'){
+            let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+            prj = cont&&cont.project? cont.project : '';
+            let contDur = cont&&cont.duration? parseInt(cont.duration) : 0 ;
+            let pervDurs=this.state.rows.filter(a=>a.contract_id==this.state.obj.contract_id),
+                sumPrevDurs=pervDurs.reduce(function (acc, obj) { return acc + parseInt(obj.duration); }, 0);
+            ob.total_duration=contDur+sumPrevDurs;
+        }
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
@@ -159,6 +164,11 @@ class Extension extends Component {
     cancelBtnClick() {
         this.setState({ obj: { ...emptyItem }, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
+    deleteFile(name) {
+        let ob = this.state.obj;
+        ob[name] = false;
+        this.setState({ obj: ob });
+    }
     render() {
         const { isFetching } = this.state;
         if (isFetching) {
@@ -166,9 +176,7 @@ class Extension extends Component {
         }
         else {
             return (
-
                 <div className="app-main col-12" >
-
                     <div className="row" >
                         <div className="col-12">
                             <div className="card">
@@ -200,7 +208,6 @@ class Extension extends Component {
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
-
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_id" className="">شماره پیمان</label>
@@ -221,7 +228,6 @@ class Extension extends Component {
                                                         value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
                                                 </div>
                                             </div>
-
                                         </div>
                                         <div className="row">
                                             <div className="col">
@@ -242,8 +248,7 @@ class Extension extends Component {
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="TotalDuration" className="">جمع مدت اولیه پیمان به اضافه مدت تمدیدهای قبل</label>
-                                                    <input name="TotalDuration" className="form-control" onChange={this.handleChange}
-                                                        value={parseFloat(this.state.obj.TotalDuration).toFixed(2)} disabled={true} />
+                                                    <label className="form-control">{this.state.obj.total_duration}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -257,18 +262,15 @@ class Extension extends Component {
                                             </div>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="end_date" className="">تاریخ پایان</label>
-                                                    <DatePicker onChange={value => this.dateChange('end_date', value)}
-                                                        value={this.state.obj.end_date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                    <label htmlFor="end_date" className="">تاریخ پایان(محاسباتی)</label>
+                                                    <label  className="form-control">{this.state.obj.end_date_calc}</label>
                                                 </div>
                                             </div>
-
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="Announcement_date" className="">تاریخ پایان ابلاغ فعلی</label>
-                                                    <DatePicker onChange={value => this.dateChange('Announcement_date', value)}
-                                                        value={this.state.obj.Announcement_date}
+                                                    <label htmlFor="end_date" className="">تاریخ پایان ابلاغ فعلی</label>
+                                                    <DatePicker onChange={value => this.dateChange('end_date', value)}
+                                                        value={this.state.obj.end_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
@@ -283,18 +285,22 @@ class Extension extends Component {
                                             </div>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_signification" className="">سند ابلاغ تمدید</label>
-                                                    <input name="file_signification" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <label htmlFor="f_file_signification" className="">سند ابلاغ تمدید</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_signification && <div><a target="_blank" href={this.state.obj.file_signification}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_signification')}></i>}</div>}
                                                 </div>
                                             </div>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_late" className="">سند لایحه تاخیرات</label>
-                                                    <input name="file_late" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <label htmlFor="f_file_late" className="">سند لایحه تاخیرات</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_late" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_late && <div><a target="_blank" href={this.state.obj.file_late}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_late')}></i>}</div>}
                                                 </div>
                                             </div>
                                         </div>

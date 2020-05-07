@@ -14,7 +14,7 @@ class Delivery extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contract: [], project:'',
+            columns: columns, rows: [], contracts: [], project:'',
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -28,6 +28,7 @@ class Delivery extends Component {
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
+        this.deleteFile = this.deleteFile.bind(this);
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
@@ -35,7 +36,7 @@ class Delivery extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
-            let contract = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id ,project:a.project} });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id ,project:a.project} });
           //  let projects = response[2].data;//.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
@@ -51,7 +52,7 @@ class Delivery extends Component {
             });
 
             this.setState({
-                isFetching: false, rows: data, contract
+                isFetching: false, rows: data, contracts
                 , obj: { ...emptyItem }, showPanel: false, status: ''
             });
         }).catch((error) => console.log(error))
@@ -134,8 +135,11 @@ class Delivery extends Component {
         let ob = this.state.obj;
         ob[name] = values;
         let prj = this.state.prj;
-        if (name === 'contract_id')
-            prj = this.state.obj.contract_id && this.state.contracts.find(a => a.key == this.state.obj.contract_id) ? this.state.contracts.find(a => a.key == this.state.obj.contract_id).project : '';
+        if (name === 'contract_id'){
+           // debugger  ;
+        let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+            prj =  cont&&cont.project? cont.project : '';
+        }
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
@@ -163,6 +167,11 @@ class Delivery extends Component {
     }
     cancelBtnClick() {
         this.setState({ obj: { ...emptyItem }, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+    }
+    deleteFile(name) {
+        let ob = this.state.obj;
+        ob[name] = false;
+        this.setState({ obj: ob });
     }
     render() {
         const { isFetching } = this.state;
@@ -208,7 +217,7 @@ class Delivery extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contract}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
