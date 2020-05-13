@@ -5,9 +5,6 @@ const func = require('../../functions/index');
 const name = "Period";
 
 
-
-
-
 router.get(`/`, function (req, res) {
     let query = `SELECT * FROM ${name} order by end_date desc  `;
 
@@ -45,7 +42,8 @@ router.post('/', function (req, res) {
         });
 });
 router.put('/:id', function (req, res) {
-   let data=req.req;
+   let data=req.body;
+   //console.log(data);
     let query=func.queryGen(name,'update',data);
     pool.query(query)
         .then((results) => {

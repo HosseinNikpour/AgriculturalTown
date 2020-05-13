@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const URL = 'http://localhost:5000/'
 //export const URL = '/'
-export const header = {
+export const config = {
     headers: {
         "Accept": "application/json;odata=verbose",
         'Content-Type': 'application/json;charset=UTF-8',//
@@ -15,25 +15,43 @@ export const header = {
     }
 }
 
-export const getAllItem = (storeIndex) => axios.get(
-    URL + "api/" + storeIndex,
-    header
-)
-
-export const getItem = (id, storeIndex) => axios.get(
-    URL + "api/" + storeIndex + "/" + id,
-    header
-)
+export const getAllItem = (storeIndex) => {
+    config.params = { userId: JSON.parse(localStorage.getItem('user')).id, token: localStorage.getItem('token') }
+    return axios.get(
+        URL + "api/" + storeIndex,
+        config
+    )
+}
+export const getPrevItems = (storeIndex, contract_id, period_id) => {
+    config.params = {
+        userId: JSON.parse(localStorage.getItem('user')).id,
+        token: localStorage.getItem('token'),
+        contract_id, period_id
+    }
+    return axios.get(
+        URL + "api/" + storeIndex + "/getPrev",
+        config
+    )
+}
+export const getItem = (id, storeIndex) => {
+    config.params = { userId: JSON.parse(localStorage.getItem('user')).id, token: localStorage.getItem('token') }
+    return axios.get(
+        URL + "api/" + storeIndex + "/" + id,
+        config
+    )
+}
 export const upsertItem = (data, storeIndex) => {
+    data['user_id'] = JSON.parse(localStorage.getItem('user')).id;
+    data['current_date'] = new Date();
 
     return axios.post(
         URL + "api/" + storeIndex + "/upsert", data,
-        header
+        config
     )
 }
 export const saveItem = (data, storeIndex, ct) => {
     if (ct) {
-        header['Content-Type'] = ct;
+        config['Content-Type'] = ct;
 
         let dt = JSON.parse(data.get('data'));
         dt['creator_id'] = JSON.parse(localStorage.getItem('user')).id;
@@ -47,15 +65,15 @@ export const saveItem = (data, storeIndex, ct) => {
     }
     return axios.post(
         URL + "api/" + storeIndex, data,
-        header
+        config
     )
 }
 
 export const updateItem = (data, storeIndex, ct) => {
     let id = data.id;
     if (ct) {
-        header['Content-Type'] = ct;
-      
+        config['Content-Type'] = ct;
+
         let dt = JSON.parse(data.get('data'));
         id = dt.id;
         dt['editor_id'] = JSON.parse(localStorage.getItem('user')).id;
@@ -69,27 +87,23 @@ export const updateItem = (data, storeIndex, ct) => {
     }
     return axios.put(
         URL + "api/" + storeIndex + "/" + id, data,
-        header
+        config
     )
 }
-
 export const removeItem = (id, storeIndex) => axios.delete(
     URL + "api/" + storeIndex + "/" + id,
-    header
+    config
 )
-// export const uploadFile = (data) => axios.post(
-//     URL + "api/upload/", data,
-//     header
-// )
 export const login = (data) => axios.post(
     URL + "api/User/signin/", data,
-    header
+    config
 )
 export const verifyToken = (data) => axios.post(
     URL + "api/User/verifyToken/", data,
-    header
+    config
 )
 export const updatePassword = (data) => axios.put(
     URL + "api/User/updatePassword", data,
-    header
+    config
 )
+

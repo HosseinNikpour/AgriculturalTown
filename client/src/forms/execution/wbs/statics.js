@@ -14,5 +14,5 @@ export const storeIndex = "wbs";
 export const pageHeder = 'ساختار شکست';
 
 export const emptyItem = {
-    operation_id : '', contract_id : '' ,unit_id : '' ,value : '' ,value_change : '' ,value_diff : '' ,price : '' ,price_change : '' ,price_diff : '' ,wieght : '' ,sort:'' 
+    operation_id : '' ,unit_id : '' ,value : '' ,value_change : '' ,value_diff : '' ,price : '' ,price_change : '' ,price_diff : '' ,wieght : '' ,sort:'' 
 };

@@ -16,7 +16,7 @@ export const columns = [
     // { dataIndex: 'gas_supply',key: 'gas_supply', title: 'gas_supply' }, 
     // { dataIndex: 'gas_rate',key: 'gas_rate', title: 'gas_rate' }, 
     { dataIndex: 'total_units',key: 'total_units', title: 'تعداد واحد ها' }, 
-    // { dataIndex: 'used_units',key: 'used_units', title: 'used_units' }, 
+    // { dataIndex: 'used_units',key: 'used_units', title: 'تعداد واحدهای در حال بهره برداری' }, 
     // { dataIndex: 'used_number',key: 'used_number', title: 'used_number' }, 
     // { dataIndex: 'location',key: 'location', title: 'location' }, 
     // { dataIndex: 'coordinate_e',key: 'coordinate_e', title: 'coordinate_e' }, 

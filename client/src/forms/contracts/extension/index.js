@@ -36,16 +36,17 @@ class Extension extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('baseinfo')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project ,duration:a.duration} });         
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project, duration: a.duration } });
             let exNo = response[2].data.filter(a => a.groupid === 13).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
                 //اینجا فیلدهای تاریخ میان
                 e.letter_date = e.letter_date ? moment(e.letter_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
+                e.end_date_calc = e.end_date_calc ? moment(e.end_date_calc) : undefined;
                 e.Announcement_date = e.Announcement_date ? moment(e.Announcement_date) : undefined;
             });
-            console.log(response[1].data)
+            // console.log(response[1].data)
             this.setState({
                 isFetching: false, rows: data, contracts, exNo
                 , obj: { ...emptyItem }, showPanel: false, status: ''
@@ -57,10 +58,11 @@ class Extension extends Component {
     }
     saveBtnClick() {
         let obj = this.state.obj;
-        //   console.log(obj);
-
+        console.log(obj);
+        debugger;
         obj.letter_date = obj.letter_date ? obj.letter_date.format() : '';
         obj.end_date = obj.end_date ? obj.end_date.format() : '';
+        obj.end_date_calc = obj.end_date_calc ? obj.end_date_calc.format() : '';
         obj.Announcement_date = obj.Announcement_date ? obj.Announcement_date.format() : '';
         var formData = new FormData();
 
@@ -76,9 +78,7 @@ class Extension extends Component {
             saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
 
                 if (response.data.type !== "Error") {
-                    //    console.log(response);
                     message.success(successMessage, successDuration);
-                    //    this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -128,22 +128,25 @@ class Extension extends Component {
         ob[name] = values;
         let prj = this.state.prj;
 
-        if (name === 'contract_id'){
-            let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
-            prj = cont&&cont.project? cont.project : '';
-            let contDur = cont&&cont.duration? parseInt(cont.duration) : 0 ;
-            let pervDurs=this.state.rows.filter(a=>a.contract_id==this.state.obj.contract_id),
-                sumPrevDurs=pervDurs.reduce(function (acc, obj) { return acc + parseInt(obj.duration); }, 0);
-            ob.total_duration=contDur+sumPrevDurs;
+        if (name === 'contract_id') {
+            let cont = this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+            prj = cont && cont.project ? cont.project : '';
+            let contDur = cont && cont.duration ? parseInt(cont.duration) : 0;
+            let pervDurs = this.state.rows.filter(a => a.contract_id == this.state.obj.contract_id),
+                sumPrevDurs = pervDurs.reduce(function (acc, obj) { return acc + parseInt(obj.duration); }, 0);
+            ob.total_duration = contDur + sumPrevDurs;
         }
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
-        this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({ project: prj, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-        console.log(item);
-        this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({ project: prj, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         console.log(item)
@@ -263,7 +266,7 @@ class Extension extends Component {
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ پایان(محاسباتی)</label>
-                                                    <label  className="form-control">{this.state.obj.end_date_calc}</label>
+                                                    <label className="form-control">{this.state.obj.end_date_calc}</label>
                                                 </div>
                                             </div>
                                             <div className="col">

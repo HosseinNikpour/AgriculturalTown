@@ -314,7 +314,7 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="used_units" className="">تعداد واحد های قابل بهره برداری</label>
+                                                    <label htmlFor="used_units" className="">تعداد واحدهای در حال بهره برداری</label>
                                                     <input name="used_units" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.used_units} disabled={this.state.status === 'display'} />
                                                 </div>

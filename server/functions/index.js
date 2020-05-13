@@ -1,5 +1,7 @@
 const fs = require('fs');
-const saveFile = (file, entityName, fieldName, title) => {
+var jwt = require('jsonwebtoken');
+
+const saveFile = (file, entityName, fieldName, title, createNew) => {
     let dir = `.\\Docs\\files\\${entityName}\\${fieldName}`;
     if (!fs.existsSync(dir))
         fs.mkdir(dir, { recursive: true }, e => {
@@ -8,7 +10,8 @@ const saveFile = (file, entityName, fieldName, title) => {
         });
 
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
-    //console.log(fileName);
+  //  if (createNew && fs.existsSync(fileName))
+   //     fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     fs.writeFileSync(fileName, file.data);//, () => {
     return (fileName.replace('.\\Docs', ''));
     //  });
@@ -16,9 +19,9 @@ const saveFile = (file, entityName, fieldName, title) => {
 }
 
 const queryGen = (name, type, row) => {
-//   console.log('****************');
-//     console.log(row);
-//     console.log('****************');
+    //   console.log('****************');
+    //     console.log(row);
+    //     console.log('****************');
     Object.keys(row).forEach(key => {
         if (key.endsWith('_id')) {
             let x = key.replace('_id', '');
@@ -26,7 +29,7 @@ const queryGen = (name, type, row) => {
         }
 
     });
-  
+
     if (type == 'insert') {
         let insertQuery = `INSERT INTO public.${name}(`, insertValues = '';
         Object.keys(row).forEach(key => {
@@ -67,7 +70,49 @@ const queryGen = (name, type, row) => {
         return updateQuery;
     }
 }
+
+const returnContractIds = (userId, token) => {
+
+    // -1 ==> show nothing
+    // 0 ==>show All
+
+
+    if (!userId || !token) return -1;
+
+    let user = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!user) return -2;
+
+    if (user.id != userId) return -3;
+    if (user.role.indexOf('admin') > 0) return 0;
+    let field = '';
+    switch (user.role) {
+        case 'engineer':
+            field = 'engineer_user_id'
+            break;
+        case 'contractor':
+            field = 'contractor_user_id'
+            break;
+        case 'manager':
+            field = 'manager_user_id'
+            break;
+
+        default:
+            break;
+    }
+    let query = `SELECT id FROM conract where ${field} = ${user.id} `;
+    console.log(query)
+    pool.query(query)
+        .then((results) => {
+            console.log(results.rows);
+            return results.rows.toString();
+        })
+        .catch((err) => {
+            return -5;
+        });
+}
 module.exports = {
     saveFile,
-    queryGen
+    queryGen,
+    returnContractIds
 }

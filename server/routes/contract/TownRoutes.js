@@ -6,7 +6,7 @@ const name = "Town";
 
 router.get(`/`, function (req, res) {
     let query = `SELECT * FROM vw_${name} order by id desc  `;
-
+   // console.log(req.query)
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

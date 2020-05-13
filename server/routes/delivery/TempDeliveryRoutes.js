@@ -30,9 +30,10 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.title) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    console.log(data.contract)
+    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',  data.contract) : '';
     data["file_record"] = file_defect;
     data["file_record"] = file_record;
     data["file_signification"] = file_signification;
@@ -52,9 +53,9 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.title) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.contract) : '';
     data["file_defect"] = data['file_defect'] == false ? '**d**' : file_defect;
     data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;

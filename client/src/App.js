@@ -8,7 +8,7 @@ import './assets/css/fontawesome.css';
 import './assets/css/custom.css';
 
 import logo from './assets/img/abg.png'
-import farm from './assets/img/farm.png'
+import farm from './assets/img/arm.png'
 
 import SubMenu from './components/common/subMenu';
 //per 
@@ -112,14 +112,14 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
+       
         <div className='container-fluid' dir="RTL">
           <div className='row topRiboon'>
-
+          <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
             <div className="col-1 ml-auto" >
 
               <i className={this.state.currentUser.role && this.state.currentUser.role.indexOf('admin') > -1 ? "fas fa-tools" : 'hidden'}
-                style={{ margin: '12px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
+                style={{ margin: '8px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
 
               <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"} ref={this.setWrapperRef}>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/baseinfo" >اطلاعات پایه</Link>
@@ -132,8 +132,8 @@ class App extends Component {
             </div>
             <div className="col-1">
               <div className='top-left'>
-                <i className="fas fa-user" style={{ color: '#bdbdbd', margin: '11px 10px 7px' }}></i>
-                {this.state.currentUser.name}
+                <i className="fas fa-user" style={{ color: '#bdbdbd', margin: '8px 10px 7px' }}></i>
+               <span className='nameofuser'> {this.state.currentUser.name} </span>
               </div>
               {this.state.currentUser.name && <div className="logout" onClick={this.onLogout} style={{ marginTop: '-34px' }}>
                 خروج
@@ -146,7 +146,7 @@ class App extends Component {
               <div className='logoName'> مهندسین مشاور آبگستران میهن</div>
 
             </div>
-            <div className='col-7'>
+            <div className='col-8'>
               <ul>
                 <li >
                   <div className={this.menuClassNames(0)} onMouseEnter={() => this.topMenuHandleHover(0)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(0)}>
@@ -162,7 +162,7 @@ class App extends Component {
                 </li>
                 <li >
                   <div className={this.menuClassNames(2)} onMouseEnter={() => this.topMenuHandleHover(2)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(2)}>
-                    <i className="fa fa-wrench" ></i>
+                    <i className="fas fa-chart-line" ></i>
                         پیشرفت
                   </div>
                 </li>
@@ -174,28 +174,33 @@ class App extends Component {
                 </li>
                 <li>
                   <div className={this.menuClassNames(4)} onMouseEnter={() => this.topMenuHandleHover(4)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(4)}>
-                    <i className="fas fa-university" ></i>
+                    <i className="fas fa-donate" ></i>
                         مالی
                   </div>
                 </li>
                 <li>
                   <div className={this.menuClassNames(5)} onMouseEnter={() => this.topMenuHandleHover(5)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(5)}>
-                    <i className="fa fa-balance-scale" ></i>
+                    <i className="fas fa-gavel" ></i>
                           مناقصه
                   </div>
                 </li>
                 <li>
                   <div className={this.menuClassNames(6)} onMouseEnter={() => this.topMenuHandleHover(6)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(6)}>
-                    <i className="fas fa-chart-bar" ></i>
+                    <i className="fas fa-file-signature" ></i>
                   گزارشات
                   </div>
                 </li>
-
+                <li>
+                  <div className={this.menuClassNames(7)} onMouseEnter={() => this.topMenuHandleHover(7)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(7)}>
+                    <i className="fas fa-bell" ></i>
+                  هشدارها
+                  </div>
+                </li>
 
               </ul>
             </div>
-            <div className='col-2'>
-              <img className='farmlogo' src={farm} style={{ width: '77px', marginTop: "10px" }} />
+            <div className='col-1 farmcol'>
+              <img className='farmlogo' src={farm} style={{ width: '93px', marginTop: "10px" }} />
             </div>
           </div>
           <div className='row subNavagition'>

@@ -1,4 +1,5 @@
 
+import moment from 'moment-jalaali';
 export const columns = [
     // { dataIndex: 'creator_id',key: 'creator_id', title: 'creator_id' },
     //  { dataIndex: 'editor_id',key: 'editor_id', title: 'editor_id' }, 
@@ -8,8 +9,8 @@ export const columns = [
     //  { dataIndex: 'status',key: 'status', title: 'status' }, 
     { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
      { dataIndex: 'title',key: 'title', title: 'عنوان' }, 
-     { dataIndex: 'start_date',key: 'start_date', title: 'تاریخ شروع' , render: function (text) { return text.format('jYYYY/jMM/jDD') }},
-      { dataIndex: 'end_date',key: 'end_date', title: 'تاریخ پایان' , render: function (text) { return text.format('jYYYY/jMM/jDD') }},
+     { dataIndex: 'start_date',key: 'start_date', title: 'تاریخ شروع' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD') :''}},
+      { dataIndex: 'end_date',key: 'end_date', title: 'تاریخ پایان' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD') :''}},
        { dataIndex: 'month',key: 'month', title: 'ماه' },
 
 ];

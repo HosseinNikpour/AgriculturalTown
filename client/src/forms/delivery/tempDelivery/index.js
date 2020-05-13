@@ -36,10 +36,11 @@ class Town extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id ,project:a.project} });
            
-            let hasDefect=[{ key:1, label: 'بلی', value: 1 },{ key: 2, label: 'خیر', value: 2}]
+            let hasDefect=[{ key:1, label: 'بلی', value: true },{ key: 2, label: 'خیر', value: false}]
             let data = response[0].data;
+            console.log(data);
             data.forEach(e => {
                 //اینجا فیلدهای تاریخ میان
                 e.contractor_date =  e.contractor_date?moment(e.contractor_date):'';
@@ -129,7 +130,7 @@ class Town extends Component {
     selectChange(name, values) {
         let ob = this.state.obj;
         ob[name] = values;
-        let prj = this.state.prj;
+        let prj = this.state.project;
         if (name === 'contract_id'){
             // debugger  ;
          let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
@@ -138,11 +139,14 @@ class Town extends Component {
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
-        this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({ project: prj, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-        console.log(item);
-        this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let cont = this.state.contracts.find(a => a.key ==item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({  project: prj,obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
        // console.log(item)
@@ -287,10 +291,12 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_record" className="">سند صورتجلسه</label>
-                                                    <input name="file_record" className="form-control" onChange={this.fileChange} type='file'
-                                                        disabled={this.state.status === 'display'} />
-                                                    <a href={this.state.obj.file_dxf}></a>
+                                                    <label htmlFor="f_file_record" className="">سند صورتجلسه</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_record')}></i>}</div>}
                                                 </div>
                                             </div>
                                             <div className="col-4">

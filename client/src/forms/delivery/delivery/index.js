@@ -14,7 +14,7 @@ class Delivery extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], project:'',
+            columns: columns, rows: [], contracts: [], project: '',
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -36,8 +36,8 @@ class Delivery extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id ,project:a.project} });
-          //  let projects = response[2].data;//.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
+            //  let projects = response[2].data;//.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
                 //اینجا فیلدهای تاریخ میان
@@ -45,7 +45,7 @@ class Delivery extends Component {
                 e.consultant_date = e.consultant_date ? moment(e.consultant_date) : undefined;
                 e.branch_date = e.branch_date ? moment(e.branch_date) : undefined;
                 e.manager_date = e.manager_date ? moment(e.manager_date) : undefined;
-                e.commision_date = e.manager_date ? moment(e.commision_date) : undefined;
+                e.commision_date = e.commision_date ? moment(e.commision_date) : undefined;
 
                 e.create_date = e.create_date ? moment(e.create_date) : undefined;
                 e.edit_date = e.edit_date ? moment(e.edit_date) : undefined;
@@ -135,19 +135,22 @@ class Delivery extends Component {
         let ob = this.state.obj;
         ob[name] = values;
         let prj = this.state.prj;
-        if (name === 'contract_id'){
-           // debugger  ;
-        let cont=this.state.contracts.find(a => a.key == this.state.obj.contract_id);
-            prj =  cont&&cont.project? cont.project : '';
+        if (name === 'contract_id') {
+            // debugger  ;
+            let cont = this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+            prj = cont && cont.project ? cont.project : '';
         }
         this.setState({ obj: ob, project: prj });
     }
     editClickHandle(item) {
-        this.setState({ obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({ project: prj, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-        //  console.log(item);
-        this.setState({ obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let prj = cont && cont.project ? cont.project : '';
+        this.setState({  project: prj,obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         //console.log(item)
@@ -274,8 +277,8 @@ class Delivery extends Component {
 
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_record" className="">سند صورتجلسه'</label>
-                                                    {this.state.status !== 'display' && <input name="file_record" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    <label htmlFor="f_file_record" className="">سند صورتجلسه'</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file' />}
                                                     {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_record')}></i>}</div>}
@@ -283,8 +286,8 @@ class Delivery extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="file_signification" className="">سند ابلاغ صورتجلسه</label>
-                                                    {this.state.status !== 'display' && <input name="file_signification" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    <label htmlFor="f_file_signification" className="">سند ابلاغ صورتجلسه</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file' />}
                                                     {this.state.obj.file_signification && <div><a target="_blank" href={this.state.obj.file_signification}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_signification')}></i>}</div>}

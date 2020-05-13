@@ -1,7 +1,7 @@
 .topRiboon {
     background: #fdfdfd;
-    height: 40px;
-    color: #717171;
+    height: 32px;
+    color: #ffffff;
     border-bottom: solid 1px #d2d2d273;
     font-family: 'iran_sansregular';
     font-size: 15px;
@@ -19,17 +19,17 @@
 }
 
 .ant-table-thead tr th {
-    /* font-weight: bold!important; */
-    background: #fafcff!important;
-    font-size: 16px;
-    /* font-family: BYekan; */
-    /* color: white!important; */
+    background: #eddef157!important;
+    font-size: 17px;
+    color: white!important;
     line-height: 21px;
+    background: #4ba1ce!important;
+    font-weight: bold!important;
 }
 
 
 .ant-table-tbody tr:nth-child(2n) td {
-    background: #f4fff3a6;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .card-body {
@@ -46,7 +46,8 @@
 }
 
 .add-button {
-    color: #14ce4d;
+    color: #c2c4cc;   /* #14ce4d; */
+   
     font-size: 29px;
     line-height: 1px;
     position: absolute;
@@ -59,7 +60,9 @@
 .hidden {
     display: none;
 }
-
+.error{
+    background-color: red;
+}
 .ant-message-notice {
     direction: rtl;
     font-size: 18px!important;
@@ -67,11 +70,12 @@
 
 .card-header {
     padding: 4px 10px;
-    color: #848484;
+    color: #ffffff;
     font-size: 20px;
     font-weight: 600;
     font-style: italic;
-    background: #ffdc5db3;
+    background: #855297;
+
 }
 .card {
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -96,7 +100,7 @@
 }
 td .ant-table-cell {line-height: 23px;}
 .activeMenu  {
-    color: #3ba1dc!important;
+    color: #ab55e6!important;
 }
 
 .activeSubMenu {
@@ -109,7 +113,7 @@ td .ant-table-cell {line-height: 23px;}
 }
 
 .navagition {
-    background: #fff3e0;
+    background: #eddef1;
     font-family: 'iran_sansregular';
     height: 95px;
 }
@@ -142,7 +146,7 @@ td .ant-table-cell {line-height: 23px;}
 
 .navagition ul li div {
     display: grid;
-    color: rgb(243, 165, 24);
+    color: #653775;
     margin: 0 auto;
     cursor: pointer;
 }
@@ -213,8 +217,11 @@ td .ant-table-cell {line-height: 23px;}
     font-weight: bold;
     box-shadow: 5px 5px #c2c2c2;
 }
-.main-ribon{       font-family: 'iran_sansregular';
-    background: #ffbe5d;
+.main-ribon{ 
+    position: absolute;
+    background: rgb(137,45,205);
+    background: linear-gradient(180deg, rgba(137,45,205,1) 0%, rgba(118,41,163,1) 35%, rgba(100,37,125,1) 100%);
+    font-family: 'iran_sansregular';
     height: 31px;
     width: 100%;
     text-align: center;
@@ -222,7 +229,8 @@ td .ant-table-cell {line-height: 23px;}
     padding: 0;
     color: white;
     font-size: 20px;
-    font-weight: 500;}
+    font-weight: 500;
+}
 .activeSubMenu a {
        color: #536dfe!important;
 }	
@@ -234,13 +242,26 @@ td .ant-table-cell {line-height: 23px;}
 
 .top-left {    width: 149px;}
     .logout {      margin-right: -34px!Important;
-            line-height: 40px;
+            line-height: 37px;
     width: 58px;}
 	
-	.activeMenu i {  color: #3ba1dc!important;}
+	.activeMenu i {     color: #ab55e6!important;}
 	.farmlogo{ }
-
-
+    .farmcol{    text-align: left;
+        padding-left: 33px;
+    }
+.botton-custom{font-size: 17px;
+    bottom: 18px;
+    position: absolute;
+    left: 39px;}
+    .ant-table-row{text-align: center;}
+.table.table-striped.table-bordered th {    text-align: center;
+    font-size: 17px;
+    padding: 5px 1px 3px 0px;
+    line-height: 36px;
+    vertical-align: inherit;
+    background: #4ba1ce;
+    color: white;}
 .ant-table-cell div {text-align: center;}
 
 .ant-table-cell i {       margin: 2px;
@@ -270,6 +291,7 @@ td .ant-table-cell {line-height: 23px;}
             cursor: pointer;
         }
 
+        .ant-table-tbody > tr.ant-table-row:hover > td {    background: #dedede!important;}
 @font-face {
     font-family: 'BYekan';
     src: url('../fonts/BYekan.eot?#') format('eot'), url('../fonts/BYekan.woff') format('woff'), url('../fonts/BYekan.ttf') format('truetype');

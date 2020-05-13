@@ -5,6 +5,9 @@ const func = require('../../functions/index');
 const name = "Contract";
 
 router.get(`/`, function (req, res) {
+    //console.log(req.query.userId,req.query.token)
+  //  let ids=func.returnContractIds(req.query.userId,req.query.token);
+   // console.log(ids)
     let query = `SELECT * FROM vw_${name} order by id desc  `;
 
     pool.query(query)

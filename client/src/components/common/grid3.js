@@ -78,9 +78,11 @@ const Grid = (props) => {
       orgRows.forEach(record => {
         columns.filter(a => a.dataIndex !== 'operation').forEach(c => {
           //    console.log(record[c.dataIndex]);
-          if (record[c.dataIndex] && record[c.dataIndex].toString().indexOf(searchText) >= 0) {
+          if (record[c.dataIndex] && record[c.dataIndex].toString().indexOf(searchText) >= 0 
+              &&!matched.find(a=>a.id===record.id)) {
+           
             matched.push(record);
-            return;
+            
           }
         })
       })
