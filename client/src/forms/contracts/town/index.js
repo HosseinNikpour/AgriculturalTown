@@ -359,7 +359,7 @@ class Town extends Component {
                                                     <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
                                                     {this.state.status !== 'display' && <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
-                                                    {this.state.obj.file_dxf && <div><a target="_blank" href={this.state.obj.file_dxf}>مشاهده فایل</a>
+                                                    {this.state.obj.file_dxf && <div><a target="_blank" rel="noopener noreferrer" href={this.state.obj.file_dxf}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_dxf')}></i>}</div>}
                                                 </div>
@@ -369,7 +369,7 @@ class Town extends Component {
                                                     <label htmlFor="f_file_kmz" className="">بارگزاری فایل کروکی KMZ</label>
                                                     {this.state.status !== 'display' && <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
-                                                    {this.state.obj.file_kmz && <div><a target="_blank" href={this.state.obj.file_kmz}>مشاهده فایل</a>
+                                                    {this.state.obj.file_kmz && <div><a target="_blank" rel="noopener noreferrer" href={this.state.obj.file_kmz}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_kmz')}></i>}</div>}
                                                 </div>

@@ -26,5 +26,12 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 11, label: 'واحد ها' },
 { value: 12, label: 'گروه عملیات اجرایی' },
 { value: 13, label: 'شماره های تمدید' },
+{ value: 14, label: 'شماره های صورت وضعیت' },
+{ value: 15, label: 'نوع حق الزحمه' },
+{ value: 16, label: 'نوع اعتبار' },
+{ value: 17, label: 'نوع پرداخت' },
+
+{ value: 20, label: 'وضعیت جوی' },
+{ value: 21, label: 'وضعیت کارگاه' },
 ]
 export const emptyItem = { title: '', sort: '' };

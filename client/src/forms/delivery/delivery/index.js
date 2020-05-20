@@ -36,11 +36,9 @@ class Delivery extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
-            //  let projects = response[2].data;//.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label:a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let data = response[0].data;
             data.forEach(e => {
-                //اینجا فیلدهای تاریخ میان
                 e.contractor_date = e.contractor_date ? moment(e.contractor_date) : undefined;
                 e.consultant_date = e.consultant_date ? moment(e.consultant_date) : undefined;
                 e.branch_date = e.branch_date ? moment(e.branch_date) : undefined;
@@ -134,23 +132,23 @@ class Delivery extends Component {
     selectChange(name, values) {
         let ob = this.state.obj;
         ob[name] = values;
-        let prj = this.state.prj;
+        let contractTitle = this.state.contractTitle;
+      
         if (name === 'contract_id') {
-            // debugger  ;
             let cont = this.state.contracts.find(a => a.key == this.state.obj.contract_id);
-            prj = cont && cont.project ? cont.project : '';
+            contractTitle = cont && cont.title ? cont.title : '';
         }
-        this.setState({ obj: ob, project: prj });
+        this.setState({ obj: ob, contractTitle });
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let prj = cont && cont.project ? cont.project : '';
-        this.setState({ project: prj, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let  contractTitle = cont && cont.title ? cont.title : '';
+        this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let prj = cont && cont.project ? cont.project : '';
-        this.setState({  project: prj,obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let  contractTitle = cont && cont.title ? cont.title : '';
+        this.setState({ contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         //console.log(item)
@@ -226,8 +224,8 @@ class Delivery extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پروژه</label>
-                                                    <label className="form-control">{this.state.project}</label>
+                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
                                         </div>

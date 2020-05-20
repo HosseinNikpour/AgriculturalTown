@@ -132,15 +132,14 @@ td .ant-table-cell {line-height: 23px;}
 
 .navagition ul li {
     display: inline-flex;
-    width: 86px;
-    font-weight: bold;
-    font-size: 18px;
-    border-right: solid 2px #69696926;
+    width: 11%;
+    font-weight: 700;
+    font-size: 1.3vw;
+    border-right: 2px solid hsla(0,0%,41.2%,.15);
 }
 
 .navagition ul li div i {
-    font-size: 30px;
-    /* color: #c362ea; */
+    font-size: 2.2vw;
     margin-bottom: 10px;
 }
 

@@ -70,5 +70,5 @@ const createQueries = (table_name) => {
         });
 };
 
-createQueries('temp_delivery');
+createQueries('credit_predict');
 

@@ -36,7 +36,7 @@ class SubMenu extends Component {
     render() {
         switch (this.state.type) {
             case 0:
-                return (<div style={{ paddingTop:'8px' ,marginRight: '50px', fontSize: '13px' }}> </div>)
+                return (<div style={{ paddingTop: '8px', marginRight: '50px', fontSize: '13px' }}> </div>)
             case 1:
                 return (<ul>
                     <li className={this.menuClassNames(1)} onMouseEnter={() => this.menuHandleHover(1)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(1)}> <Link to="/company" > شناسنامه شرکتها </Link></li>
@@ -49,18 +49,26 @@ class SubMenu extends Component {
                     {/* <li className={this.menuClassNames(8)} onMouseEnter={() => this.menuHandleHover(8)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(8)}> <Link to="/" > چرخه پیمان </Link></li>
                     <li className={this.menuClassNames(9)} onMouseEnter={() => this.menuHandleHover(9)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(9)}> <Link to="/" > بیمه </Link></li> */}
                 </ul>)
-                 case 2:
-                    return (<ul>
-                        <li className={this.menuClassNames(1)}  onClick={() => this.menuHandleClick(1)}> <Link to="/wbs" > ساختار شکست</Link></li>
-                        <li className={this.menuClassNames(2)}  onClick={() => this.menuHandleClick(2)}> <Link to="/weeklyOperation" > گزارش هفتگی عملیات اجرایی </Link></li>
-                        <li className={this.menuClassNames(3)}  onClick={() => this.menuHandleClick(3)}> <Link to="/weeklyOperationPlan" > برنامه عملیات هفتگی</Link></li>
-                    
+            case 2:
+                return (<ul>
+                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/wbs" > ساختار شکست</Link></li>
+                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/weeklyOperation" > گزارش هفتگی عملیات اجرایی </Link></li>
+                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/weeklyOperationPlan" > برنامه عملیات هفتگی</Link></li>
+
+                </ul>)
+            case 3:
+                return (<ul>
+                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/tempDelivery" > تحویل موقت </Link></li>
+                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/delivery" >تحویل قطعی </Link></li>
+                </ul>)
+            case 4:
+                return (<ul>
+                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/invoiceContractor" >صورت وضعیت پیمانکاران</Link></li>
+                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/invoiceConsultant" >صورتحساب مشاورین</Link></li>
+                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/payInvoiceContractor" >پرداخت صورت وضعیت</Link></li>
+                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/payInvoiceConsultant" >پرداخت صورتحساب</Link></li>
+                    <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/creditPredict" >پیش بینی اعتبار</Link></li>
                     </ul>)
-                      case 3:
-                        return (<ul>
-                            <li className={this.menuClassNames(1)}  onClick={() => this.menuHandleClick(1)}> <Link to="/tempDelivery" > تحویل موقت </Link></li>
-                            <li className={this.menuClassNames(2)}  onClick={() => this.menuHandleClick(2)}> <Link to="/delivery" >تحویل قطعی </Link></li>                       
-                        </ul>)
             default:
                 return (<div></div>)
         }

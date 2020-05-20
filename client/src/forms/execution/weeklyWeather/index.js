@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import { getPrevItems, getAllItem, removeItem, saveItem, updateItem, getItem } from '../../../api/index';
+import { getAllItem, removeItem, saveItem, updateItem, getItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
+import moment from 'moment-jalaali'
+// import fa from "moment/src/locale/fa";
+// moment.locale("fa", fa);
+moment.loadPersian({ dialect: 'persian-modern' })
 
-
-class WeeklyOperation extends Component {
+class WeeklyWeather extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
 
         this.state = {
             columns: columns, rows: [], periods: [], contracts: [],
-            //contract_id: 0, period_id: 0, parent_id: 0, prev_parent_id: 0, prev_period_id: 0,
             tableData: [], isFetching: true, showPanel: false, status: '',
         }
 
@@ -33,46 +35,44 @@ class WeeklyOperation extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period'), getAllItem('baseinfo')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
+            let weatherStatus = response[3].data.filter(a => a.groupid === 20).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let workshopStatus = response[3].data.filter(a => a.groupid === 21).map(a => { return { key: a.id, label: a.title, value: a.id } });
             this.setState({
-                isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
+                isFetching: false, rows: response[0].data, contracts, periods, tableData: [],
+                showTable: false, weatherStatus, workshopStatus,
                 status: '', showPanel: false, contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
             });
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
-        let { contract_id, parent_id, period_id } = this.state;
+        let { period_id, parent_id } = this.state;
         parent_id = parent_id ? parent_id : 0;
-       // prev_parent_id = prev_parent_id ? prev_parent_id : 0;
 
-
-       
-        Promise.all([getItem(contract_id, 'wbs'),
-                     getItem(parent_id, 'WeeklyOperationDetail'), 
-                     getPrevItems("WeeklyOperationDetail",contract_id,period_id)
-        ]).then((response) => {
-            let wbs = response[0].data;
-            let curr = response[1].data;
-            let prev = response[2].data;
+        getItem(parent_id, 'WeeklyWeatherDetail').then((response) => {
+            let data = response.data ? response.data : [];
             let tableData = [];
-            wbs.forEach(e => {
-                let p = prev.find(a => a.operation === e.operation && a.unit === e.unit);
-                let c = curr.find(a => a.operation === e.operation && a.unit === e.unit);
-                let oo = {
-                    cumulative_plan: 0,//p ? p.prev_plan : 0,//:
-                    cumulative_done: p ? p.prev_done : 0,//:
-                    current_plan: c ? c.current_plan : 0,
-                    current_done: c ? c.current_done : 0,
-                }
-                //  oo.sum_plan = oo.cumulative_plan + oo.current_plan;
-                // oo.sum_done = oo.cumulative_done + oo.current_done;
-                //change this
-                oo.plan = 0;
-                tableData.push({ ...oo, operation: e.operation, unit: e.unit, totalWork: e.value_change, sort: e.sort })
-            });
-            // ;
+            let per = this.state.periods.find(a => a.key === period_id);
+            let s = moment(per.start_date), e = moment(per.end_date).add(1, 'days');
+
+            while (s.isBefore(e)) {
+                let curr = data.find(a => moment(a.date).format('jYYYY/jMM/jDD') === s.format('jYYYY/jMM/jDD'))
+
+                tableData.push({
+                    date: s.format('jYYYY/jMM/jDD'),
+                    day: s.format('ddd'),
+                    shift_count: curr ? curr.shift_count : 0,
+                    weather_status_id: curr ? curr.weather_status_id : "",
+                    workshop_status_id: curr ? curr.workshop_status_id : "",
+                    rain: curr ? curr.rain : 0
+                });
+
+                s.add(1, 'days');
+            }
+
+
             this.setState({ tableData, showTable: true, isFetching: false });
         }).catch((error) => console.log(error))
     }
@@ -81,61 +81,74 @@ class WeeklyOperation extends Component {
     }
     saveBtnClick() {
 
-        let tbl = this.state.tableData;
+        let rows = this.state.tableData;
         const { contract_id, period_id, parent_id } = this.state;
 
-        let rows = tbl.map(a => ({
-            operation: a.operation,
-            unit: a.unit,
-            total_work: a.totalWork,
-            cumulative_plan: a.cumulative_plan,
-            cumulative_done: a.cumulative_done,
-            current_plan: a.current_plan,
-            current_done: parseInt(a.current_done),
-            sort: a.sort
-        }))
+        let errorRows=[];
+        rows.forEach((r, i) => {
+            if (!r.weather_status_id && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.workshop_status_id && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+           
+        });
 
-        let obj = { contract_id, period_id, rows }
-        console.log(obj)
-        if (this.state.status === 'new') {
-            saveItem(obj, storeIndex).then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.error('error : ', response);
-                }
-            }).catch((error) => console.log(error));
+        if (errorRows.length > 0) {
+            alert('لطفا ستون های الزامی را وارد کنید . ردیف های ' + errorRows.toString())
         }
         else {
-            obj.parent_id = parent_id;
-            updateItem(obj, storeIndex).then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.error('error : ', response);
-                }
-            }).catch((error) => console.log(error));
-        }
 
+
+
+            rows.forEach(e => {
+                e.date = moment(e.date, 'jYYYY/jMM/jDD').format();
+            });
+
+
+            let obj = { contract_id, period_id, rows }
+            console.log(obj)
+            if (this.state.status === 'new') {
+                saveItem(obj, storeIndex).then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.error('error : ', response);
+                    }
+                }).catch((error) => console.log(error));
+            }
+            else {
+                obj.parent_id = parent_id;
+                updateItem(obj, storeIndex).then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.error('error : ', response);
+                    }
+                }).catch((error) => console.log(error));
+            }
+        }
     }
     handleChange(e, i) {
         let tableData = this.state.tableData;
         tableData[i][e.target.name] = e.target.value;
         this.setState({ tableData });
     }
+    selectChange2(name, value, i) {
+        let tableData = this.state.tableData;
+        tableData[i][name] = value;
+        this.setState({ tableData });
+    }
     selectChange(name, values) {
         if (name === 'contract_id') {
             let pervItems = this.state.rows.filter(a => a.contract_id === values);
             if (pervItems[0]) {
-               let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
+                let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
                 let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
-                let period_id = periods[periods.length-1].key;
+                let period_id = periods[periods.length - 1].key;
                 let prev_parent_id = pervItems[0].id;
                 this.setState({ contract_id: values, period_id, prev_parent_id });
             }
@@ -145,13 +158,7 @@ class WeeklyOperation extends Component {
 
     }
     editClickHandle(item) {
-        //let items = this.state.rows.find(a => a.contract_id === item.contract_id);
-        // let prevPeriod = this.state.periods.find(a => a.key < item.period_id);
-        // let prev_parent_id = 0;
-        // if (prevPeriod) {
-        //     let prevItem = items.find(a => a.period_id === prevPeriod.key);
-        //     prev_parent_id = prevItem.id;
-        // }
+
         this.setState({
             period_id: item.period_id, contract_id: item.contract_id,
             parent_id: item.id, status: 'edit', showPanel: true
@@ -161,7 +168,6 @@ class WeeklyOperation extends Component {
         });
     }
     displayClickHandle(item) {
-        console.log(item);
         this.setState({
             obj: item, status: 'display', showPanel: true,
             contract_id: item.contract_id, period_id: item.period_id,
@@ -187,7 +193,8 @@ class WeeklyOperation extends Component {
         }).catch((error) => console.log(error))
     }
     newClickHandle() {
-        this.setState({ status: 'new', showPanel: true
+        this.setState({
+            status: 'new', showPanel: true
         }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
@@ -262,25 +269,18 @@ class WeeklyOperation extends Component {
                                     <hr />
                                     <div className={this.state.showTable ? 'row' : 'hidden'}>
                                         <div className='col'>
-                                            <table className='table table-striped table-bordered'>
+                                            <table className='table table-striped table-bordered' style={{ width: '80%' }}>
                                                 <thead>
-                                                    <tr>
-                                                        <th colSpan={4}></th>
-                                                        <th colSpan={2}>تجمعی تا در دوره قبل</th>
-                                                        <th colSpan={2}>مقدار دوره</th>
-                                                        <th colSpan={2}>مقدار تجمعی</th>
-                                                    </tr>
+
                                                     <tr>
                                                         <th>ردیف</th>
-                                                        <th>شرح فعالیت</th>
-                                                        <th>واحد</th>
-                                                        <th>مقدار کل</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
+                                                        <th>روز</th>
+                                                        <th>تاریخ</th>
+                                                        <th>تعداد شیفت کاری</th>
+                                                        <th>وضعیت جوی</th>
+                                                        <th>وضعیت کارگاه</th>
+                                                        <th>میزان بارش (mm)</th>
+
 
                                                     </tr>
                                                 </thead>
@@ -288,16 +288,20 @@ class WeeklyOperation extends Component {
                                                     {this.state.tableData.map((item, i) => {
                                                         return <tr key={i}>
                                                             <td><label className='tableSpan'>{i + 1}</label></td>
-                                                            <td><label className='tableSpan'>{item.operation}</label></td>
-                                                            <td><label className='tableSpan'>{item.unit}</label></td>
-                                                            <td><label className='tableSpan'>{item.totalWork}</label></td>
-                                                            <td><label className='tableSpan'>{item.cumulative_plan}</label></td>
-                                                            <td><label className='tableSpan'>{item.cumulative_done}</label></td>
-                                                            <td><label className='tableSpan'>{item.current_plan}</label></td>
-                                                            <td><input name="current_done" className="form-control" onChange={(e) => this.handleChange(e, i)}
-                                                                value={item.current_done} type='number' disabled={this.state.status === 'display'} /></td>
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_plan) + parseInt(item.current_plan)}</label></td>
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_done) + parseInt(item.current_done)}</label></td>
+                                                            <td><label className='tableSpan'>{item.day}</label></td>
+                                                            <td><label className='tableSpan'>{item.date}</label></td>
+                                                            <td style={{ width: '150px' }}><input name="shift_count" className="form-control" onChange={(e) => this.handleChange(e, i)}
+                                                                value={item.shift_count} type='number' disabled={this.state.status === 'display'} /></td>
+                                                            <td style={{ width: '200px' }}>
+                                                                <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.weatherStatus}
+                                                                    value={item.weather_status_id} onSelect={(values) => this.selectChange2("weather_status_id", values, i)} /></td>
+                                                            <td style={{ width: '200px' }}>
+                                                                <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.workshopStatus}
+                                                                    value={item.workshop_status_id} onSelect={(values) => this.selectChange2("workshop_status_id", values, i)} /></td>
+                                                            <td style={{ width: '150px' }}>
+                                                                <input name="rain" className="form-control" onChange={(e) => this.handleChange(e, i)}
+                                                                    value={item.rain} type='number' disabled={this.state.status === 'display'} /></td>
+
                                                         </tr>
                                                     })}
 
@@ -317,4 +321,4 @@ class WeeklyOperation extends Component {
     }
 
 }
-export default WeeklyOperation;
+export default WeeklyWeather;

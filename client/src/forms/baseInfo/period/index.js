@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
-import { message, Select } from 'antd';
+import { message } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, datePickerDefaultProp } from '../../../components/statics'
 
 class Period extends Component {
     constructor(props) {

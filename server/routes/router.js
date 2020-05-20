@@ -21,8 +21,13 @@ router.use('/TempDelivery', require('./delivery/TempDeliveryRoutes'));
 router.use('/WBS', require('./execution/WBSRoutes'));
 router.use('/WeeklyOperation', require('./execution/WeeklyOperationRoutes'));
 router.use('/WeeklyOperationDetail', require('./execution/WeeklyOperationDetailRoutes'));
+router.use('/WeeklyWeather', require('./execution/WeeklyWeatherRoutes'));
+router.use('/WeeklyWeatherDetail', require('./execution/WeeklyWeatherDetailRoutes'));
 
-
-
+router.use('/CreditPredict', require('./financial/CreditPredictRoutes'));
+router.use('/InvoiceConsultant', require('./financial/InvoiceConsultantRoutes'));
+router.use('/InvoiceContractor', require('./financial/InvoiceContractorRoutes'));
+router.use('/PayInvoiceConsultant', require('./financial/PayInvoiceConsultantRoutes'));
+router.use('/PayInvoiceContractor', require('./financial/PayInvoiceContractorRoutes'));
 
 module.exports = router;

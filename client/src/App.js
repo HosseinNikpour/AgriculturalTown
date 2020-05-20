@@ -34,6 +34,14 @@ import Extension from './forms/contracts/extension/index'
 import Delivery from './forms/delivery/delivery/index'
 import TempDelivery from './forms/delivery/tempDelivery/index'
 import WeeklyOperation from './forms/execution/weeklyOperation/index'
+import WeeklyWeather from './forms/execution/weeklyWeather/index'
+
+import CreditPredict from './forms/financial/creditPredict/index'
+import InvoiceConsultant from './forms/financial/invoiceConsultant/index'
+import InvoiceContractor from './forms/financial/invoiceContractor/index'
+import PayInvoiceConsultant from './forms/financial/payInvoiceConsultant/index'
+import PayInvoiceContractor from './forms/financial/payInvoiceContractor/index'
+
 
 import Home from './components/home'
 import Test from './components/test'
@@ -112,10 +120,10 @@ class App extends Component {
   render() {
     return (
       <Router>
-       
+
         <div className='container-fluid' dir="RTL">
           <div className='row topRiboon'>
-          <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
+            <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
             <div className="col-1 ml-auto" >
 
               <i className={this.state.currentUser.role && this.state.currentUser.role.indexOf('admin') > -1 ? "fas fa-tools" : 'hidden'}
@@ -133,7 +141,7 @@ class App extends Component {
             <div className="col-1">
               <div className='top-left'>
                 <i className="fas fa-user" style={{ color: '#bdbdbd', margin: '8px 10px 7px' }}></i>
-               <span className='nameofuser'> {this.state.currentUser.name} </span>
+                <span className='nameofuser'> {this.state.currentUser.name} </span>
               </div>
               {this.state.currentUser.name && <div className="logout" onClick={this.onLogout} style={{ marginTop: '-34px' }}>
                 خروج
@@ -222,7 +230,13 @@ class App extends Component {
               <PrivateRoute path="/extension" component={Extension} />
               <PrivateRoute path="/tempDelivery" component={TempDelivery} />
               <PrivateRoute path="/delivery" component={Delivery} />
+              <PrivateRoute path="/payInvoiceContractor" component={PayInvoiceContractor} />
+              <PrivateRoute path="/payInvoiceConsultant" component={PayInvoiceConsultant} />
+              <PrivateRoute path="/invoiceContractor" component={InvoiceContractor} />
+              <PrivateRoute path="/invoiceConsultant" component={InvoiceConsultant} />
+              <PrivateRoute path="/creditPredict" component={CreditPredict} />
               <PrivateRoute path="/weeklyOperation" component={WeeklyOperation} />
+              <PrivateRoute path="/weeklyWeather" component={WeeklyWeather} />
               <Route path="/test">
                 <Test />
               </Route>

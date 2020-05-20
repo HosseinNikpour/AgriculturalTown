@@ -3,7 +3,7 @@ import { getPrevItems, getAllItem, removeItem, saveItem, updateItem, getItem } f
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder } from './statics'
+import { columns, storeIndex, pageHeder, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
 
 
@@ -43,9 +43,9 @@ class WeeklyOperation extends Component {
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
-        let { contract_id, parent_id, period_id } = this.state;
+        let { contract_id, parent_id, prev_parent_id,period_id } = this.state;
         parent_id = parent_id ? parent_id : 0;
-       // prev_parent_id = prev_parent_id ? prev_parent_id : 0;
+        prev_parent_id = prev_parent_id ? prev_parent_id : 0;
 
 
        
@@ -58,8 +58,8 @@ class WeeklyOperation extends Component {
             let prev = response[2].data;
             let tableData = [];
             wbs.forEach(e => {
-                let p = prev.find(a => a.operation === e.operation && a.unit === e.unit);
-                let c = curr.find(a => a.operation === e.operation && a.unit === e.unit);
+                let p = prev.find(a => a.operation == e.operation && a.unit == e.unit);
+                let c = curr.find(a => a.operation == e.operation && a.unit == e.unit);
                 let oo = {
                     cumulative_plan: 0,//p ? p.prev_plan : 0,//:
                     cumulative_done: p ? p.prev_done : 0,//:
