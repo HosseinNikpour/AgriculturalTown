@@ -1,29 +1,49 @@
-import React, { Component } from 'react';
-import { Select } from 'antd';
-const { Option, OptGroup } = Select;
+import { getItem } from '../api/index'
 
-const createGroupData = (array, groupField) => {
-    let arr = [], groupArr = [];
-    array.forEach(e => {
-        let i = groupArr.indexOf(e[groupField])
-        if (i >= 0) {
-            arr[i].child.push(e);
-        } else {
-            arr.push({ title: e[groupField], child: [] });
-            groupArr.push(e[groupField]);
+export const findNextStep = async (entityName, contractId, state, currentUserId) => {
+  
+    return await Promise.all([getItem(entityName, 'PermissionStructure'), getItem(contractId, 'contract')]).then(res => {
+      
+        let user_id = 0, role_id = 0;
+        let approver = res[0].data[0].item_approver_id;
+        let contract = res[1].data[0];
+
+        debugger;
+          if (state.toLowerCase() === 'a') {
+            if (!currentUserId) role_id = approver[0];
+            else {
+                let currentRole=contract.contractor_user_id===currentUserId?1:
+                                contract.engineer_user_id===currentUserId?2:
+                                contract.manager_user_id===currentUserId?3:4;
+                let i = approver.indexOf(currentRole);
+                if (i > -1) {
+                    if (approver[i + 1]) role_id = approver[i + 1];
+                    else role_id = -1;
+                }
+            }
         }
-    });
-    console.log(arr)
-    return arr;
+        else {
+
+        }
+
+        switch (role_id) {
+            case 1:
+                user_id = contract.contractor_user_id;
+                break;
+            case 2:
+                user_id = contract.engineer_user_id;
+                break;
+            case 3:
+                user_id = contract.manager_user_id;
+                break;
+            case 4:
+                user_id = 1;
+                break;
+            case -1:
+                user_id = -1;
+                break;
+        }
+        return user_id;
+    }).catch((error) => console.log(error));
 }
-export const createGroupedOptions = (array, groupField) => {
-    
-    let res = [], gArr = createGroupData(array, groupField);
-    gArr.forEach(g => {
-        res.push(<OptGroup label={g.title}></OptGroup>);
-        g.child.forEach(e => {
-            res.push(<Option value={e.value}>{e.label}</Option>);
-       });
-    });
-return res;
-}
+

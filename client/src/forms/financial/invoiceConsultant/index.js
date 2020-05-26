@@ -62,7 +62,8 @@ class InvoiceConsultant extends Component {
 
         obj.start_date = obj.start_date ? obj.start_date.format() : '';
         obj.end_date = obj.end_date ? obj.end_date.format() : '';
-
+        obj.period_price=parseInt(obj.manager_price)-parseInt(obj.prev_price);
+        
         var formData = new FormData();
         if (obj.f_file_invoice)
             formData.append("file_invoice", obj.f_file_invoice);

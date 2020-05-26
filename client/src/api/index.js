@@ -15,8 +15,9 @@ export const config = {
     }
 }
 
-export const getAllItem = (storeIndex) => {
+export const getAllItem = (storeIndex,params) => {
     config.params = { userId: JSON.parse(localStorage.getItem('user')).id, token: localStorage.getItem('token') }
+    if(params)config.params={...config.params,...params}
     return axios.get(
         URL + "api/" + storeIndex,
         config

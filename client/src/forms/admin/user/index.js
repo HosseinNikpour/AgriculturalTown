@@ -5,7 +5,7 @@ import { saveItem, getAllItem, updateItem, removeItem, updatePassword } from '..
 
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
-import { columns, storeIndex, pageHeder, genPass, emptyItem,roles } from './statics'
+import { columns, storeIndex, pageHeder, genPass, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration,selectDefaultProp } from '../../../components/statics'
 
 moment.loadPersian()
@@ -31,14 +31,15 @@ class User extends Component {
     scrollToFormRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        getAllItem(storeIndex).then((response) => {
-            let data = response.data;
+        Promise.all([getAllItem(storeIndex),getAllItem('role')]).then((response) => {
+            let data = response[0].data;
+            let roles=response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             data.forEach(e => {
                 e.last_login =e.last_login? moment(e.last_login):undefined;
-               // e.created_on = moment(e.created_on).format('jYYYY/jMM/jDD HH:mm');
+              
             });
-           // console.log(data);
-            this.setState({ data: data, isFetching: false, rows: data.filter(a => a.enabled) 
+
+            this.setState({ data,roles, isFetching: false, rows: data.filter(a => a.enabled) 
             , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
     }
@@ -161,8 +162,9 @@ class User extends Component {
                                     <Grid columns={this.state.columns} rows={this.state.rows}
                                         editClick={this.editClickHandle}
                                         displayClick={this.chpClickHandle}
-                                        deleteClick={this.deleteClickHandle}>
+                                        // deleteClick={this.deleteClickHandle}
                                         >
+                                        
                                     </Grid>
                                 </div>
                             </div>
@@ -197,9 +199,9 @@ class User extends Component {
                                             <div className='row'>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="role" className="">نقش </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={roles}
-                                                        value={this.state.obj.role} onSelect={(values) => this.selectChange("role", values)}
+                                                    <label htmlFor="role_id" className="">نقش </label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.roles}
+                                                        value={this.state.obj.role_id} onSelect={(values) => this.selectChange("role_id", values)}
                                                     />
                                                 </div>
                                             </div>

@@ -28,7 +28,7 @@ class PrivateRoute extends Component {
                 if (typeof this.props.onLogin === 'function')
                     this.props.onLogin(5);
                 if (this.props.role && this.props.role === 'admin')
-                    if (user.role === 'admin' || user.role === 'superadmin')
+                    if (user.role_id === 4 || user.role_id === 5)
                         this.setState({ authenticated: 1 });
                     else
                         this.setState({ authenticated: -1 });

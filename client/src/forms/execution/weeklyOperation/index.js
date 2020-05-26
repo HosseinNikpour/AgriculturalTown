@@ -5,7 +5,10 @@ import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
-
+import Approve from '../../../components/approve/index';
+import History from '../../../components/approve/history';
+import { findNextStep } from '../../../functions/index';
+import { status } from '../../../components/approve/statics'
 
 class WeeklyOperation extends Component {
     constructor(props) {
@@ -33,25 +36,27 @@ class WeeklyOperation extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period'),
+                     getItem("weeklyOperation", 'PermissionStructure')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
-            this.setState({
+           let roleId=JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd=response[3].data[0].item_creator_id===roleId||roleId>3?true:false;
+            let canEdit=response[3].data[0].item_editor_id.indexOf(roleId)>-1||roleId>3?true:false;
+            this.setState({canAdd,canEdit,
                 isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
                 status: '', showPanel: false, contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
             });
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
+        this.scrollToGridRef();
         let { contract_id, parent_id, period_id } = this.state;
         parent_id = parent_id ? parent_id : 0;
-       // prev_parent_id = prev_parent_id ? prev_parent_id : 0;
 
-
-       
         Promise.all([getItem(contract_id, 'wbs'),
-                     getItem(parent_id, 'WeeklyOperationDetail'), 
-                     getPrevItems("WeeklyOperationDetail",contract_id,period_id)
+        getItem(parent_id, 'WeeklyOperationDetail'),
+        getPrevItems("WeeklyOperationDetail", contract_id, period_id)
         ]).then((response) => {
             let wbs = response[0].data;
             let curr = response[1].data;
@@ -61,9 +66,9 @@ class WeeklyOperation extends Component {
                 let p = prev.find(a => a.operation === e.operation && a.unit === e.unit);
                 let c = curr.find(a => a.operation === e.operation && a.unit === e.unit);
                 let oo = {
-                    cumulative_plan: 0,//p ? p.prev_plan : 0,//:
+                    //    cumulative_plan: 0,//p ? p.prev_plan : 0,//:
                     cumulative_done: p ? p.prev_done : 0,//:
-                    current_plan: c ? c.current_plan : 0,
+                    //   current_plan: c ? c.current_plan : 0,
                     current_done: c ? c.current_done : 0,
                 }
                 //  oo.sum_plan = oo.cumulative_plan + oo.current_plan;
@@ -79,11 +84,11 @@ class WeeklyOperation extends Component {
     componentDidMount() {
         this.fetchData();
     }
-    saveBtnClick() {
-
-        let tbl = this.state.tableData;
+    async saveBtnClick() {
         const { contract_id, period_id, parent_id } = this.state;
 
+        let tbl = this.state.tableData;
+       
         let rows = tbl.map(a => ({
             operation: a.operation,
             unit: a.unit,
@@ -96,6 +101,13 @@ class WeeklyOperation extends Component {
         }))
 
         let obj = { contract_id, period_id, rows }
+        let xx= await findNextStep('weeklyOperation',contract_id, 'a');
+        obj.current_user_id =xx;
+        obj.status = xx===-1?status.approved:status.wait;
+        obj.entity_name = 'weeklyOperation';
+        obj.role_id=JSON.parse(localStorage.getItem('user')).role_id;
+
+       
         console.log(obj)
         if (this.state.status === 'new') {
             saveItem(obj, storeIndex).then((response) => {
@@ -133,9 +145,9 @@ class WeeklyOperation extends Component {
         if (name === 'contract_id') {
             let pervItems = this.state.rows.filter(a => a.contract_id === values);
             if (pervItems[0]) {
-               let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
+                let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
                 let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
-                let period_id = periods[periods.length-1].key;
+                let period_id = periods[periods.length - 1].key;
                 let prev_parent_id = pervItems[0].id;
                 this.setState({ contract_id: values, period_id, prev_parent_id });
             }
@@ -145,13 +157,6 @@ class WeeklyOperation extends Component {
 
     }
     editClickHandle(item) {
-        //let items = this.state.rows.find(a => a.contract_id === item.contract_id);
-        // let prevPeriod = this.state.periods.find(a => a.key < item.period_id);
-        // let prev_parent_id = 0;
-        // if (prevPeriod) {
-        //     let prevItem = items.find(a => a.period_id === prevPeriod.key);
-        //     prev_parent_id = prevItem.id;
-        // }
         this.setState({
             period_id: item.period_id, contract_id: item.contract_id,
             parent_id: item.id, status: 'edit', showPanel: true
@@ -187,7 +192,8 @@ class WeeklyOperation extends Component {
         }).catch((error) => console.log(error))
     }
     newClickHandle() {
-        this.setState({ status: 'new', showPanel: true
+        this.setState({
+            status: 'new', showPanel: true
         }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
@@ -213,16 +219,16 @@ class WeeklyOperation extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                       {this.state.canAdd&& <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
                                     <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                        editClick={this.state.canEdit? this.editClickHandle:undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit?this.deleteClickHandle:undefined}></Grid>
                                 </div>
                             </div>
                         </div>
@@ -264,23 +270,15 @@ class WeeklyOperation extends Component {
                                         <div className='col'>
                                             <table className='table table-striped table-bordered'>
                                                 <thead>
-                                                    <tr>
-                                                        <th colSpan={4}></th>
-                                                        <th colSpan={2}>تجمعی تا در دوره قبل</th>
-                                                        <th colSpan={2}>مقدار دوره</th>
-                                                        <th colSpan={2}>مقدار تجمعی</th>
-                                                    </tr>
+
                                                     <tr>
                                                         <th>ردیف</th>
                                                         <th>شرح فعالیت</th>
                                                         <th>واحد</th>
                                                         <th>مقدار کل</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
+                                                        <th>تجمعی تا در دوره قبل</th>
+                                                        <th>مقدار دوره</th>
+                                                        <th>مقدار تجمعی</th>
 
                                                     </tr>
                                                 </thead>
@@ -291,12 +289,12 @@ class WeeklyOperation extends Component {
                                                             <td><label className='tableSpan'>{item.operation}</label></td>
                                                             <td><label className='tableSpan'>{item.unit}</label></td>
                                                             <td><label className='tableSpan'>{item.totalWork}</label></td>
-                                                            <td><label className='tableSpan'>{item.cumulative_plan}</label></td>
+
                                                             <td><label className='tableSpan'>{item.cumulative_done}</label></td>
-                                                            <td><label className='tableSpan'>{item.current_plan}</label></td>
+
                                                             <td><input name="current_done" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                 value={item.current_done} type='number' disabled={this.state.status === 'display'} /></td>
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_plan) + parseInt(item.current_plan)}</label></td>
+
                                                             <td><label className='tableSpan'>{parseInt(item.cumulative_done) + parseInt(item.current_done)}</label></td>
                                                         </tr>
                                                     })}
@@ -310,6 +308,11 @@ class WeeklyOperation extends Component {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className='row'>
+                        {this.state.status === 'display' && <Approve item={this.state.obj} entityName='weeklyOperation' onEnd={this.fetchData}></Approve>}
+                        {this.state.status === 'display' && <History item={this.state.obj} entityName='weeklyOperation'></History>}
+
                     </div>
                 </div>
             )

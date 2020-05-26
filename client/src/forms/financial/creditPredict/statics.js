@@ -1,7 +1,8 @@
 ﻿import moment from 'moment-jalaali';
 export const columns = [
   { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان' },
-  { dataIndex: 'period',key: 'period', title: 'دوره گزارش' },  
+  { dataIndex: 'start_date',key: 'start_date', title: 'تاریخ شروع' }, 
+  { dataIndex: 'end_date',key: 'end_date', title: 'تاریخ پایان' },   
   { dataIndex: 'invoice_paid_price',key: 'invoice_paid_price', title: 'مبلغ تجمعی صورت وضعیت پرداخت شده' },
   { dataIndex: 'invoice_paid_period',key: 'invoice_paid_period', title: 'دوره پرداخت' }, 
   { dataIndex: 'invoice_approved_price',key: 'invoice_approved_price', title: 'مبلغ تجمعی صورت وضعیت تایید شده' },

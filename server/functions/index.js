@@ -10,8 +10,8 @@ const saveFile = (file, entityName, fieldName, title, createNew) => {
         });
 
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
-  //  if (createNew && fs.existsSync(fileName))
-   //     fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
+    //  if (createNew && fs.existsSync(fileName))
+    //     fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     fs.writeFileSync(fileName, file.data);//, () => {
     return (fileName.replace('.\\Docs', ''));
     //  });
@@ -38,6 +38,8 @@ const queryGen = (name, type, row) => {
                 // console.log(typeof (row[key]));
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     insertValues += `${row[key]},`;
+                else if (Array.isArray(row[key]))
+                    insertValues += `'{${row[key]}}',`;
                 else {
 
                     insertValues += `'${row[key]}',`
@@ -57,6 +59,8 @@ const queryGen = (name, type, row) => {
 
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;
+                else if (Array.isArray(row[key]))
+                updateQuery += `${key} ='{${row[key]}}',`;
                 else {
                     if (row[key] === '**d**')
                         updateQuery += `${key} = null,`;
@@ -84,16 +88,16 @@ const returnContractIds = (userId, token) => {
     if (!user) return -2;
 
     if (user.id != userId) return -3;
-    if (user.role.indexOf('admin') > 0) return 0;
+    if (user.role_id>3) return 0;
     let field = '';
-    switch (user.role) {
-        case 'engineer':
+    switch (user.role_id) {
+        case 2:
             field = 'engineer_user_id'
             break;
-        case 'contractor':
+        case 1:
             field = 'contractor_user_id'
             break;
-        case 'manager':
+        case 3:
             field = 'manager_user_id'
             break;
 

@@ -61,7 +61,8 @@ class InvoiceContractor extends Component {
 
         obj.start_date = obj.start_date ? obj.start_date.format() : '';
         obj.end_date = obj.end_date ? obj.end_date.format() : '';
-
+        obj.period_price=parseInt(obj.manager_price)-parseInt(obj.prev_price);
+        
         var formData = new FormData();
    //اینجا فیلدهای فایل میان
   

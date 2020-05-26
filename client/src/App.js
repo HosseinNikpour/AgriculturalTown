@@ -65,13 +65,15 @@ class App extends Component {
     this.onLogout = this.onLogout.bind(this);
   }
   onLogout() {
-    localStorage.clear();
+  
     this.setState({ currentUser: {} });
+    localStorage.clear();
+    window.location.reload();
   }
   onLogin() {
     const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : undefined;
     if (user)
-      this.setState({ currentUser: { name: user.name, lastLoginDate: user.last_login, role: user.role } });
+      this.setState({ currentUser: { name: user.name, lastLoginDate: user.last_login, role_id: user.role_id } });
 
   }
   componentDidMount() {
@@ -126,7 +128,7 @@ class App extends Component {
             <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
             <div className="col-1 ml-auto" >
 
-              <i className={this.state.currentUser.role && this.state.currentUser.role.indexOf('admin') > -1 ? "fas fa-tools" : 'hidden'}
+              <i className={this.state.currentUser.role_id && this.state.currentUser.role_id >3 ? "fas fa-tools" : 'hidden'}
                 style={{ margin: '8px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
 
               <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"} ref={this.setWrapperRef}>
@@ -134,7 +136,7 @@ class App extends Component {
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/period" >دوره ها</Link>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/operation" >عملیات اجرایی</Link>
                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/user" >مدیریت کاربران </Link>
-                {/* <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/permissionStructure" >مدیریت دسترسی ها</Link> */}
+                 <Link onClick={() => this.setState({ showSettingMenu: false })} className="dropdown-item" to="/permissionStructure" >مدیریت دسترسی ها</Link> 
               </div>
 
             </div>

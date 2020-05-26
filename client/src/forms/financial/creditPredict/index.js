@@ -40,6 +40,13 @@ class CreditPredict extends Component {
             let data = response[0].data;
             let invioces = response[2].data;
             let payInvioces = response[3].data;
+
+            data.forEach(e => {
+                e.start_date = e.start_date ? moment(e.start_date) : undefined;
+                e.end_date = e.end_date ? moment(e.end_date) : undefined;
+
+            });
+
             this.setState({
                 isFetching: false, rows: data, contracts, invioces, payInvioces,
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
@@ -109,11 +116,11 @@ class CreditPredict extends Component {
             let prevPayInvo = payInvioces.filter(a => a.contract_id === obj.contract_id)
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
             obj.invoice_paid_period = prevPayInvo ? prevPayInvo.no : 0;
-            obj.invoice_paid_price = prevPayInvo ? prevPayInvo.manager_price : 0;
+            obj.invoice_paid_price = prevPayInvo ? prevPayInvo.price : 0;
 
             let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.invoice_approved_price = prevInvo ? prevInvo.price : 0;
+            obj.invoice_approved_price = prevInvo ? prevInvo.manager_price : 0;
             obj.invoice_approved_period = prevInvo ? prevInvo.no : 0;
 
         }
@@ -121,13 +128,13 @@ class CreditPredict extends Component {
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let prj = cont && cont.project ? cont.project : '';
-        this.setState({ project: prj, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let contractTitle = cont && cont.title ? cont.title : '';
+        this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let prj = cont && cont.project ? cont.project : '';
-        this.setState({ project: prj, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let contractTitle = cont && cont.title ? cont.title : '';
+        this.setState({ contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         //console.log(item)

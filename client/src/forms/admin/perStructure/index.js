@@ -4,6 +4,7 @@ import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem, entities } from './statics'
+
 import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
 
 class PermissionStructure extends Component {
@@ -17,7 +18,7 @@ class PermissionStructure extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
-      //  this.selectMultiChange = this.selectMultiChange.bind(this);
+        //  this.selectMultiChange = this.selectMultiChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -30,12 +31,19 @@ class PermissionStructure extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('User')]).then((response) => {
-            let users = response[1].data.map(a => ({ key: a.id,value: a.id,  label: a.username }));
-            users.unshift({ key: -1,value:-1, label: 'پیمانکار' }, { key: -2,value:-2, label: 'مشاور' }, {Key: -3,value:-3, label: 'مدیر شهرستان' })
-           let r=response[0].data;
-           console.log(r);
-            this.setState({ isFetching: false, rows: r, users: users });
+        Promise.all([getAllItem(storeIndex),getAllItem('role')]).then((response) => {
+            let users =response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let rows = response[0].data;
+           
+            rows.forEach(e => {
+                e.item_creator = users.find(a => a.key === e.item_creator_id).label;
+                e.item_approver =e.item_approver_id.map(x => users.find(a => a.key === x).label).toString();
+                e.item_viewer =e.item_viewer_id.map(x => users.find(a => a.key === x).label).toString();
+                e.item_editor =e.item_editor_id.map(x => users.find(a => a.key === x).label).toString();
+            });
+           
+            this.setState({ isFetching: false, rows, users ,
+                 obj: { ...emptyItem }, showPanel: false, status: ''});
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -44,10 +52,8 @@ class PermissionStructure extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-        // obj.item_creator=obj.item_creator.map(a=>a.value).toString();
-        // obj.item_approver=obj.item_approver.map(a=>a.value).toString();
-        // obj.item_viewer=obj.item_viewer.map(a=>a.value).toString();
-        // obj.item_editor=obj.item_editor.map(a=>a.value).toString();
+        console.log(obj);
+ 
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
@@ -164,24 +170,24 @@ class PermissionStructure extends Component {
 
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_creator" className=""> ایجاد کننده گان</label>
+                                                    <label htmlFor="item_creator_id" className=""> ایجاد کننده </label>
                                                     <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
                                                         disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_creator} 
-                                                        onChange={(values) => this.selectChange("item_creator", values)}
+                                                        showSearch value={this.state.obj.item_creator_id}
+                                                        onSelect={(values) => this.selectChange("item_creator_id", values)}
                                                     />
-                                                   
+
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-12">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_approver" className="">تایید کننده گان</label>
+                                                    <label htmlFor="item_approver_id" className="">تایید کننده گان</label>
                                                     <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
                                                         disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_approver} 
-                                                        onChange={(values) => this.selectChange("item_approver", values)}
+                                                        mode="multiple" showSearch value={this.state.obj.item_approver_id}
+                                                        onChange={(values) => this.selectChange("item_approver_id", values)}
                                                     />
                                                 </div>
                                             </div>
@@ -189,21 +195,21 @@ class PermissionStructure extends Component {
                                         <div className="row">
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_viewer" className="">مشاهده کننده گان </label>
+                                                    <label htmlFor="item_viewer_id" className="">مشاهده کننده گان </label>
                                                     <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
                                                         disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_viewer}
-                                                        onChange={(values) => this.selectChange("item_viewer", values)}
+                                                        mode="multiple" showSearch value={this.state.obj.item_viewer_id}
+                                                        onChange={(values) => this.selectChange("item_viewer_id", values)}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="item_editor" className=""> ویرایش کننده گان</label>
+                                                    <label htmlFor="item_editor_id" className=""> ویرایش کننده گان</label>
                                                     <Select className="form-control" direction="rtl" placeholder='انتخاب ...'
                                                         disabled={this.state.status === 'display'} options={this.state.users}
-                                                        mode="multiple" showSearch value={this.state.obj.item_editor}  
-                                                        onChange={(values) => this.selectChange("item_editor", values)}
+                                                        mode="multiple" showSearch value={this.state.obj.item_editor_id}
+                                                        onChange={(values) => this.selectChange("item_editor_id", values)}
                                                     />
                                                 </div>
                                             </div>

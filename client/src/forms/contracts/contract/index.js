@@ -43,7 +43,7 @@ class Town extends Component {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let projects = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id } });
+            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id ,roleId:a.role_id} });
             let data = response[0].data;
             data.forEach(e => {
 
@@ -389,7 +389,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contractor_user_id" className="">کاربر پیمانکار </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.label.endsWith('.c'))}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===1)}
                                                         value={this.state.obj.contractor_user_id} onSelect={(values) => this.selectChange("contractor_user_id", values)}
                                                     />
                                                 </div>
@@ -397,7 +397,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="engineer_user_id" className="">کاربر مشاور  </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.label.endsWith('.e'))}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===2)}
                                                         value={this.state.obj.engineer_user_id} onSelect={(values) => this.selectChange("engineer_user_id", values)}
                                                     />
                                                 </div>
@@ -405,7 +405,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="manager_user_id" className="">کاربر مدیر استان </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.label.endsWith('.m'))}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===3)}
                                                         value={this.state.obj.manager_user_id} onSelect={(values) => this.selectChange("manager_user_id", values)}
                                                     />
                                                 </div>

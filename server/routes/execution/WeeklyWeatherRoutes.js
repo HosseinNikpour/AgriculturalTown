@@ -73,7 +73,7 @@ router.put('/:id', function (req, res) {
                 VALUES `;
 
                 rows.forEach(e => {
-                    query_d += `('${e.date}','${e.day}',${e.weather_status_id},${e.workshop_status_id},${e.workshop_status_id},${parent_id}),`
+                    query_d += `('${e.date}','${e.day}',${e.shift_count},${e.weather_status_id},${e.workshop_status_id},${e.rain},${parent_id}),`
                 });
                 query_d = query_d.slice(0, -1);
                 console.log('details',query_d)

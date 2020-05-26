@@ -1,12 +1,11 @@
 ﻿import moment from 'moment-jalaali';
 export const columns = [
  { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان / قرارداد' },
-// { dataIndex: 'prev_approve_id',key: 'prev_approve_id', title: 'شماره آخرین صورت وضعیت تایید شده مدیر طرح' }, 
-// { dataIndex: 'prev_id',key: 'prev_id', title: 'شماره آخرین صورت وضعیت پرداخت شده مالی' },
- //{ dataIndex: 'prev_approve_price',key: 'prev_approve_price', title: 'مبلغ آخرین صورت وضعیت تایید شده مدیر طرح' }, 
- //{ dataIndex: 'prev_price',key: 'prev_price', title: 'مبلغ آخرین صورت وضعیت پرداخت شده مالی' },
+{ dataIndex: 'prev_approve_id',key: 'prev_approve_id', title: 'شماره آخرین صورت وضعیت تایید شده مدیر طرح' }, 
+{ dataIndex: 'prev_id',key: 'prev_id', title: 'شماره آخرین صورت وضعیت پرداخت شده مالی' },
+ { dataIndex: 'prev_approve_price',key: 'prev_approve_price', title: 'مبلغ آخرین صورت وضعیت تایید شده مدیر طرح' }, 
+ { dataIndex: 'prev_price',key: 'prev_price', title: 'مبلغ آخرین صورت وضعیت پرداخت شده مالی' },
  { dataIndex: 'no',key: 'no', title: 'شماره صورت وضعیت فعلی' },
- { dataIndex: 'approve_price',key: 'approve_price', title: 'مبلغ تجمعی صورت وضعیت تایید شده مدیر طرح' },
  { dataIndex: 'price',key: 'price', title: 'مبلغ قابل پرداخت تجمعی' }, 
  { dataIndex: 'period_price',key: 'period_price', title: 'مبلغ قابل پرداخت در دوره' },
  { dataIndex: 'pay_date',key: 'pay_date', title: 'تاریخ سند پرداخت' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } }, 

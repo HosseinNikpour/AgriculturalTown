@@ -3,14 +3,15 @@ export const columns = [
     { sorter: true, key: 'id', dataIndex: 'id', title: 'شناسه' ,width:'70px',},
     { sorter: true, key: 'username', dataIndex: 'username', title: 'نام کاربری' },
     { sorter: true, key: 'name', dataIndex: 'name', title: 'نام' },
+    { sorter: true, key: 'role', dataIndex: 'role', title: 'نقش' },
     { sorter: true, key: 'enabled', dataIndex: 'enabled', title: 'فعال؟', render: function (text, record, index) { return text ? 'بلی' : 'خیر' } },
     { sorter: true, key: 'last_login', dataIndex: 'last_login', title: 'آخرین اتصال', render: function (text) { return text?text.format('jYYYY/jMM/jDD HH:mm'):'' } },
     // { sorter: true, key: 'created_on', dataIndex: 'created_on', title: 'تاریخ ایجاد', type: 'date' },
 
 ];
 
-export const roles = [ { key: 'admin', label: 'ادمین', value: 'admin' },
-                        { key: 'manager', label: 'مدیر استان', value: 'manager' },
+export const roles = [  { key: 'admin', label: 'ادمین', value: 'admin' },
+                        { key: 'manager', label: 'مدیر شعبه', value: 'manager' },
                         { key: 'engineer', label: 'مشاور', value: 'engineer' },
                         { key: 'contractor', label: 'پیمانکار', value: 'contractor' }]
 export const storeIndex = "User";

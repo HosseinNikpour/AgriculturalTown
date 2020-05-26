@@ -40,7 +40,7 @@ router.post(`/signin`, function (req, res) {
                             id: results.rows[0].id,
                             name: results.rows[0].name,
                             username: results.rows[0].username,
-                            role: results.rows[0].role,
+                            role_id: results.rows[0].role_id,
                             last_login: results.rows[0].last_login
                         };
 
@@ -83,7 +83,6 @@ router.post(`/signin`, function (req, res) {
             return res.send({ type: "Error", message: err.message })
         });
 });
-
 router.post('/verifyToken', function (req, res) {
     // check header or url parameters or post parameters for token
     let token = req.body.token || req.query.token;
@@ -115,7 +114,9 @@ router.post('/verifyToken', function (req, res) {
     });
 });
 router.get(`/`, function (req, res) {
-    let query = `SELECT id, username, name, last_login,enabled,role FROM public.${name} order by id desc  `;
+    let query = `SELECT u.id, u.username, u.name, u.last_login,u.enabled,u.role_id ,r.title as role
+            FROM public.${name} as u left join tbl_roles as r on u.role_id=r.id
+            order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -131,8 +132,8 @@ router.post('/', function (req, res) {
     bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash(req.body.password, salt, function (err, hash) {
 
-            let query = `INSERT INTO public.${name} (username, name, password,enabled,role,creator_id, create_date)  
-                         Values('${req.body.username}','${req.body.name}','${hash}',${req.body.enabled},'${req.body.role}',${req.body.creator_id},'${req.body.create_date}')`;
+            let query = `INSERT INTO public.${name} (username, name, password,enabled,role_id,creator_id, create_date)  
+                         Values('${req.body.username}','${req.body.name}','${hash}',${req.body.enabled},'${req.body.role_id}',${req.body.creator_id},'${req.body.create_date}')`;
             console.log(query);
             pool.query(query)
                 .then((results) => {
@@ -169,7 +170,7 @@ router.put('/:id', function (req, res) {
     let query = `UPDATE public.${name}
             SET name='${req.body.name}',
                 username='${req.body.username}',
-                role='${req.body.role}',
+                role_id='${req.body.role_id}',
                 enabled=${req.body.enabled},
                 editor_id=${req.body.editor_id}, 
                 edit_date='${req.body.edit_date}'

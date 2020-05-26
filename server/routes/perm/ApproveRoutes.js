@@ -2,10 +2,11 @@ const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
-const name = "per_structure";
+const name = "wf_history";
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM ${name} `;
+    console.log(req.query)
+    let query = `SELECT * FROM vw_${name} where item_id=${req.query.item_id} and entity_name='${req.query.entity_name}' `;
 
     pool.query(query)
         .then((results) => {
@@ -15,9 +16,9 @@ router.get(`/`, function (req, res) {
             return res.send({ type: "Error", message: err.message })
         });
 });
-router.get(`/:entity`, function (req, res) {
-    let query = `SELECT * FROM ${name} where entity_name = '${req.params.entity}' `;
-console.log(query)
+router.get(`/:id`, function (req, res) {
+    let query = `SELECT * FROM ${name} where item_id = ${req.params.key} `;
+
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);
@@ -27,23 +28,32 @@ console.log(query)
         });
 });
 router.post('/', function (req, res) {
-    let data = req.body;
-    console.log(data)
+    let data = req.body.obj;
+    let tblName = "";
+    switch (data.entity_name) {
+        case 'weeklyOperation': tblName = "weekly_operation"; break;
+        // case 'weeklyOperation':tblName="weekly_operation";break;
+    }
     let query = func.queryGen(name, 'insert', data);
-    console.log(query)
-    pool.query(query)
-        .then((results) => {
+    pool.query(query).then((results) => {
+        let query_d = `UPDATE public.${tblName}
+            SET current_user_id=${req.body.next_user}, status='${req.body.status}'
+            WHERE id =${data.item_id}`
+        pool.query(query_d).then((results_d) => {
             return res.send(results.rows);
-        })
+        }).catch((err) => {
+            return res.send({ type: "Error", message: err.message })
+        });
+        
+    })
         .catch((err) => {
             return res.send({ type: "Error", message: err.message })
         });
 });
 router.put('/:id', function (req, res) {
+
     let data = req.body;
-    console.log(data)
     let query = func.queryGen(name, 'update', data);
-    console.log(query)
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

@@ -14,6 +14,8 @@ router.use('/Extension', require('./contract/ExtensionRoutes'));
 
 router.use('/User', require('./perm/UserRoutes'));
 router.use('/PermissionStructure', require('./perm/PermissionStructureRoutes'));
+router.use('/Approve', require('./perm/ApproveRoutes'));
+router.use('/Role', require('./perm/RoleRoutes'));
 
 router.use('/Delivery', require('./delivery/DeliveryRoutes'));
 router.use('/TempDelivery', require('./delivery/TempDeliveryRoutes'));
