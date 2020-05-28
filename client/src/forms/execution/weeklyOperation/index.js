@@ -37,20 +37,21 @@ class WeeklyOperation extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period'),
-                     getItem("weeklyOperation", 'PermissionStructure')]).then((response) => {
+        getItem("weeklyOperation", 'PermissionStructure')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
-           let roleId=JSON.parse(localStorage.getItem('user')).role_id;
-            let canAdd=response[3].data[0].item_creator_id===roleId||roleId>3?true:false;
-            let canEdit=response[3].data[0].item_editor_id.indexOf(roleId)>-1||roleId>3?true:false;
-            this.setState({canAdd,canEdit,
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[3].data[0].item_creator_id === roleId || roleId > 3 ? true : false;
+            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 3 ? true : false;
+            this.setState({
+                canAdd, canEdit,
                 isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
                 status: '', showPanel: false, contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
             });
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
-        this.scrollToGridRef();
+      //  
         let { contract_id, parent_id, period_id } = this.state;
         parent_id = parent_id ? parent_id : 0;
 
@@ -88,7 +89,7 @@ class WeeklyOperation extends Component {
         const { contract_id, period_id, parent_id } = this.state;
 
         let tbl = this.state.tableData;
-       
+
         let rows = tbl.map(a => ({
             operation: a.operation,
             unit: a.unit,
@@ -101,13 +102,13 @@ class WeeklyOperation extends Component {
         }))
 
         let obj = { contract_id, period_id, rows }
-        let xx= await findNextStep('weeklyOperation',contract_id, 'a');
-        obj.current_user_id =xx;
-        obj.status = xx===-1?status.approved:status.wait;
+        let xx = await findNextStep('weeklyOperation', contract_id, 'a');
+        obj.current_user_id = xx;
+        obj.status = xx === -1 ? status.approved : status.wait;
         obj.entity_name = 'weeklyOperation';
-        obj.role_id=JSON.parse(localStorage.getItem('user')).role_id;
+        obj.role_id = JSON.parse(localStorage.getItem('user')).role_id;
 
-       
+
         console.log(obj)
         if (this.state.status === 'new') {
             saveItem(obj, storeIndex).then((response) => {
@@ -167,8 +168,11 @@ class WeeklyOperation extends Component {
     }
     displayClickHandle(item) {
         console.log(item);
+        let status = 'display';
+        if (item.status === 'در انتظار ویرایش' && item.current_user_id === JSON.parse(localStorage.getItem('user')).id)
+            status = 'edit';
         this.setState({
-            obj: item, status: 'display', showPanel: true,
+            obj: item, status, showPanel: true,
             contract_id: item.contract_id, period_id: item.period_id,
             parent_id: item.id,
         }, () => {
@@ -200,7 +204,7 @@ class WeeklyOperation extends Component {
         this.setState({
             contract_id: "", period_id: "", parent_id: "", prev_parent_id: "",
             prev_period_id: "", status: '', showPanel: false, tableData: [], showTable: false
-        }, () => { this.scrollToGridRef(); });
+        }, () => { this.scrollToGridRef();this.fetchData(); });
     }
     render() {
         const { isFetching } = this.state;
@@ -219,16 +223,16 @@ class WeeklyOperation extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                       {this.state.canAdd&& <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
                                         </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
                                     <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.state.canEdit? this.editClickHandle:undefined}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.state.canEdit?this.deleteClickHandle:undefined}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>
@@ -310,9 +314,8 @@ class WeeklyOperation extends Component {
                         </div>
                     </div>
                     <div className='row'>
-                        {this.state.status === 'display' && <Approve item={this.state.obj} entityName='weeklyOperation' onEnd={this.fetchData}></Approve>}
+                        {this.state.status === 'display' && <Approve item={this.state.obj} entityName='weeklyOperation' onEnd={this.cancelBtnClick}></Approve>}
                         {this.state.status === 'display' && <History item={this.state.obj} entityName='weeklyOperation'></History>}
-
                     </div>
                 </div>
             )

@@ -53,9 +53,9 @@ class SubMenu extends Component {
                 return (<ul>
                     <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/wbs" > ساختار شکست</Link></li>
                     <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/weeklyOperation" > گزارش هفتگی عملیات اجرایی </Link></li>
-                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/weeklyOperationPlan" > برنامه عملیات هفتگی</Link></li>
-                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/weeklyWeather" > گزارش هفتگی وضعیت جوی</Link></li>
-                    
+                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/weeklyWeather" > گزارش هفتگی وضعیت جوی</Link></li>
+                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/weeklyUser" > گزارش هفتگی نیروی انسانی</Link></li>
+                    <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/weeklyMachine" > گزارش هفتگی ماشین آلات</Link></li>
                 </ul>)
             case 3:
                 return (<ul>

@@ -2,7 +2,7 @@ const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
-const name = "Weekly_Weather_detail";
+const name = "Weekly_machine_detail";
 
 
 router.get(`/`, function (req, res) {

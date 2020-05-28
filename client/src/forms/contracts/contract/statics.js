@@ -1,10 +1,10 @@
 
 export const columns = [
     { dataIndex: 'id', key: 'id', title: 'شناسه', selected: true },
-    { dataIndex: 'title', key: 'title', title: 'عنوان اختصاری قرارداد', selected: true },
-    { dataIndex: 'full_title', key: 'full_title', title: 'عنوان قرارداد' },
+    { dataIndex: 'title', key: 'title', title: 'عنوان قرارداد', selected: true },
+  
     { selected: true, dataIndex: 'contract_no', key: 'contract_no', title: 'شماره قرارداد' },
-    { selected: true, dataIndex: 'project', key: 'project', title: 'نام پروژه' },
+    { selected: true, dataIndex: 'town', key: 'town', title: 'نام شهرک' },
     { selected: true, dataIndex: 'company', key: 'company', title: 'شرکت' },
     //  { dataIndex: 'colleague1_id',key: 'colleague1', title: 'شرکت همکار1' }, 
     //  { dataIndex: 'colleague2_id',key: 'colleague2', title: 'شرکت همکار2' }, 
@@ -30,7 +30,7 @@ export const storeIndex = "Contract";
 export const pageHeder = 'شناسنامه قرارداد';
 
 export const emptyItem = {
-    title: '', full_title: '', contract_no: '', project_id: '', company_id: '',
+    title: '', operation_type_id: '', contract_no: '', town_id: '', company_id: '',
     colleague1_id: '', colleague2_id: '', contract_type_id: '', contract_date: undefined, announcement_date: '',
     land_delivery_date: '', end_date: '', duration: '', initial_amount: "", client_initial_amount: '',
     coefficient: undefined, file_agreement: '', file_announcement: '', file_delivery: '', project_manager_name: '',

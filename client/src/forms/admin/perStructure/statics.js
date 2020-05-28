@@ -16,12 +16,16 @@ export const pageHeder = 'دسترسی ها';
 export const emptyItem = {
     entity_name: '', item_creator_id: '', item_approver_id: [], item_viewer_id: [], item_editor_id:[],
 };
-export const entities = [{key:'BaseInfo', value: 'BaseInfo', label: 'اطلاعات پایه' },
-{key:'company', value: 'Company', label: 'شناسنامه شرکت ها' },
-{key:'1', value: 'شناسنامه شهرکها', label: 'شناسنامه شهرکها' },
-{key:'2', value: 'شناسنامه قرارداد', label: 'شناسنامه قرارداد' },
-{key:'3', value: 'شناسنامه پروژه', label: 'شناسنامه پروژه' },
+export const entities = [
+    // {key:'BaseInfo', value: 'BaseInfo', label: 'اطلاعات پایه' },
+// {key:'company', value: 'Company', label: 'شناسنامه شرکت ها' },
+// {key:'1', value: 'شناسنامه شهرکها', label: 'شناسنامه شهرکها' },
+// {key:'2', value: 'شناسنامه قرارداد', label: 'شناسنامه قرارداد' },
+// {key:'3', value: 'شناسنامه پروژه', label: 'شناسنامه پروژه' },
 {key:'weeklyOperation', value: 'weeklyOperation', label: 'گزارش هفتگی عملیات اجرایی' },
+{key:'weeklyWeather', value: 'weeklyWeather', label: 'گزارش هفتگی وضعیت جوی' },
+{key:'weeklyUser', value: 'weeklyUser', label: 'گزارش هفتگی نیروی انسانی' },
+{key:'weeklyMachine', value: 'weeklyMachine', label: 'گزارش هفتگی ماشین آلات' },
     // { value: 6, label: 'اطلاعات پایه' },
     // { value: 7, label: 'اطلاعات پایه' },
     // { value: 8, label: 'اطلاعات پایه' },

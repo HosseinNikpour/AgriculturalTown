@@ -228,6 +228,14 @@ class Delivery extends Component {
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label htmlFor="commision_date" className="">تاریخ تشکیل کمیسیون</label>
+                                                    <DatePicker onChange={value => this.dateChange('commision_date', value)}
+                                                        value={this.state.obj.commision_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="row">
                                             <div className="col">
@@ -262,14 +270,7 @@ class Delivery extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col">
-                                                <div className="form-group">
-                                                    <label htmlFor="commision_date" className="">تاریخ تشکیل کمیسیون</label>
-                                                    <DatePicker onChange={value => this.dateChange('commision_date', value)}
-                                                        value={this.state.obj.commision_date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                         <div className="row">
 

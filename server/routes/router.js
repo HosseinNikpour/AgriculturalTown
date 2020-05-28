@@ -25,6 +25,10 @@ router.use('/WeeklyOperation', require('./execution/WeeklyOperationRoutes'));
 router.use('/WeeklyOperationDetail', require('./execution/WeeklyOperationDetailRoutes'));
 router.use('/WeeklyWeather', require('./execution/WeeklyWeatherRoutes'));
 router.use('/WeeklyWeatherDetail', require('./execution/WeeklyWeatherDetailRoutes'));
+router.use('/WeeklyUser', require('./execution/WeeklyUserRoutes'));
+router.use('/WeeklyUserDetail', require('./execution/WeeklyUserDetailRoutes'));
+router.use('/WeeklyMachine', require('./execution/WeeklyMachineRoutes'));
+router.use('/WeeklyMachineDetail', require('./execution/WeeklyMachineDetailRoutes'));
 
 router.use('/CreditPredict', require('./financial/CreditPredictRoutes'));
 router.use('/InvoiceConsultant', require('./financial/InvoiceConsultantRoutes'));

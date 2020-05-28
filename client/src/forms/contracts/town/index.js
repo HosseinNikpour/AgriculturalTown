@@ -14,7 +14,7 @@ class Town extends Component {
         this.state = {
             columns: columns, rows: [], provinces: [],
             waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],
-            isFetching: true, obj: {...emptyItem}, showPanel: false, status: '',
+            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -41,12 +41,13 @@ class Town extends Component {
             let powerSupply = response[1].data.filter(a => a.groupid === 6).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let gasSupply = response[1].data.filter(a => a.groupid === 7).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
-                 //console.log(emptyItem);
+            let waterIndex = response[1].data.filter(a => a.groupid === 18).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let operationType = response[1].data.filter(a => a.groupid === 19).map(a => { return { key: a.id, label: a.title, value: a.id } });
             this.setState({
-                isFetching: false, rows: response[0].data, waterSupply: waterSupply,
-                provinces: provinces, activities: activities, ownerships: ownerships, powerSupply: powerSupply,
-                gasSupply: gasSupply, locations: locations,
-                obj: {...emptyItem}, isEdit: false, showPanel: false
+                isFetching: false, rows: response[0].data, waterSupply,
+                provinces, activities, ownerships, powerSupply, waterIndex,
+                gasSupply, locations, operationType,
+                obj: { ...emptyItem }, isEdit: false, showPanel: false
             });
         }).catch((error) => console.log(error))
     }
@@ -57,13 +58,7 @@ class Town extends Component {
     async saveBtnClick() {
 
         let obj = this.state.obj;
-        // if (obj.province) delete obj.province;
-        // if (obj.activity_type) delete obj.activity_type;
-        // if (obj.ownership_type) delete obj.ownership_type;
-        // if (obj.water_supply) delete obj.water_supply;
-        // if (obj.power_supply) delete obj.power_supply;
-        // if (obj.gas_supply) delete obj.gas_supply;
-        // if (obj.location) delete obj.location;
+
         let formData = new FormData();
         if (obj.f_file_dxf)
             formData.append("file_dxf", obj.f_file_dxf);
@@ -73,12 +68,9 @@ class Town extends Component {
 
         if (this.state.status === 'new')
             saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                // debugger;
-                if (response.data.type !== "Error") {
-              //      console.log(response);
-                    message.success(successMessage, successDuration);
 
-                  //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                if (response.data.type !== "Error") {
+                    message.success(successMessage, successDuration);
                     this.fetchData();
                 }
                 else {
@@ -92,7 +84,7 @@ class Town extends Component {
             updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                   // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                    // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                     this.fetchData();
                 }
                 else {
@@ -151,7 +143,7 @@ class Town extends Component {
         this.setState({ status: 'new', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
-        this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
+        this.setState({ obj: { ...emptyItem }, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
         const { isFetching } = this.state;
@@ -328,23 +320,31 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="location_id" className="">موقعیت (شماره زون)</label>
-                                                    <Select {...selectDefaultProp} options={this.state.locations} disabled={this.state.status === 'display'}
-                                                        value={this.state.obj.location_id} onSelect={(values) => this.selectChange("location_id", values)}
+                                                    <label htmlFor="water_index_id" className=""> شاخص های اصلی کیفیت آب</label>
+                                                    <Select {...selectDefaultProp} options={this.state.waterIndex} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.water_index_id} onSelect={(values) => this.selectChange("water_index_id", values)}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="row">
-                                            <div className="col-6">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="location_id" className="">موقعیت (شماره زون)</label>
+                                                    <Select {...selectDefaultProp} options={this.state.locations} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.location_id} onSelect={(values) => this.selectChange("location_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="coordinate_e" className="">مختصات نقطه مرکزی (E)</label>
                                                     <input name="coordinate_e" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.coordinate_e} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="coordinate_n" className="">مختصات نقطه مرکزی (N)</label>
                                                     <input name="coordinate_n" className="form-control" onChange={this.handleChange} type='number'
@@ -354,7 +354,15 @@ class Town extends Component {
                                         </div>
 
                                         <div className="row">
-                                            <div className="col-6">
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label htmlFor="operation_type_id" className="">  نوع عملیات</label>
+                                                    <Select {...selectDefaultProp} options={this.state.operationType} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.operation_type_id} onSelect={(values) => this.selectChange("operation_type_id", values)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
                                                     {this.state.status !== 'display' && <input name="f_file_dxf" className="form-control" onChange={this.fileChange} type='file'
@@ -364,7 +372,7 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_dxf')}></i>}</div>}
                                                 </div>
                                             </div>
-                                            <div className="col-6">
+                                            <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_kmz" className="">بارگزاری فایل کروکی KMZ</label>
                                                     {this.state.status !== 'display' && <input name="f_file_kmz" className="form-control" onChange={this.fileChange} type='file'
@@ -375,6 +383,15 @@ class Town extends Component {
                                                 </div>
                                             </div>
 
+                                        </div>
+                                        <div className='row'>
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label htmlFor="decsciption" className="">توضیحات</label>
+                                                    <textarea name="decsciption" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} row="2" />
+                                                </div>
+                                            </div>
                                         </div>
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />

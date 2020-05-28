@@ -30,8 +30,10 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 15, label: 'نوع حق الزحمه' },
 { value: 16, label: 'نوع اعتبار' },
 { value: 17, label: 'نوع پرداخت' },
-
+{ value: 18, label: 'شاخص های اصلی کیفیت آب' },
+{ value: 19, label: 'نوع عملیات' },
 { value: 20, label: 'وضعیت جوی' },
 { value: 21, label: 'وضعیت کارگاه' },
+{ value: 22, label: 'انواع ماشین آلات' },
 ]
 export const emptyItem = { title: '', sort: '' };

@@ -6,7 +6,7 @@ const name = "wf_history";
 
 router.get(`/`, function (req, res) {
     console.log(req.query)
-    let query = `SELECT * FROM vw_${name} where item_id=${req.query.item_id} and entity_name='${req.query.entity_name}' `;
+    let query = `SELECT * FROM vw_${name} where item_id=${req.query.item_id} and entity_name='${req.query.entity_name}' order by id desc`;
 
     pool.query(query)
         .then((results) => {
@@ -32,7 +32,9 @@ router.post('/', function (req, res) {
     let tblName = "";
     switch (data.entity_name) {
         case 'weeklyOperation': tblName = "weekly_operation"; break;
-        // case 'weeklyOperation':tblName="weekly_operation";break;
+        case 'weeklyWeather':tblName="Weekly_Weather";break;
+        case 'weeklyUser':tblName="Weekly_User";break;
+        case 'weeklyMachine':tblName="Weekly_Machine";break;
     }
     let query = func.queryGen(name, 'insert', data);
     pool.query(query).then((results) => {

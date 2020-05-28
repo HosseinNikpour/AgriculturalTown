@@ -8,7 +8,7 @@ export const findNextStep = async (entityName, contractId, state, currentUserId)
         let approver = res[0].data[0].item_approver_id;
         let contract = res[1].data[0];
 
-        debugger;
+       
           if (state.toLowerCase() === 'a') {
             if (!currentUserId) role_id = approver[0];
             else {
@@ -22,8 +22,13 @@ export const findNextStep = async (entityName, contractId, state, currentUserId)
                 }
             }
         }
-        else {
-
+        else  if (state.toLowerCase() === 'r'){
+            let currentRole=contract.contractor_user_id===currentUserId?1:
+            contract.engineer_user_id===currentUserId?2:
+            contract.manager_user_id===currentUserId?3:4;
+            let i = approver.indexOf(currentRole);
+            if (approver[i - 1]) role_id = approver[i - 1];
+            else role_id = 1;
         }
 
         switch (role_id) {
@@ -31,7 +36,8 @@ export const findNextStep = async (entityName, contractId, state, currentUserId)
                 user_id = contract.contractor_user_id;
                 break;
             case 2:
-                user_id = contract.engineer_user_id;
+                user_id = contract.engineer_user_id?contract.engineer_user_id:
+                state.toLowerCase() === 'a'?contract.manager_user_id:contract.contractor_user_id;
                 break;
             case 3:
                 user_id = contract.manager_user_id;

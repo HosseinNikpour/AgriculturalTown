@@ -1,8 +1,8 @@
 const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
-const func = require('../../functions/index');
-const name = "Weekly_Weather";
+
+const name = "Weekly_User";
 
 
 
@@ -33,15 +33,15 @@ router.post('/', function (req, res) {
     let rows = req.body.rows;
     let query = `INSERT INTO public.${name}(creator_id, create_date, current_user_id, status, contract_id, period_id)
         VALUES (${req.body.creator_id},'${req.body.create_date}',${req.body.current_user_id},'${req.body.status}',${req.body.contract_id},${req.body.period_id}) RETURNING id`;
-    // console.log('**********************') ;console.log(rows) ;console.log('**************')
+  
     pool.query(query)
         .then((results) => {
             let parent_id = results.rows[0].id;
             let query_d = `INSERT INTO public.${name}_detail(
-                date, day, shift_count, weather_status_id, workshop_status_id, rain, parent_id)
+                user_type, contractor_user, consultant_user, parent_id)
                 VALUES `;
             rows.forEach(e => {
-                query_d += `('${e.date}','${e.day}',${e.shift_count},${e.weather_status_id},${e.workshop_status_id},${e.rain},${parent_id}),`
+                query_d += `('${e.user_type}',${e.contractor_user},${e.consultant_user},${parent_id}),`
             });
             query_d = query_d.slice(0, -1);
             console.log(query_d)
@@ -79,11 +79,11 @@ router.put('/:id', function (req, res) {
             .then((results) => {
                 // let parent_id = results.rows[0].id;
                 let query_d = `INSERT INTO public.${name}_detail(
-                    date, day, shift_count, weather_status_id, workshop_status_id, rain, parent_id)
+                    user_type, contractor_user, consultant_user, parent_id)
                 VALUES `;
 
                 rows.forEach(e => {
-                    query_d += `('${e.date}','${e.day}',${e.shift_count},${e.weather_status_id},${e.workshop_status_id},${e.rain},${parent_id}),`
+                    query_d += `('${e.user_type}',${e.contractor_user},${e.consultant_user},${parent_id}),`
                 });
                 query_d = query_d.slice(0, -1);
                 console.log('details', query_d)

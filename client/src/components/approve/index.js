@@ -8,7 +8,7 @@ import { findNextStep } from '../../functions/index'
 const Approve = (props) => {
     const [comment, setComment] = useState();
 
-    const buttonClick = async(type) => {
+    const buttonClick = async (type) => {
         if (type < 0 && !comment)
             message.error("وارد کردن فیلد توضیحات در هنگام عدم تایید اطلاعات ضروری میباشد", errorDuration);
         else {
@@ -18,14 +18,15 @@ const Approve = (props) => {
                 creator_id: JSON.parse(localStorage.getItem('user')).id, create_date: new Date()
             };
             console.log(obj);
-            let nextUser =await findNextStep(props.entityName, props.item.contract_id, type === 1 ? "a" : "r", props.item.current_user_id)
+            let nextUser = await findNextStep(props.entityName, props.item.contract_id, type === 1 ? "a" : "r", props.item.current_user_id)
             console.log(nextUser);
-            let s=nextUser!==-1? status.wait:status.approved;
-
-            saveItem({ obj ,next_user:nextUser,status:s}, 'Approve').then((response) => {
+            let s = status.wait;
+            if (nextUser === -1) s = status.approved;
+            if (nextUser ===  props.item.creator_id) s = status.edit;
+            saveItem({ obj, next_user: nextUser, status: s }, 'Approve').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
-                   // this.fetchData();
+                    // this.fetchData();
                     props.onEnd();
                 }
                 else {

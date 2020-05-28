@@ -39,11 +39,12 @@ class Town extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'),
-        getAllItem('project'), getAllItem('user')]).then((response) => {
+        getAllItem('town'), getAllItem('user')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let projects = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id ,roleId:a.role_id} });
+            let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
+            let operationType = response[1].data.filter(a => a.groupid === 19).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
 
@@ -55,9 +56,9 @@ class Town extends Component {
             });
             //console.log(data);
             this.setState({
-                isFetching: false, rows: data, contractTypes: contractTypes,
-                companies: companies, projects: projects, users: users
-                , obj: { ...emptyItem }, showPanel: false, status: ''
+                isFetching: false, rows: data, contractTypes,
+                companies, towns, users, operationType,
+                obj: { ...emptyItem }, showPanel: false, status: ''
             });
         }).catch((error) => console.log(error))
     }
@@ -67,7 +68,7 @@ class Town extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-       // debugger;
+        // debugger;
         obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
         obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
         obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
@@ -211,16 +212,17 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className="">عنوان اختصاری قرارداد/پیمان</label>
+                                                    <label htmlFor="title" className="">عنوان قرارداد/پیمان</label>
                                                     <input name="title" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="full_title" className="">عنوان قرارداد/پیمان</label>
-                                                    <input name="full_title" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.full_title} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="operation_type_id" className="">  نوع عملیات</label>
+                                                    <Select {...selectDefaultProp} options={this.state.operationType} disabled={this.state.status === 'display'}
+                                                        value={this.state.obj.operation_type_id} onSelect={(values) => this.selectChange("operation_type_id", values)}
+                                                    />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -234,9 +236,9 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پروژه</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.projects}
-                                                        value={this.state.obj.project_id} onSelect={(values) => this.selectChange("project_id", values)} />
+                                                    <label htmlFor="town_id" className="">نام شهرک</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.towns}
+                                                        value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -389,7 +391,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contractor_user_id" className="">کاربر پیمانکار </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===1)}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 1)}
                                                         value={this.state.obj.contractor_user_id} onSelect={(values) => this.selectChange("contractor_user_id", values)}
                                                     />
                                                 </div>
@@ -397,7 +399,7 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="engineer_user_id" className="">کاربر مشاور  </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===2)}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 2)}
                                                         value={this.state.obj.engineer_user_id} onSelect={(values) => this.selectChange("engineer_user_id", values)}
                                                     />
                                                 </div>
@@ -405,13 +407,21 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="manager_user_id" className="">کاربر مدیر استان </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId===3)}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 3)}
                                                         value={this.state.obj.manager_user_id} onSelect={(values) => this.selectChange("manager_user_id", values)}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <div className='row'>
+                                            <div className="col">
+                                                <div className="form-group">
+                                                    <label htmlFor="decsciption" className="">توضیحات</label>
+                                                    <textarea name="decsciption" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} row="2" />
+                                                </div>
+                                            </div>
+                                        </div>
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
                                     </form>

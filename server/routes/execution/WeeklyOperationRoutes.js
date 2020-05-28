@@ -97,12 +97,15 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let rows = req.body.rows;
     let parent_id = req.body.parent_id;
-    console.log(parent_id);
+   // console.log(req.body.editor_id,req.body.edit_date);
     pool.query(`delete from public.${name}_detail WHERE parent_id=${parent_id}`).then((results) => {
         let query = `update public.${name} 
-        SET  editor_id=${req.body.editor_id}, edit_date='${req.body.edit_date}' 
+        SET  editor_id=${req.body.editor_id},
+             edit_date='${req.body.edit_date}' ,
+             status='${req.body.status}',
+             current_user_id=${req.body.current_user_id}
         where id =${parent_id}`;
-        console.log('master', query);
+     //   console.log('master', query);
         pool.query(query).then((results) => {
             // let parent_id = results.rows[0].id;
             let query_d = `INSERT INTO public.${name}_detail(
@@ -118,7 +121,7 @@ router.put('/:id', function (req, res) {
             pool.query(query_d).then((results_d) => {
                 if (req.body.role_id<4) {
                     let query_a = `INSERT INTO public.wf_history(creator_id, create_date, entity_name, item_id, action)
-                        VALUES (${req.body.current_user_id},'${req.body.create_date}','${req.body.entity_name}',${parent_id},3)`;
+                        VALUES (${req.body.editor_id},'${req.body.edit_date}','${req.body.entity_name}',${parent_id},3)`;
                     pool.query(query_a).then((results_a) => {
                         return res.send(results.rows);
                     });

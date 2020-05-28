@@ -6,8 +6,8 @@ export const columns = [
     { dataIndex: 'status',key: 'status', title: 'وضعیت' }, 
     { dataIndex: 'current_user',key: 'current_user', title: 'کاربر جاری' }, 
 ];
-export const storeIndex = "weeklyWeather";
-export const pageHeder = 'گزارش هفتگی وضعیت جوی';
+export const storeIndex = "weeklyUser";
+export const pageHeder = 'گزارش هفتگی نیروی انسانی';
 
 export const emptyItem = {
     operation_id : '', contract_id : '' ,unit_id : '' ,value : '' ,value_change : '' ,value_diff : '' ,price : '' ,price_change : '' ,price_diff : '' ,wieght : '' ,sort:'' 

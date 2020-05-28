@@ -2,11 +2,11 @@ const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
-const name = "Weekly_Weather_detail";
+const name = "Weekly_User_detail";
 
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} `;
+    let query = `SELECT * FROM ${name} `;
 
     pool.query(query)
         .then((results) => {
@@ -17,7 +17,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where parent_id = ${req.params.id}`;
+    let query = `SELECT * FROM ${name} where parent_id = ${req.params.id}`;
 //console.log(query)
     pool.query(query)
         .then((results) => {

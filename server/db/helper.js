@@ -70,5 +70,5 @@ const createQueries = (table_name) => {
         });
 };
 
-createQueries('credit_predict');
+createQueries('value_change');
 

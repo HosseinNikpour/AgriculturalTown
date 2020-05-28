@@ -35,6 +35,8 @@ import Delivery from './forms/delivery/delivery/index'
 import TempDelivery from './forms/delivery/tempDelivery/index'
 import WeeklyOperation from './forms/execution/weeklyOperation/index'
 import WeeklyWeather from './forms/execution/weeklyWeather/index'
+import WeeklyUser from './forms/execution/weeklyUser/index'
+import WeeklyMachine from './forms/execution/weeklyMachine/index'
 
 import CreditPredict from './forms/financial/creditPredict/index'
 import InvoiceConsultant from './forms/financial/invoiceConsultant/index'
@@ -239,6 +241,8 @@ class App extends Component {
               <PrivateRoute path="/creditPredict" component={CreditPredict} />
               <PrivateRoute path="/weeklyOperation" component={WeeklyOperation} />
               <PrivateRoute path="/weeklyWeather" component={WeeklyWeather} />
+              <PrivateRoute path="/weeklyMachine" component={WeeklyMachine} />
+              <PrivateRoute path="/weeklyUser" component={WeeklyUser} />
               <Route path="/test">
                 <Test />
               </Route>
