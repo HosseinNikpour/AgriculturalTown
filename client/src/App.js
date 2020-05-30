@@ -31,8 +31,15 @@ import Town from './forms/contracts/town/index'
 import Contract from './forms/contracts/contract/index'
 import Project from './forms/contracts/project/index'
 import Extension from './forms/contracts/extension/index'
+import ValueChange from './forms/contracts/valueChange/index'
+import ContractCycle from './forms/contracts/contractCycle/index'
+import ProjectCycle from './forms/contracts/projectCycle/index'
+
+import Tender from './forms/tender/tender/index'
+
 import Delivery from './forms/delivery/delivery/index'
 import TempDelivery from './forms/delivery/tempDelivery/index'
+
 import WeeklyOperation from './forms/execution/weeklyOperation/index'
 import WeeklyWeather from './forms/execution/weeklyWeather/index'
 import WeeklyUser from './forms/execution/weeklyUser/index'
@@ -243,6 +250,12 @@ class App extends Component {
               <PrivateRoute path="/weeklyWeather" component={WeeklyWeather} />
               <PrivateRoute path="/weeklyMachine" component={WeeklyMachine} />
               <PrivateRoute path="/weeklyUser" component={WeeklyUser} />
+
+              <PrivateRoute path="/contractCycle" component={ContractCycle} />
+              <PrivateRoute path="/projectCycle" component={ProjectCycle} />
+              <PrivateRoute path="/valueChange" component={ValueChange} />
+              <PrivateRoute path="/tender" component={Tender} />
+
               <Route path="/test">
                 <Test />
               </Route>

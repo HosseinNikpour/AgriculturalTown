@@ -35,5 +35,13 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 20, label: 'وضعیت جوی' },
 { value: 21, label: 'وضعیت کارگاه' },
 { value: 22, label: 'انواع ماشین آلات' },
+{ value: 23, label: 'چرخه پیمان' },
+{ value: 24, label: 'گروه' },
+{ value: 25, label: 'نوع مناقصه' },
+{ value: 26, label: 'نوع خدمات' },
+{ value: 27, label: 'وضعیت اسناد' },
+{ value: 28, label: 'مراحل بررسی' },
+{ value: 29, label: 'نتیجه کمیسیون' },
+{ value: 30, label: 'شماره تغییر مقادیر' },
 ]
 export const emptyItem = { title: '', sort: '' };

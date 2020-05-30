@@ -43,11 +43,11 @@ class SubMenu extends Component {
                     <li className={this.menuClassNames(2)} onMouseEnter={() => this.menuHandleHover(2)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(2)}> <Link to="/town" > شناسنامه شهرکها </Link></li>
                     <li className={this.menuClassNames(3)} onMouseEnter={() => this.menuHandleHover(3)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(3)}> <Link to="/project" > شناسنامه پروژه </Link></li>
                     <li className={this.menuClassNames(4)} onMouseEnter={() => this.menuHandleHover(4)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(4)}> <Link to="/contract" > شناسنامه قرارداد </Link></li>
-                    {/* <li className={this.menuClassNames(5)} onMouseEnter={() => this.menuHandleHover(5)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(5)}> <Link to="/" > تغییر مقادیر </Link></li>
-                    <li className={this.menuClassNames(6)} onMouseEnter={() => this.menuHandleHover(6)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(6)}> <Link to="/" > ابلاغ افزایش قرارداد </Link></li> */}
+                    <li className={this.menuClassNames(5)} onMouseEnter={() => this.menuHandleHover(5)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(5)}> <Link to="/valuechange" > تغییر مقادیر </Link></li>
                     <li className={this.menuClassNames(7)} onMouseEnter={() => this.menuHandleHover(7)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(7)}> <Link to="/extension" > تمدید مدت قرارداد </Link></li>
-                    {/* <li className={this.menuClassNames(8)} onMouseEnter={() => this.menuHandleHover(8)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(8)}> <Link to="/" > چرخه پیمان </Link></li>
-                    <li className={this.menuClassNames(9)} onMouseEnter={() => this.menuHandleHover(9)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(9)}> <Link to="/" > بیمه </Link></li> */}
+                    <li className={this.menuClassNames(8)} onMouseEnter={() => this.menuHandleHover(8)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(8)}> <Link to="/contractCycle" > چرخه پیمان </Link></li>
+                    <li className={this.menuClassNames(6)} onMouseEnter={() => this.menuHandleHover(6)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(6)}> <Link to="/projectCycle" > چرخه قرارداد </Link></li>
+                    {/* <li className={this.menuClassNames(9)} onMouseEnter={() => this.menuHandleHover(9)} onMouseLeave={this.menuHandleBlur} onClick={() => this.menuHandleClick(9)}> <Link to="/" > بیمه </Link></li>  */}
                 </ul>)
             case 2:
                 return (<ul>
@@ -69,7 +69,12 @@ class SubMenu extends Component {
                     <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/payInvoiceContractor" >پرداخت صورت وضعیت</Link></li>
                     <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/payInvoiceConsultant" >پرداخت صورتحساب</Link></li>
                     <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/creditPredict" >پیش بینی اعتبار</Link></li>
-                    </ul>)
+                </ul>)
+            case 5:
+                return (<ul>
+                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/tender" >مناقصه</Link></li>
+                   
+                </ul>)
             default:
                 return (<div></div>)
         }

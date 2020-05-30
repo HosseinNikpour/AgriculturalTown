@@ -70,5 +70,5 @@ const createQueries = (table_name) => {
         });
 };
 
-createQueries('value_change');
+createQueries('insurance_appendix');
 

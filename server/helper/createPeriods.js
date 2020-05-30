@@ -1,4 +1,4 @@
-const pool = require('../db/pool');
+const pool = require('../db/poolMain');
 const moment = require('moment-jalaali')
 
 let query = `INSERT INTO public.period(title, start_date, end_date, month)

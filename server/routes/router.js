@@ -11,6 +11,9 @@ router.use('/Town', require('./contract/TownRoutes'));
 router.use('/Contract', require('./contract/ContractRoutes'));
 router.use('/Project', require('./contract/ProjectRoutes'));
 router.use('/Extension', require('./contract/ExtensionRoutes'));
+router.use('/ContractCycle', require('./contract/ContractCycleRoutes'));
+router.use('/ProjectCycle', require('./contract/ProjectCycleRoutes'));
+router.use('/ValueChange', require('./contract/ValueChangeRoutes'));
 
 router.use('/User', require('./perm/UserRoutes'));
 router.use('/PermissionStructure', require('./perm/PermissionStructureRoutes'));
@@ -35,5 +38,7 @@ router.use('/InvoiceConsultant', require('./financial/InvoiceConsultantRoutes'))
 router.use('/InvoiceContractor', require('./financial/InvoiceContractorRoutes'));
 router.use('/PayInvoiceConsultant', require('./financial/PayInvoiceConsultantRoutes'));
 router.use('/PayInvoiceContractor', require('./financial/PayInvoiceContractorRoutes'));
+
+router.use('/Tender', require('./tender/tenderRoutes'));
 
 module.exports = router;
