@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
-import moment from 'moment-jalaali';
-import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
@@ -36,17 +34,14 @@ class ValueChange extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title,initial_amount:a.initial_amount } });
             let valueChange_no = response[2].data.filter(a => a.groupid === 30).map(a => { return { key: a.id, label: a.title, value: a.id } });
-
+            let yesNo = [{ key: 1, label: 'بلی', value: true }, { key: 2, label: 'خیر', value: false }]
             let data = response[0].data;
-            data.forEach(e => {
-                /* e.pay_date = e.pay_date ? moment(e.pay_date) : undefined;*/
-            });
 
             this.setState({
-                isFetching: false, rows: data, contracts, valueChange_no,
-                obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
+                isFetching: false, rows: data, contracts, valueChange_no, yesNo,
+                obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',initialAmount:0,
             });
         }).catch((error) => console.log(error))
     }
@@ -109,34 +104,28 @@ class ValueChange extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, rows, invioces } = this.state;
+        let { obj, contractTitle, contracts, initialAmount,rows, invioces } = this.state;
         obj[name] = values;
 
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_id = prevCont ? prevCont.no : 0;
-            obj.prev_price = prevCont ? prevCont.price : 0;
-
-            let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_approve_id = prevInvo ? prevInvo.no : 0;
-            obj.prev_approve_price = prevInvo ? prevInvo.manager_price : 0;
-
+            initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
+          
         }
-        this.setState({ obj, contractTitle });
+        this.setState({ obj, contractTitle ,initialAmount});
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
-        this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+       let initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
+        this.setState({initialAmount, contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
-        this.setState({ contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
+        this.setState({initialAmount, contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         //console.log(item)
@@ -210,6 +199,21 @@ class ValueChange extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
+                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label className="form-control">{this.state.contractTitle}</label>
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="project_id" className="">مبلغ اولیه پیمان</label>
+                                                    <label className="form-control">{this.state.initialAmount}</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="no_id" className="">شماره تغییر مقادیر</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.valueChange_no}
                                                         value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
@@ -222,8 +226,6 @@ class ValueChange extends Component {
                                                         value={this.state.obj.increase_price} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="decrease_price" className="">مبلغ کاهش یافته</label>
@@ -231,6 +233,8 @@ class ValueChange extends Component {
                                                         value={this.state.obj.decrease_price} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="new_work" className="">بهای کار جدید</label>
@@ -241,19 +245,17 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="change_price" className="">بهای تغییر مقادیر </label>
-                                                    <input name="change_price" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.change_price} disabled={this.state.status === 'display'} />
+                                                    <label className="form-control">{-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)}</label>
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="contract_new_price_calc" className="">مبلغ پیمان با احتساب تغییر مقادیر(محاسباتی)</label>
+                                                    <label className="form-control">{parseInt(this.state.initialAmount) - parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)}</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="contract_new_price_calc" className="">مبلغ پیمان با احتساب تغییر مقادیر(محاسباتی)</label>
-                                                    <input name="contract_new_price_calc" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.contract_new_price_calc} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_new_price" className="">مبلغ پیمان با احتساب تغییر مقادیر(سند)</label>
@@ -264,50 +266,46 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="increase_price_percent" className="">درصد تغییرات(افزایش)</label>
-                                                    <input name="increase_price_percent" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.increase_price_percent} disabled={this.state.status === 'display'} />
+                                                    <label className="form-control">{(100* parseInt(this.state.obj.increase_price)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="decrease_price_percent" className="">درصد تغییرات( کاهش)</label>
-                                                    <input name="decrease_price_percent" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decrease_price_percent} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="new_work_percent" className="">درصد کارجدید</label>
-                                                    <input name="new_work_percent" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.new_work_percent} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="change_price_percent" className="">درصد کل افزایش یا کاهش</label>
-                                                    <input name="change_price_percent" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.change_price_percent} disabled={this.state.status === 'display'} />
+                                                    <label className="form-control">{(100* parseInt(this.state.obj.decrease_price)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
+                                        <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="new_work_percent" className="">درصد کارجدید</label>
+                                                    <label className="form-control">{(100* parseInt(this.state.obj.new_work)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                </div>
+                                            </div>
+                                         <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="change_price_percent" className="">درصد کل افزایش یا کاهش</label>
+                                                    <label className="form-control">{(100* (-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price))/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                </div>
+                                            </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="has_license" className="">مجوز جمع جبری دارد</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.has_license}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has_license} onSelect={(values) => this.selectChange("has_license", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                        <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="has25" className="">ابلاغ 25 درصد دارد</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.has25}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has25} onSelect={(values) => this.selectChange("has25", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                       <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_signification" className="">نامه ابلاغ تغییر مقادیر</label>
                                                     {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file'
@@ -318,8 +316,6 @@ class ValueChange extends Component {
 
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_25percent" className="">نامه ابلاغ  25 درصد</label>
@@ -331,11 +327,13 @@ class ValueChange extends Component {
 
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="decsciption" className="">توضیحات</label>
-                                                    <input name="decsciption" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="description" className="">توضیحات</label>
+                                                    <input name="description" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>

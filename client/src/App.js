@@ -34,6 +34,8 @@ import Extension from './forms/contracts/extension/index'
 import ValueChange from './forms/contracts/valueChange/index'
 import ContractCycle from './forms/contracts/contractCycle/index'
 import ProjectCycle from './forms/contracts/projectCycle/index'
+import Insurance from './forms/contracts/insurance/index'
+import InsuranceAppendix from './forms/contracts/insuranceAppendix/index'
 
 import Tender from './forms/tender/tender/index'
 
@@ -255,6 +257,9 @@ class App extends Component {
               <PrivateRoute path="/projectCycle" component={ProjectCycle} />
               <PrivateRoute path="/valueChange" component={ValueChange} />
               <PrivateRoute path="/tender" component={Tender} />
+
+              <PrivateRoute path="/insurance" component={Insurance} />
+               <PrivateRoute path="/insuranceAppendix" component={InsuranceAppendix} />
 
               <Route path="/test">
                 <Test />

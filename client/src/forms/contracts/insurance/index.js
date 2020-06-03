@@ -14,8 +14,9 @@ class PayInvoiceContractor extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], periods: [], StatusContract: [],
-            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',// selectedPeriod: '',
+            columns: columns, rows: [], contracts: [], insurance_number: [], insurance_company: [],
+            insurance_type: [], buy_close: [],
+            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -35,18 +36,21 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('period')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-           // let periods = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
-            let StatusContract = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let insurance_number = response[2].data.filter(a => a.groupid === 34).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let insurance_company = response[2].data.filter(a => a.groupid === 33).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let insurance_type = response[2].data.filter(a => a.groupid === 32).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let buy_close = response[2].data.filter(a => a.groupid === 31).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
-                e.date = e.date ? moment(e.date) : undefined;
-                e.signification_date = e.signification_date ? moment(e.signification_date) : undefined;
+                e.start_date = e.start_date ? moment(e.start_date) : undefined;
+                e.end_date = e.end_date ? moment(e.end_date) : undefined;
             });
 
             this.setState({
-                isFetching: false, rows: data, contracts,  StatusContract,
+                isFetching: false, rows: data, contracts, insurance_number, insurance_company,
+                insurance_type, buy_close,
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
             });
         }).catch((error) => console.log(error))
@@ -54,23 +58,26 @@ class PayInvoiceContractor extends Component {
     componentDidMount() {
         this.fetchData();
     }
+
     saveBtnClick() {
         let obj = this.state.obj;
-        obj.date = obj.date ? obj.date.format() : '';
-        obj.signification_date = obj.signification_date ? obj.signification_date.format() : '';
+        obj.start_date = obj.start_date ? obj.start_date.format() : '';
+        obj.end_date = obj.end_date ? obj.end_date.format() : '';
         var formData = new FormData();
 
-        if (obj.f_file_record)
-            formData.append("file_record", obj.f_file_record);
+        /* if (obj.f_file_record)
+         formData.append("file_record", obj.f_file_record); */
 
 
         formData.append("data", JSON.stringify(obj));
 
         if (this.state.status === 'new')
-            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+            saveItem(obj, storeIndex).then((response) => {
+                // console.log('new save res', response);
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -78,10 +85,12 @@ class PayInvoiceContractor extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+            updateItem(obj, storeIndex).then((response) => {
+                //console.log('new save res', response);
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
+                    //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
                     message.error(errorMessage, errorDuration);
@@ -89,6 +98,7 @@ class PayInvoiceContractor extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
+
     }
     fileChange(e, name) {
         let ob = this.state.obj;
@@ -108,15 +118,9 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj: ob });
     }
     dateChange(name, value) {
-        let { obj } = this.state;//, selectedPeriod, periods
-        obj[name] = value;
-
-        // if (name === 'date') {
-        //     let x = periods.find(a => a.start_date >= value && a.end_date <= value);
-        //     if()
-        // }
-
-        this.setState({ obj });
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
     }
     selectChange(name, values) {
         let { obj, contractTitle, contracts } = this.state;
@@ -125,6 +129,7 @@ class PayInvoiceContractor extends Component {
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
+
 
         }
         this.setState({ obj, contractTitle });
@@ -217,58 +222,75 @@ class PayInvoiceContractor extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="status_id" className="">چرخه پیمان</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.StatusContract}
-                                                        value={this.state.obj.status_id} onSelect={(values) => this.selectChange("status_id", values)} />
+                                                    <label htmlFor="insurance_no" className="">شماره بیمه نامه</label>
+
+                                                    <input name="insurance_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.insurance_no} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="date" className="">تاریخ</label>
-                                                    <DatePicker onChange={value => this.dateChange('date', value)}
-                                                        value={this.state.obj.date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
-                                                </div>
-                                            </div>
-                                            {/* <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="period_id" className="">دوره</label>
-                                                    {this.state.period_id && <label className="form-control">{this.state.periods.find(a => a.key === this.state.period_id).label}</label>}
-                                                    {!this.state.period_id && <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.periods}
-                                                        value={this.state.period_id} onSelect={(values) => this.setState({ period_id: values })} />}
-                                                </div>
-                                            </div> */}
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
-                                                    <DatePicker onChange={value => this.dateChange('signification_date', value)}
-                                                        value={this.state.obj.signification_date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                    <label htmlFor="insurance_company_id" className="">نام بیمه گر</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance_company}
+                                                        value={this.state.obj.insurance_company_id} onSelect={(values) => this.selectChange("insurance_company_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه</label>
-                                                    {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
-                                                    />}
-                                                    {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
-                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
-                                                            onClick={() => this.deleteFile('file_record')}></i>}</div>}
+                                                    <label htmlFor="fund" className="">سرمایه بیمه شده</label>
+                                                    <input name="fund" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.fund} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="insurance_type_id" className="">نوع بیمه</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance_type}
+                                                        value={this.state.obj.insurance_type_id} onSelect={(values) => this.selectChange("insurance_type_id", values)} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-                                            
-                                            <div className="col-12">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="description" className="">توضیحات</label>
-                                                    <input name="description" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} />
+
+                                                    <label htmlFor="start_date" className="">تاریخ شروع</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('start_date', value)}
+                                                        value={this.state.obj.start_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+
+                                                    <label htmlFor="end_date" className="">تاریخ پایان</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('end_date', value)}
+                                                        value={this.state.obj.end_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="buy_close_id" className="">کلوزهای خریداری شده</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.buy_close}
+                                                        mode="multiple" value={this.state.obj.buy_close_id} onChange={(values) => this.selectChange("buy_close_id", values)} />
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="price" className="">مبلغ حق بیمه</label>
+                                                    <input name="price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
                                     </form>

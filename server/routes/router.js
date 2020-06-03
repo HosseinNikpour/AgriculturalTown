@@ -14,6 +14,8 @@ router.use('/Extension', require('./contract/ExtensionRoutes'));
 router.use('/ContractCycle', require('./contract/ContractCycleRoutes'));
 router.use('/ProjectCycle', require('./contract/ProjectCycleRoutes'));
 router.use('/ValueChange', require('./contract/ValueChangeRoutes'));
+router.use('/insurance', require('./contract/insuranceRoutes'));
+router.use('/insuranceAppendix', require('./contract/insuranceAppendixRoutes'));
 
 router.use('/User', require('./perm/UserRoutes'));
 router.use('/PermissionStructure', require('./perm/PermissionStructureRoutes'));

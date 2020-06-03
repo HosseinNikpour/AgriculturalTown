@@ -8,7 +8,7 @@ import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
-class PayInvoiceContractor extends Component {
+class Tender extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
@@ -34,11 +34,11 @@ class PayInvoiceContractor extends Component {
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
-    Typetender
+    
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('town')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-            let town = response[2].data.filter(a => a.groupid === 2).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let town = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let group = response[2].data.filter(a => a.groupid === 24).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let Typetender = response[2].data.filter(a => a.groupid === 25).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let ServiceType = response[2].data.filter(a => a.groupid === 26).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -86,7 +86,7 @@ class PayInvoiceContractor extends Component {
         formData.append("data", JSON.stringify(obj));
 
         if (this.state.status === 'new')
-            saveItem(obj, storeIndex).then((response) => {
+            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
@@ -97,7 +97,7 @@ class PayInvoiceContractor extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            updateItem(obj, storeIndex).then((response) => {
+            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
@@ -380,11 +380,11 @@ class PayInvoiceContractor extends Component {
 											  </div>
 								</div>
 								 <div className="row">        
-                                          <div className="col-6">
+                                          <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="decsciption" className="">توضیحات</label>
-                                                    <input name="decsciption" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="description" className="">توضیحات</label>
+                                                    <input name="description" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} />
                                                 </div>
                                                </div>                                        
 	                                     </div>	  
@@ -404,4 +404,4 @@ class PayInvoiceContractor extends Component {
     }
 
 }
-export default PayInvoiceContractor;
+export default Tender;

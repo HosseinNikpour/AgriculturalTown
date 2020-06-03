@@ -43,5 +43,9 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 28, label: 'مراحل بررسی' },
 { value: 29, label: 'نتیجه کمیسیون' },
 { value: 30, label: 'شماره تغییر مقادیر' },
+{ value: 31, label: 'کلوزهای خریداری شده' },
+{ value: 32, label: 'نوع بیمه' },
+{ value: 33, label: 'نام بیمه گر' },
+{ value: 34, label: 'شماره بیمه نامه' },
 ]
 export const emptyItem = { title: '', sort: '' };
