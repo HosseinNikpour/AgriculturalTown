@@ -3,10 +3,11 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
+import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class PayInvoiceConsultant extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class PayInvoiceConsultant extends Component {
         this.dateChange = this.dateChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -135,6 +137,14 @@ class PayInvoiceConsultant extends Component {
         let contractTitle = cont && cont.title ? cont.title : '';
         this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
+     
+   numberChange(name, values) {
+    const {formattedValue, value} = values;
+    let ob = this.state.obj;
+    ob[name] = value;
+    this.setState({ obj: ob });
+}
+
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
@@ -235,13 +245,13 @@ class PayInvoiceConsultant extends Component {
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_approve_price" className="">مبلغ آخرین صورت وضعیت تایید شده مدیر طرح</label>
-                                                    <label className="form-control">{this.state.obj.prev_approve_price}</label>
+                                                    <label className="form-control">{this.state.obj.prev_approve_price?this.state.obj.prev_approve_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_price" className="">مبلغ آخرین صورت وضعیت پرداخت شده مالی</label>
-                                                    <label className="form-control">{this.state.obj.prev_price}</label>
+                                                    <label className="form-control">{this.state.obj.prev_price?this.state.obj.prev_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -256,14 +266,16 @@ class PayInvoiceConsultant extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="price" className="">مبلغ قابل پرداخت تجمعی</label>
-                                                    <input name="price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price} disabled={this.state.status === 'display'} /> */}
+                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="period_price" className="">مبلغ قابل پرداخت در دوره</label>
-                                                    <label className="form-control">{parseInt(this.state.obj.price) - parseInt(this.state.obj.prev_price)}</label>
+                                                    <label className="form-control">{this.state.obj.price?(parseInt(this.state.obj.price) - parseInt(this.state.obj.prev_price)).toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                         </div>

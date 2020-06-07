@@ -3,10 +3,11 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
+import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
 
 class InvoiceConsultant extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class InvoiceConsultant extends Component {
         this.dateChange = this.dateChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -132,6 +134,12 @@ class InvoiceConsultant extends Component {
         }
         this.setState({ obj, contractTitle });
     }
+    numberChange(name, values) {
+        const {formattedValue, value} = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
@@ -231,7 +239,7 @@ class InvoiceConsultant extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_price" className="">مبلغ آخرین صورت وضعیت تایید شده مدیر طرح</label>
-                                                    <label className="form-control">{this.state.obj.prev_price}</label>
+                                                    <label className="form-control">{this.state.obj.prev_price?this.state.obj.prev_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -266,15 +274,19 @@ class InvoiceConsultant extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="consultant_price" className="">مبلغ ارائه شده مشاور</label>
-                                                    <input name="consultant_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.consultant_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="consultant_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.consultant_price} disabled={this.state.status === 'display'} /> */}
+                                                        <NumberFormat  onValueChange={(values) =>this.numberChange("consultant_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.consultant_price}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="manager_price" className="">مبلغ تایید مدیر طرح</label>
-                                                    <input name="manager_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.manager_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="manager_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.manager_price} disabled={this.state.status === 'display'} /> */}
+                                                        <NumberFormat  onValueChange={(values) =>this.numberChange("manager_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.manager_price}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -284,7 +296,7 @@ class InvoiceConsultant extends Component {
                                                     <label htmlFor="period_price" className="">کارکرد دوره</label>
                                                     {/* <input name="period_price" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.period_price} disabled={this.state.status === 'display'} /> */}
-                                                    <label className="form-control">{parseInt(this.state.obj.manager_price)-parseInt(this.state.obj.prev_price)}</label>
+                                                    <label className="form-control">{this.state.obj.manager_price?(parseInt(this.state.obj.manager_price)-parseInt(this.state.obj.prev_price)).toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                             <div className="col-6">

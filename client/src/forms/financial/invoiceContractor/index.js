@@ -3,10 +3,11 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
+import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
 
 class InvoiceContractor extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class InvoiceContractor extends Component {
         this.dateChange = this.dateChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -36,6 +38,10 @@ class InvoiceContractor extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
+            // let c=response[1].data;
+            // c.forEach((e,i)=>{
+            //     console.log(e.certificate_type_id+ '     '+e.certificate_type_id === 55)
+            // })
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let invoice_no= response[2].data.filter(a => a.groupid === 14).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let dueTypes= response[2].data.filter(a => a.groupid === 15).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -128,6 +134,15 @@ class InvoiceContractor extends Component {
         ob[name] = value;
         this.setState({ obj: ob });
     }
+    
+ 
+   numberChange(name, values) {
+    const {formattedValue, value} = values;
+    let ob = this.state.obj;
+    ob[name] = value;
+    this.setState({ obj: ob });
+}
+
     selectChange(name, values) {
         let ob = this.state.obj;
         ob[name] = values;
@@ -242,7 +257,7 @@ class InvoiceContractor extends Component {
                                          <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_price" className="">مبلغ آخرین صورت وضعیت تایید شده مدیر طرح</label>
-                                                    <label className="form-control">{this.state.obj.prev_price}</label>
+                                                    <label className="form-control">{this.state.obj.prev_price?this.state.obj.prev_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
 											<div className="col-4">
@@ -275,15 +290,19 @@ class InvoiceContractor extends Component {
                                     <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contractor_price" className="">مبلغ تجمعی ارائه شده پیمانکار</label>
-                                                    <input name="contractor_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.contractor_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="contractor_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.contractor_price} disabled={this.state.status === 'display'} /> */}
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("contractor_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.contractor_price}/>
                                                 </div>
                                             </div>
                                    <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="consultant_price" className="">مبلغ تجمعی تایید نظارت</label>
-                                                    <input name="consultant_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.consultant_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="consultant_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.consultant_price} disabled={this.state.status === 'display'} /> */}
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("consultant_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.consultant_price}/>
                                                 </div>
                                             </div>     											
                                             </div>
@@ -291,14 +310,16 @@ class InvoiceContractor extends Component {
                                     <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="manager_price" className="">مبلغ تجمعی تایید مدیر طرح</label>
-                                                    <input name="manager_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.manager_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="manager_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.manager_price} disabled={this.state.status === 'display'} /> */}
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("manager_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.manager_price}/>
                                                 </div>
                                             </div>	
 						                <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="period_price" className="">کارکرد دوره</label>
-                                                    <label className="form-control">{parseInt(this.state.obj.manager_price)-parseInt(this.state.obj.prev_price)}</label>
+                                                    <label className="form-control">{this.state.obj.manager_price?(parseInt(this.state.obj.manager_price)-parseInt(this.state.obj.prev_price)).toLocaleString():0}</label>
                                                 </div>
                                             </div>
 											 <div className="col-4">

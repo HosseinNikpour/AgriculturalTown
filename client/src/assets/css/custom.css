@@ -88,15 +88,17 @@
 }
 
 .logoName {
+    float: right;
     font-family: 'IranNastaliq';
-    font-size: 26px;
+    font-size: 1.7vw;
     display: inline-block;
-    width: 223px;
-    margin-right: 20px;
+    width: 75%;
+    padding-right: 0px;
     margin-top: 0px;
     color: #0990d6;
-    padding-top: 38px;
-
+    /* padding-top: 13%; */
+    line-height: 462%;
+    padding-top: 2%;
 }
 td .ant-table-cell {line-height: 23px;}
 .activeMenu  {
@@ -115,7 +117,7 @@ td .ant-table-cell {line-height: 23px;}
 .navagition {
     background: #eddef1;
     font-family: 'iran_sansregular';
-    height: 95px;
+    height: auto;
 }
 
 .navagition ul {
@@ -178,8 +180,8 @@ td .ant-table-cell {line-height: 23px;}
     font-family: 'iran_sansregular';
     line-height: 36px;
     display: inline-flex;
-    padding: 0 20px;
-    font-size: 15px;
+    padding: 0 16px;
+    font-size: 1.2vw;
     margin-top: -3px;
 
 }

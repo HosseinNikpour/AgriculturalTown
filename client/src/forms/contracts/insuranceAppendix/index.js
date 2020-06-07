@@ -35,9 +35,9 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('period')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('insurance')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-            let insurance = response[2].data;
+            let insurance = response[2].data.map(a => { return { key: a.id, label: a.insurance_no, value: a.id, contract: a.contract_id } });;
             let data = response[0].data;
             data.forEach(e => {
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;

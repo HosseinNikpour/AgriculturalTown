@@ -163,7 +163,7 @@ class App extends Component {
           </div>
           <div className='row navagition'>
             <div className='col-3'>
-              <img src={logo} style={{ width: '50px', marginTop: '-24px' }} />
+              <img src={logo} style={{ width: '15%',float:'right' , marginTop: '3%',paddingTop:'3%' }} />
               <div className='logoName'> مهندسین مشاور آبگستران میهن</div>
 
             </div>

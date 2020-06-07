@@ -25,7 +25,7 @@ const queryGen = (name, type, row) => {
     Object.keys(row).forEach(key => {
         if (key.endsWith('_id')) {
             let x = key.replace('_id', '');
-            if (row[x]) delete row[x];
+            if (row[x])  delete row[x];
         }
 
     });
@@ -33,7 +33,8 @@ const queryGen = (name, type, row) => {
     if (type == 'insert') {
         let insertQuery = `INSERT INTO public.${name}(`, insertValues = '';
         Object.keys(row).forEach(key => {
-            if (row[key] && !key.startsWith('f_')) {
+            //console.log(key+'    '+row[key])
+            if ((row[key] ||row[key]===false )&& !key.startsWith('f_')) {
                 insertQuery += key + ',';
                 // console.log(typeof (row[key]));
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
@@ -55,7 +56,7 @@ const queryGen = (name, type, row) => {
     else if (type == 'update') {
         updateQuery = `UPDATE public.${name} SET `
         Object.keys(row).forEach(key => {
-            if (row[key] && !key.startsWith('f_') && key != 'id') {
+            if ((row[key] ||row[key]===false )&& !key.startsWith('f_') && key != 'id') {
 
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;

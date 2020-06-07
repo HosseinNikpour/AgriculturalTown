@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
+import NumberFormat from 'react-number-format';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class ValueChange extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class ValueChange extends Component {
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
         this.displayClickHandle = this.displayClickHandle.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
         this.deleteFile = this.deleteFile.bind(this);
@@ -110,7 +112,7 @@ class ValueChange extends Component {
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
+            initialAmount=cont&&cont.initial_amount?parseInt(cont.initial_amount):0;
           
         }
         this.setState({ obj, contractTitle ,initialAmount});
@@ -126,6 +128,12 @@ class ValueChange extends Component {
         let contractTitle = cont && cont.title ? cont.title : '';
         let initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
         this.setState({initialAmount, contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+    }
+    numberChange(name, values) {
+        const {formattedValue, value} = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
     }
     deleteClickHandle(item) {
         //console.log(item)
@@ -206,7 +214,7 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">مبلغ اولیه پیمان</label>
-                                                    <label className="form-control">{this.state.initialAmount}</label>
+                                                    <label className="form-control">{this.state.initialAmount?this.state.initialAmount.toLocaleString():0}</label>
                                                 </div>
                                             </div>
 
@@ -222,15 +230,19 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="increase_price" className="">مبلغ افزایش یافته</label>
-                                                    <input name="increase_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.increase_price} disabled={this.state.status === 'display'} />
+                                                   {/* <input name="increase_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.increase_price} disabled={this.state.status === 'display'} /> */}
+                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("increase_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.increase_price}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="decrease_price" className="">مبلغ کاهش یافته</label>
-                                                    <input name="decrease_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.decrease_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="decrease_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.decrease_price} disabled={this.state.status === 'display'} /> */}
+                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("decrease_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.decrease_price}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -238,20 +250,22 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="new_work" className="">بهای کار جدید</label>
-                                                    <input name="new_work" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.new_work} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="new_work" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.new_work} disabled={this.state.status === 'display'} /> */}
+                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("new_work",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.new_work}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="change_price" className="">بهای تغییر مقادیر </label>
-                                                    <label className="form-control">{-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)}</label>
+                                                    <label className="form-control">{(-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)).toLocaleString()}</label>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_new_price_calc" className="">مبلغ پیمان با احتساب تغییر مقادیر(محاسباتی)</label>
-                                                    <label className="form-control">{parseInt(this.state.initialAmount) - parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)}</label>
+                                                    <label className="form-control">{(parseInt(this.state.initialAmount) - parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)).toLocaleString()}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -259,8 +273,10 @@ class ValueChange extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_new_price" className="">مبلغ پیمان با احتساب تغییر مقادیر(سند)</label>
-                                                    <input name="contract_new_price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.contract_new_price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="contract_new_price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.contract_new_price} disabled={this.state.status === 'display'} /> */}
+                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("contract_new_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.contract_new_price}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">

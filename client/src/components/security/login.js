@@ -29,7 +29,7 @@ const Login = (props) => {
         <div className="app-main col-12">
             <div className="row" >
                 <div className="col-4"></div>
-                <div className="col-4">
+                <div className="col-xs-9 col-md-4">
                     <div className="card">
                         <div className="card-header">
                             <div className='row'>

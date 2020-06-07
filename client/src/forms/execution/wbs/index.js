@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { getItem,  getAllItem,  upsertItem } from '../../../api/index';
 import { message, Select } from 'antd'
 import Loading from '../../../components/common/loading';
+import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, numberDefaultProp
+} from '../../../components/statics'
 
 class WBS extends Component {
     constructor(props) {
@@ -22,6 +24,7 @@ class WBS extends Component {
         this.newClickHandle = this.newClickHandle.bind(this);
         this.showTable = this.showTable.bind(this);
         this.newRangeClickHandle = this.newRangeClickHandle.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.deleteRecord = this.deleteRecord.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
@@ -122,6 +125,13 @@ class WBS extends Component {
         rows.splice(i, 1);
         this.setState({ rows });
     }
+    numberChange(name, values,i) {
+        const {formattedValue, value} = values;
+         let rows = this.state.rows;
+        rows[i][name] = value;
+        this.setState({ rows });
+ }
+	
     newRangeClickHandle() {
         this.setState({ isFetching: true });
         let opGroup_id = this.state.opGroup_id ? this.state.opGroup_id : 0;
@@ -229,13 +239,21 @@ class WBS extends Component {
                                                                     {(item.value_change - item.value)}
 
                                                                 </td>
-                                                                <td><input name="price" className="form-control" onChange={(e) => this.handleChange(e, i)}
-                                                                    value={(item.price)} type='number' /></td>
-                                                                <td><input name="price_change" className="form-control" onChange={(e) => this.handleChange(e, i)}
-                                                                    value={(item.price_change)} type='number' /></td>
+                                                                <td>
+                                                                    {/* <input name="price" className="form-control" onChange={(e) => this.handleChange(e, i)}
+                                                                    value={(item.price)} type='number' /> */}
+                                                                       <NumberFormat  onValueChange={(values) =>this.numberChange("price",values,i)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={item.price}/>
+                                                                    </td>
+                                                                <td>
+                                                                    {/* <input name="price_change" className="form-control" onChange={(e) => this.handleChange(e, i)}
+                                                                    value={(item.price_change)} type='number' /> */}
+                                                                       <NumberFormat  onValueChange={(values) =>this.numberChange("price_change",values,i)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={item.price_change}/>
+                                                                    </td>
                                                                 <td>{/* <input name="price_diff" className="form-control" onChange={(e)=>this.handleChange(e,i)}
                                                                     value={(item.price_change-item.price)} type='number' disabled={true}/> */}
-                                                                    {(item.price_change - item.price)}
+                                                                    {(item.price_change - item.price).toLocaleString()}
                                                                 </td>
                                                                 <td>{item.wieght}</td>
                                                                 <td><input name="sort" className="form-control" onChange={(e) => this.handleChange(e, i)}

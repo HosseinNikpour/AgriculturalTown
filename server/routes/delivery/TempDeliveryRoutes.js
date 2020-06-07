@@ -30,7 +30,7 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    console.log(data.contract)
+    console.log(data)
     let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',  data.contract) : '';
@@ -52,6 +52,7 @@ router.post('/', function (req, res) {
 });
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
+    console.log(data)
     let files = req.files;
     let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
@@ -61,6 +62,7 @@ router.put('/:id', function (req, res) {
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
 
     let query = func.queryGen(name, 'update', data);
+    console.log(query)
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

@@ -3,8 +3,9 @@ import { getPrevItems, getAllItem, removeItem, saveItem, updateItem, getItem } f
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
+import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp ,numberDefaultProp  } from '../../../components/statics'
 import Approve from '../../../components/approve/index';
 import History from '../../../components/approve/history';
 import { findNextStep } from '../../../functions/index';
@@ -25,6 +26,7 @@ class WeeklyOperation extends Component {
         this.selectChange = this.selectChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
@@ -137,6 +139,14 @@ class WeeklyOperation extends Component {
         }
 
     }
+     
+   numberChange(name, values) {
+        const {formattedValue, value} = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
+	
     handleChange(e, i) {
         let tableData = this.state.tableData;
         tableData[i][e.target.name] = e.target.value;

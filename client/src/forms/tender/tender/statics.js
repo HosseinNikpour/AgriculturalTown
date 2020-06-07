@@ -1,4 +1,5 @@
 ﻿import moment from 'moment-jalaali';
+import React, { Component } from 'react';
 export const columns = [
 { dataIndex: 'title',key: 'title', title: 'عنوان' }, 
 { dataIndex: 'town',key: 'town', title:'شهرک' }, 
@@ -16,7 +17,7 @@ export const columns = [
 { dataIndex: 'open_packets_date',key: 'open_packets_date', title: 'تاریخ گشایش پاکت مالی', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
 { dataIndex: 'say_to_winner_date',key: 'say_to_winner_date', title: 'تاریخ ابلاغ به برنده', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } }, 
 //{ dataIndex: 'contract_date',key: 'contract_date', title: 'تاریخ انعقاد قرارداد', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
-//{ dataIndex: 'file_record',key: 'file_record', title: 'بارگذاری صورتجلسه' },
+{ dataIndex: 'file_record',key: 'file_record', title: 'بارگذاری صورتجلسه',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
 //{ dataIndex: 'description',key: 'description', title: 'توضیحات' },
 //{ dataIndex: 'creator_id',key: 'creator_id', title: 'ایجاد کننده' },
 //{ dataIndex: 'editor_id',key: 'editor_id', title: 'ویرایش کننده' },

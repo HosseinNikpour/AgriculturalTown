@@ -1,4 +1,4 @@
-
+import React, { Component } from 'react';
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
     { dataIndex: 'title',key: 'title', title: 'عنوان' }, 
@@ -21,8 +21,8 @@ export const columns = [
     // { dataIndex: 'location',key: 'location', title: 'location' }, 
     // { dataIndex: 'coordinate_e',key: 'coordinate_e', title: 'coordinate_e' }, 
     // {dataIndex: 'coordinate_n',key: 'coordinate_n', title: 'coordinate_n' }, 
-    // { dataIndex: 'file_dxf',key: 'file_dxf', title: 'file_dxf' }, 
-    // { dataIndex: 'file_kmz',key: 'file_kmz', title: 'file_kmz' },
+     { dataIndex: 'file_dxf',key: 'file_dxf', title: 'بارگزاری فایل کروکی DXF',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} }, 
+     { dataIndex: 'file_kmz',key: 'file_kmz', title: 'بارگزاری فایل کروکی KMZ',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
 ];
 export const storeIndex = "Town";
 export const pageHeder = 'شناسنامه شهرک ها';

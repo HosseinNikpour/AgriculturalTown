@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
-
+import NumberFormat from 'react-number-format';
 
 import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp,numberDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -25,6 +25,7 @@ class Town extends Component {
         this.dateChange = this.dateChange.bind(this);
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
@@ -68,7 +69,9 @@ class Town extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
-        // debugger;
+        
+       // obj['coefficient'] = parobj.initial_amount / obj.client_initial_amount;
+
         obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
         obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
         obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
@@ -122,13 +125,19 @@ class Town extends Component {
         else
             ob[name] = e;
 
-        if (e.target.name === 'initial_amount' || e.target.name == 'client_initial_amount')
-            if (ob.client_initial_amount)
-                ob['coefficient'] = ob.initial_amount / ob.client_initial_amount;
+        // if (e.target.name === 'initial_amount' || e.target.name == 'client_initial_amount')
+        //     if (ob.client_initial_amount)
+        //         ob['coefficient'] = ob.initial_amount / ob.client_initial_amount;
 
         this.setState({ obj: ob });
     }
     dateChange(name, value) {
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
+    numberChange(name, values) {
+        const {formattedValue, value} = values;
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
@@ -221,7 +230,7 @@ class Town extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="operation_type_id" className="">  نوع عملیات</label>
                                                     <Select {...selectDefaultProp} options={this.state.operationType} disabled={this.state.status === 'display'}
-                                                        value={this.state.obj.operation_type_id} onSelect={(values) => this.selectChange("operation_type_id", values)}
+                                                      mode="multiple"  value={this.state.obj.operation_type_id} onChange={(values) => this.selectChange("operation_type_id", values)}
                                                     />
                                                 </div>
                                             </div>
@@ -318,15 +327,19 @@ class Town extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="initial_amount" className="">مبلغ اولیه  (ریال)</label>
-                                                    <input name="initial_amount" className="form-control" onChange={this.handleChange} type='number'
-                                                        value={this.state.obj.initial_amount} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="initial_amount" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.initial_amount} disabled={this.state.status === 'display'} /> */}
+                                                        <NumberFormat  onValueChange={(values) =>this.numberChange("initial_amount",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.initial_amount}/>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="client_initial_amount" className="">مبلغ برآورد اولیه کارفرما (ریال)</label>
-                                                    <input name="client_initial_amount" className="form-control" onChange={this.handleChange} type='number'
-                                                        value={this.state.obj.client_initial_amount} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="client_initial_amount" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.client_initial_amount} disabled={this.state.status === 'display'} /> */}
+                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("client_initial_amount",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.client_initial_amount}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -335,7 +348,7 @@ class Town extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="coefficient" className="">ضریب </label>
                                                     <input name="coefficient" className="form-control" onChange={this.handleChange}
-                                                        value={parseFloat(this.state.obj.coefficient).toFixed(2)} disabled={true} />
+                                                        value={(parseFloat(this.state.obj.initial_amount) / parseFloat(this.state.obj.client_initial_amount)).toFixed(2)} disabled={true} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -416,9 +429,9 @@ class Town extends Component {
                                         <div className='row'>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="decsciption" className="">توضیحات</label>
-                                                    <textarea name="decsciption" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} row="2" />
+                                                    <label htmlFor="description" className="">توضیحات</label>
+                                                    <textarea name="description" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} row="2" />
                                                 </div>
                                             </div>
                                         </div>

@@ -3,10 +3,11 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
+import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
 
 class CreditPredict extends Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class CreditPredict extends Component {
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
         this.displayClickHandle = this.displayClickHandle.bind(this);
@@ -131,6 +133,14 @@ class CreditPredict extends Component {
         let contractTitle = cont && cont.title ? cont.title : '';
         this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
+    
+   numberChange(name, values) {
+    const {formattedValue, value} = values;
+    let ob = this.state.obj;
+    ob[name] = value;
+    this.setState({ obj: ob });
+}
+
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
@@ -233,7 +243,7 @@ class CreditPredict extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invoice_paid_price" className="">مبلغ تجمعی صورت وضعیت پرداخت شده</label>
-                                                    <label className="form-control">{this.state.obj.invoice_paid_price}</label>
+                                                    <label className="form-control">{this.state.obj.invoice_paid_price?this.state.obj.invoice_paid_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -247,7 +257,7 @@ class CreditPredict extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invoice_approved_price" className="">مبلغ تجمعی صورت وضعیت تایید شده</label>
-                                                    <label className="form-control">{this.state.obj.invoice_approved_price}</label>
+                                                    <label className="form-control">{this.state.obj.invoice_approved_price?this.state.obj.invoice_approved_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -259,8 +269,11 @@ class CreditPredict extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="price_until_now" className="">برآورد مبلغ صورت وضعیت از آخرین دوره تایید تا دوره گزارش</label>
-                                                    <input name="price_until_now" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.price_until_now} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="price_until_now" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price_until_now} disabled={this.state.status === 'display'} /> */}
+                                                         <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_now",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_now}/>
+                                                        
                                                 </div>
                                             </div>
 
@@ -269,8 +282,10 @@ class CreditPredict extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="price_until_end" className="">برآورد مبلغ صورت وضعیت از دوره گزارش تا پایان کار</label>
-                                                    <input name="price_until_end" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.price_until_end} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="price_until_end" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price_until_end} disabled={this.state.status === 'display'} /> */}
+                                                         <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_end",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_end}/>
                                                 </div>
                                             </div>
                                             <div className="col-8">
