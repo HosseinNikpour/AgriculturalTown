@@ -1,7 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
- { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان / قرارداد' },
+ { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان  ' },
 { dataIndex: 'prev_approve_id',key: 'prev_approve_id', title: 'شماره آخرین صورت وضعیت تایید شده مدیر طرح' }, 
 { dataIndex: 'prev_id',key: 'prev_id', title: 'شماره آخرین صورت وضعیت پرداخت شده مالی' },
  { dataIndex: 'prev_approve_price',key: 'prev_approve_price', title: 'مبلغ آخرین صورت وضعیت تایید شده مدیر طرح', render: function (text) { return  text?text.toLocaleString():0 } }, 

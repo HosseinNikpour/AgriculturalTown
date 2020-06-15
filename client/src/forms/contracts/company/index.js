@@ -12,7 +12,7 @@ class Company extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, data: [], rows: [], provinces: [], certificateTypes: [],
+            columns: columns, data: [], rows: [], provinces: [], certificateTypes: [],  errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -44,6 +44,18 @@ class Company extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+
+        let errors = this.state.errors;
+
+        errors.title = obj.title ? false : true;
+        errors.certificate_type_id = obj.certificate_type_id ? false : true;
+       
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
@@ -70,6 +82,8 @@ class Company extends Component {
             }).catch((error) => console.log(error));
         }
     }
+}
+
     handleChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -151,14 +165,14 @@ class Company extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className="">نام اختصاری</label>
-                                                    <input name="title" className="form-control" onChange={this.handleChange}
+                                                    <label htmlFor="title"  className={this.state.errors.title ? "error-lable" : ''}>نام شرکت</label>
+                                                    <input name="title"  className={this.state.errors.title ? "form-control error-control" : 'form-control'}  onChange={this.handleChange}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="full_title" className="">نام کامل</label>
+                                                    <label htmlFor="full_title" className="">نام  کامل شرکت </label>
                                                     <input name="full_title" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.full_title} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -247,9 +261,10 @@ class Company extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="certificate_type_id" className="">نوع گواهینامه</label>
+                                                    <label htmlFor="certificate_type_id" className={this.state.errors.town_id ? "error-lable" : ''}>نوع گواهینامه</label>
                                                     <Select {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.certificateTypes}
                                                         value={this.state.obj.certificate_type_id} onSelect={(values) => this.selectChange("certificate_type_id", values)}
+                                                        className={this.state.errors.certificate_type_id ? "form-control error-control" : 'form-control'} 
                                                     />
                                                 </div>
                                             </div>

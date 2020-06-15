@@ -15,7 +15,7 @@ class Tender extends Component {
 
         this.state = {
             columns: columns, rows: [], contracts: [], town: [], group: [], Typetender: [], ServiceType: [], 
-            operation_type: [], DocumentType: [], ModifierType: [], CommissionResult: [],
+            operation_type: [], DocumentType: [], ModifierType: [], CommissionResult: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -69,6 +69,20 @@ class Tender extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+
+        let errors = this.state.errors;
+
+        errors.title = obj.title ? false : true;
+        errors.town_id = obj.town_id ? false : true;
+        errors.service_type_id = obj.service_type_id ? false : true;
+        errors.operation_type_id = obj.operation_type_id ? false : true;
+        
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
         obj.publish_date = obj.publish_date ? obj.publish_date.format() : '';
         obj.get_doc_date = obj.get_doc_date ? obj.get_doc_date.format() : '';
         obj.upload_date = obj.upload_date ? obj.upload_date.format() : '';
@@ -109,6 +123,7 @@ class Tender extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -226,15 +241,17 @@ class Tender extends Component {
                                  <div className="row">
                                            <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className="">عنوان</label>
+                                                    <label htmlFor="title" className={this.state.errors.title ? "error-lable" : ''}>عنوان</label>
                                                     <input name="title" className="form-control" onChange={this.handleChange}
+                                                    className={this.state.errors.title ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
 											 <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="town_id" className="">شهرک</label>
+                                                    <label htmlFor="town_id" className={this.state.errors.town_id ? "error-lable" : ''}>شهرک</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.town}
+                                                    className={this.state.errors.town_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)} />
                                                 </div>
                                             </div>
@@ -256,8 +273,9 @@ class Tender extends Component {
                                             </div>
 										<div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="service_type_id" className="">نوع خدمات</label>
+                                                    <label htmlFor="service_type_id" className={this.state.errors.service_type_id ? "error-lable" : ''}>نوع خدمات</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.ServiceType}
+                                                    className={this.state.errors.service_type_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.service_type_id} onSelect={(values) => this.selectChange("service_type_id", values)} />
                                                 </div>
                                             </div>
@@ -265,8 +283,9 @@ class Tender extends Component {
 							     <div className="row">
 									 	<div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="operation_type_id" className="">نوع عملیات</label>
+                                                    <label htmlFor="operation_type_id"  className={this.state.errors.operation_type_id ? "error-lable" : ''}>نوع عملیات</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.operation_type}
+                                                     className={this.state.errors.operation_type_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.operation_type_id} onSelect={(values) => this.selectChange("operation_type_id", values)} />
                                                 </div>
                                             </div>

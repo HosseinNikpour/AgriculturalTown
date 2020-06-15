@@ -15,7 +15,7 @@ class CreditPredict extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], periods: [],
+            columns: columns, rows: [], contracts: [], periods: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -61,6 +61,17 @@ class CreditPredict extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+        errors.price_until_now = obj.price_until_now ? false : true;
+        errors.price_until_end = obj.price_until_end ? false : true;
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
 
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
@@ -86,6 +97,7 @@ class CreditPredict extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -207,21 +219,24 @@ class CreditPredict extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                    <form>
+                                <form>
                                         <div className="row">
                                             <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                            <div className="form-group">
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="period_id" className="">شروع دوره گزارش</label>
@@ -230,8 +245,6 @@ class CreditPredict extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="period_id" className="">پایان دوره گزارش</label>
@@ -246,14 +259,14 @@ class CreditPredict extends Component {
                                                     <label className="form-control">{this.state.obj.invoice_paid_price?this.state.obj.invoice_paid_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invoice_paid_period" className="">دوره پرداخت</label>
                                                     <label className="form-control">{this.state.obj.invoice_paid_period}</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invoice_approved_price" className="">مبلغ تجمعی صورت وضعیت تایید شده</label>
@@ -266,29 +279,32 @@ class CreditPredict extends Component {
                                                     <label className="form-control">{this.state.obj.invoice_approved_period}</label>
                                                 </div>
                                             </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="price_until_now" className="">برآورد مبلغ صورت وضعیت از آخرین دوره تایید تا دوره گزارش</label>
-                                                    {/* <input name="price_until_now" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.price_until_now} disabled={this.state.status === 'display'} /> */}
-                                                         <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_now",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_now}/>
-                                                        
-                                                </div>
-                                            </div>
-
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="price_until_end" className="">برآورد مبلغ صورت وضعیت از دوره گزارش تا پایان کار</label>
+                                            <div className="form-group">
+                                                    <label htmlFor="price_until_now" className={this.state.errors.price_until_now ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از آخرین دوره تایید تا دوره گزارش</label>
+                                                    {/* <input name="price_until_now" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price_until_now} disabled={this.state.status === 'display'} /> */}
+                                                         <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_now",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_now}
+													    className={this.state.errors.price_until_now ? "form-control error-control" : 'form-control'}/>
+                                                        
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                            <div className="form-group">
+                                                    <label htmlFor="price_until_end" className={this.state.errors.price_until_end ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از دوره گزارش تا پایان کار</label>
                                                     {/* <input name="price_until_end" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.price_until_end} disabled={this.state.status === 'display'} /> */}
                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_end",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_end}/>
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price_until_end}
+													     className={this.state.errors.price_until_end ? "form-control error-control" : 'form-control'}/>
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+											 </div>
+											 <div className="row">
+                                            <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <textarea name="decsciption" className="form-control" onChange={this.handleChange}

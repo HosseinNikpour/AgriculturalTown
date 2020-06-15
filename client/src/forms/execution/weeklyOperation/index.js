@@ -17,7 +17,7 @@ class WeeklyOperation extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], periods: [], contracts: [],
+            columns: columns, rows: [], periods: [], contracts: [], errors: {},
             //contract_id: 0, period_id: 0, parent_id: 0, prev_parent_id: 0, prev_period_id: 0,
             tableData: [], isFetching: true, showPanel: false, status: '',
         }
@@ -92,6 +92,18 @@ class WeeklyOperation extends Component {
 
         let tbl = this.state.tableData;
 
+        /*let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+     
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {*/
+
+        
         let rows = tbl.map(a => ({
             operation: a.operation,
             unit: a.unit,
@@ -138,8 +150,9 @@ class WeeklyOperation extends Component {
             }).catch((error) => console.log(error));
         }
 
-    }
-     
+    
+
+}    
    numberChange(name, values) {
         const {formattedValue, value} = values;
         let ob = this.state.obj;
@@ -257,10 +270,11 @@ class WeeklyOperation extends Component {
                                     <div className="row">
                                         <div className="col-6">
                                             <div className="form-group">
-                                                <label htmlFor="contract_id" className=""> پیمان</label>
+                                                <label htmlFor="contract_id" className={this.state.errors.town_id ? "error-lable" : ''}> پیمان</label>
                                                 {this.state.contract_id && <label className="form-control">{this.state.contracts.find(a => a.key === this.state.contract_id).label}</label>}
                                                 {!this.state.contract_id &&
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />}
                                             </div>
                                         </div>

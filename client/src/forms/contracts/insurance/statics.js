@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 export const columns = [
   { dataIndex: 'insurance_no',key: 'insurance_no', title: 'شماره بیمه نامه' },
-  { dataIndex: 'contract',key: 'contract', title: 'شماره قرارداد/پیمان' },
+  { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان' },
   { dataIndex: 'insurance_company',key: 'insurance_company', title: 'نام بیمه گر' }, 
   { dataIndex: 'fund',key: 'fund', title: 'سرمایه بیمه شده', render: function (text) { return  text?text.toLocaleString():0 } },
   { dataIndex: 'insurance_type',key: 'insurance_type', title: 'نوع بیمه' }, 

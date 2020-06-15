@@ -1,7 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
-    { dataIndex: 'contract',key: 'contract', title: 'شماره قرارداد/پیمان' }, 
+    { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان' }, 
     { dataIndex: 'insurance',key: 'insurance', title: 'بیمه پیمان' },
     { dataIndex: 'start_date',key: 'start_date', title: 'تاریخ شروع', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' }  },
     { dataIndex:'end_date',key: 'end_date', title: 'تاریخ پایان', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' }  }, 

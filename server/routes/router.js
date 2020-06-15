@@ -9,6 +9,7 @@ router.use('/Period', require('./baseinfo/PeriodRoutes'));
 router.use('/Company', require('./contract/CompanyRoutes'));
 router.use('/Town', require('./contract/TownRoutes'));
 router.use('/Contract', require('./contract/ContractRoutes'));
+router.use('/Agreement', require('./contract/AgreementRoutes'));
 router.use('/Project', require('./contract/ProjectRoutes'));
 router.use('/Extension', require('./contract/ExtensionRoutes'));
 router.use('/ContractCycle', require('./contract/ContractCycleRoutes'));

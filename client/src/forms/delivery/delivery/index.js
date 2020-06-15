@@ -14,7 +14,7 @@ class Delivery extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], project: '',
+            columns: columns, rows: [], contracts: [], project: '', errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -61,6 +61,18 @@ class Delivery extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+       
+        errors.commision_date = obj.commision_date ? false : true;
+      
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
 
         obj.contractor_date = obj.contractor_date ? obj.contractor_date.format() : '';
         obj.consultant_date = obj.consultant_date ? obj.consultant_date.format() : '';
@@ -107,6 +119,7 @@ class Delivery extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -213,32 +226,34 @@ class Delivery extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                    <form>
+                                <form>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-                                            <div className="col">
-                                                <div className="form-group">
-                                                    <label htmlFor="commision_date" className="">تاریخ تشکیل کمیسیون</label>
-                                                    <DatePicker onChange={value => this.dateChange('commision_date', value)}
-                                                        value={this.state.obj.commision_date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
-                                                </div>
-                                            </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col">
+                                            <div className="col-3">
+                                                <div className="form-group">
+                                                    <label htmlFor="commision_date"  className={this.state.errors.commision_date ? "error-lable" : ''}>تاریخ تشکیل کمیسیون</label>
+                                                    <DatePicker onChange={value => this.dateChange('commision_date', value)}
+                                                        value={this.state.obj.commision_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} 
+                                                        className={this.state.errors.commision_date ? "form-control error-control" : 'form-control'}/>
+                                                </div>
+                                            </div>
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="contractor_date" className="">تاریخ درخواست پیمانکار</label>
                                                     <DatePicker onChange={value => this.dateChange('contractor_date', value)}
@@ -246,7 +261,7 @@ class Delivery extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="consultant_date" className="">تاریخ درخواست مشاور</label>
                                                     <DatePicker onChange={value => this.dateChange('consultant_date', value)}
@@ -254,7 +269,7 @@ class Delivery extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="branch_date" className="">تاریخ درخواست مدیر شعبه</label>
                                                     <DatePicker onChange={value => this.dateChange('branch_date', value)}
@@ -262,7 +277,9 @@ class Delivery extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="manager_date" className="">تاریخ درخواست مدیر طرح</label>
                                                     <DatePicker onChange={value => this.dateChange('manager_date', value)}
@@ -271,19 +288,16 @@ class Delivery extends Component {
                                                 </div>
                                             </div>
                                             
-                                        </div>
-                                        <div className="row">
-
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="f_file_record" className="">سند صورتجلسه'</label>
+                                                    <label htmlFor="f_file_record" className="">سند صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file' />}
                                                     {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_record')}></i>}</div>}
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_signification" className="">سند ابلاغ صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file' />}

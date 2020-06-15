@@ -40,7 +40,6 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        console.log('[' + Date.now() + '] ',' before fetch');
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'),
         getAllItem('town'), getAllItem('user')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -49,7 +48,6 @@ class Town extends Component {
             let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
             let operationType = response[1].data.filter(a => a.groupid === 19).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
-            console.log('[' + Date.now() + '] ',' data loaded');
             data.forEach(e => {
 
                 e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
@@ -59,13 +57,11 @@ class Town extends Component {
 
             });
             //console.log(data);
-            console.log('[' + Date.now() + '] ',' after loop ');
             this.setState({
                 isFetching: false, rows: data, contractTypes,
                 companies, towns, users, operationType,
                 obj: { ...emptyItem }, showPanel: false, status: ''
             });
-            console.log('[' + Date.now() + '] ',' after set tate ');
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
@@ -78,7 +74,7 @@ class Town extends Component {
         let errors = this.state.errors;
 
         errors.title = obj.title ? false : true;
-        errors.town_id = obj.town_id ? false : true;
+        /*errors.town_id = obj.town_id ? false : true;*/
         errors.duration = obj.duration ? false : true;
         errors.announcement_date = obj.announcement_date ? false : true;
         errors.contract_date = obj.contract_date ? false : true;
@@ -247,7 +243,7 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className={this.state.errors.title ? "error-lable" : ''}>عنوان پیمان</label>
+                                                    <label htmlFor="title" className={this.state.errors.title ? "error-lable" : ''}>عنوان قرارداد</label>
                                                     <input name="title" className={this.state.errors.title ? "form-control error-control" : 'form-control'} onChange={this.handleChange}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -263,9 +259,10 @@ class Town extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
+										
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_no" className={this.state.errors.contract_no ? "error-lable" : ''}>شماره پیمان</label>
+                                                    <label htmlFor="contract_no" className={this.state.errors.contract_no ? "error-lable" : ''}>شماره قرارداد</label>
                                                     <input name="contract_no" className="form-control" onChange={this.handleChange}
                                                         className={this.state.errors.contract_no ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_no} disabled={this.state.status === 'display'} />
@@ -289,7 +286,7 @@ class Town extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="colleague1_id" className="">شرکت همکار1</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.companies}
@@ -306,17 +303,17 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_type_id" className="">نوع پیمان</label>
+                                                    <label htmlFor="contract_type_id" className="">نوع قرارداد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contractTypes}
                                                         value={this.state.obj.contract_type_id} onSelect={(values) => this.selectChange("contract_type_id", values)} />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
 
-                                                    < label htmlFor="contract_date" className={this.state.errors.contract_date ? "error-lable" : ''}>تاریخ پیمان</label>
+                                                    < label htmlFor="contract_date" className={this.state.errors.contract_date ? "error-lable" : ''}>تاریخ قرارداد</label>
 
                                                     <DatePicker onChange={value => this.dateChange('contract_date', value)}
                                                         value={this.state.obj.contract_date}
@@ -326,7 +323,7 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="announcement_date" className={this.state.errors.announcement_date ? "error-lable" : ''}>تاریخ ابلاغ پیمان</label>{this.state.obj.announcement_date_v}
+                                                    <label htmlFor="announcement_date" className={this.state.errors.announcement_date ? "error-lable" : ''}>تاریخ ابلاغ قرارداد</label>{this.state.obj.announcement_date_v}
                                                     <DatePicker onChange={value => this.dateChange('announcement_date', value)}
                                                         value={this.state.obj.announcement_date}
 
@@ -336,15 +333,6 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="land_delivery_date" className="">تاریخ تحویل زمین</label>
-                                                    <DatePicker onChange={value => this.dateChange('land_delivery_date', value)}  {...datePickerDefaultProp}
-                                                        value={this.state.obj.land_delivery_date} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-											</div>
-                                        <div className="row">
-										<div className="col-4">
-                                                <div className="form-group">
                                                     <label htmlFor="duration" className={this.state.errors.duration ? "error-lable" : ''}>مدت  (روز)</label>
                                                     <input name="duration" className="form-control" onChange={this.handleChange} type='number'
                                                         className={this.state.errors.duration ? "form-control error-control" : 'form-control'}
@@ -352,7 +340,8 @@ class Town extends Component {
                                                 </div>
 
                                             </div>
-                                        
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ اولیه اتمام </label>
@@ -371,9 +360,7 @@ class Town extends Component {
                                                         className={this.state.errors.initial_amount ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
-											</div>
-                                        <div className="row">
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="client_initial_amount" className="">مبلغ برآورد اولیه کارفرما (ریال)</label>
                                                     {/* <input name="client_initial_amount" className="form-control" onChange={this.handleChange} type='number'
@@ -382,7 +369,8 @@ class Town extends Component {
                                                         {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.client_initial_amount} />
                                                 </div>
                                             </div>
-                                       
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="coefficient" className="">ضریب </label>
@@ -390,16 +378,63 @@ class Town extends Component {
                                                         value={(parseFloat(this.state.obj.initial_amount) / parseFloat(this.state.obj.client_initial_amount)).toFixed(2)} disabled={true} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+											   
+                                          
+											  <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="study_surface" className={this.state.errors.study_surface ? "error-lable" : ''}>سطح مطالعات (قرارداد)</label>
+                                                    {/* <input name="study_surface" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.study_surface} disabled={this.state.status === 'display'} /> */}
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("study_surface", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.study_surface}
+                                                        className={this.state.errors.study_surface ? "form-control error-control" : 'form-control'} />
+                                                </div>
+                                            </div>
+										   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="study_surface_final" className={this.state.errors.study_surface_final ? "error-lable" : ''}>سطح نهایی مطالعات</label>
+                                                    {/* <input name="study_surface_final" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.study_surface_final} disabled={this.state.status === 'display'} /> */}
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("study_surface_final", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.study_surface_final}
+                                                        className={this.state.errors.study_surface_final ? "form-control error-control" : 'form-control'} />
+                                                </div>
+                                            </div>
+                                           
+                                        </div>
+                                      
+                                        <div className="row">
+                                      
+							           <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="mapping_surface" className={this.state.errors.mapping_surface ? "error-lable" : ''}>سطح نقشه برداری (قرارداد)</label>
+                                                    {/* <input name="mapping_surface" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.mapping_surface} disabled={this.state.status === 'display'} /> */}
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("mapping_surface", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.mapping_surface}
+                                                        className={this.state.errors.mapping_surface ? "form-control error-control" : 'form-control'} />
+                                                </div>
+												 </div>
+										<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="mapping_surface_final" className={this.state.errors.mapping_surface_final ? "error-lable" : ''}>سطح نهایی نقشه برداری</label>
+                                                    {/* <input name="mapping_surface_final" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.mapping_surface_final} disabled={this.state.status === 'display'} /> */}
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("mapping_surface_final", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.mapping_surface_final}
+                                                        className={this.state.errors.mapping_surface_final ? "form-control error-control" : 'form-control'} />
+                                                </div>
+                                            </div>
+											<div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_manager_name" className="">مدیر پروژه</label>
                                                     <input name="project_manager_name" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.project_manager_name} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-4">
+											</div>
+											 <div className="row">
+											 <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_manager_contacts" className="">تلفن همراه مدیر پروژه</label>
                                                     <input name="project_manager_contacts" className="form-control" onChange={this.handleChange}
@@ -420,9 +455,9 @@ class Town extends Component {
                                                         value={this.state.obj.email} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                           
+											
                                         </div>
-                                        <div className="row">
+										<div className="row">
                                         <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_agreement" className="">موافقتنامه </label>
@@ -443,48 +478,10 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_announcement')}></i>}</div>}
 
                                                 </div>
+                                            </div> 
+                                      
                                             </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="f_file_delivery" className="">صورتجلسه تحویل زمین</label>
-                                                    {this.state.status !== 'display' && <input name="f_file_delivery" className="form-control" onChange={this.fileChange} type='file'
-                                                    />}
-                                                    {this.state.obj.file_delivery && <div><a target="_blank" href={this.state.obj.file_delivery}>مشاهده فایل</a>
-                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
-                                                            onClick={() => this.deleteFile('file_delivery')}></i>}</div>}
-
-                                                </div>
-                                            </div>
-                                           
-                                            </div>
-                                          <div className="row">
-                                          <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="contractor_user_id" className="">کاربر پیمانکار </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 1)}
-                                                        value={this.state.obj.contractor_user_id} onSelect={(values) => this.selectChange("contractor_user_id", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="engineer_user_id" className="">کاربر مشاور  </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 2)}
-                                                        value={this.state.obj.engineer_user_id} onSelect={(values) => this.selectChange("engineer_user_id", values)}
-                                                    />
-                                                </div>
-                                            </div>
-										<div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="manager_user_id" className="">کاربر مدیر استان </label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.users.filter(a => a.roleId === 3)}
-                                                        value={this.state.obj.manager_user_id} onSelect={(values) => this.selectChange("manager_user_id", values)}
-                                                    />
-                                                </div>
-                                            </div>
-                                          
-                                        </div>
-                                        <div className='row'>
+                                            <div className="row">
                                             <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="description" className="">توضیحات</label>

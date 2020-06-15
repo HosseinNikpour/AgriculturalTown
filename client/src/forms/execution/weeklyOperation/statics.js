@@ -1,7 +1,7 @@
 
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه' }, 
-    { dataIndex: 'contract',key: 'contract', title: 'قرارداد' }, 
+    { dataIndex: 'contract',key: 'contract', title: 'پیمان' }, 
     { dataIndex: 'period',key: 'period', title: 'دوره' }, 
     { dataIndex: 'status',key: 'status', title: 'وضعیت' }, 
     { dataIndex: 'current_user',key: 'current_user', title: 'کاربر جاری' }, 

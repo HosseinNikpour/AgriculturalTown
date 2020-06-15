@@ -15,7 +15,7 @@ class PayInvoiceConsultant extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], invoice_no: [], Typecredit: [], TypePay: [],
+            columns: columns, rows: [], contracts: [], invoice_no: [], Typecredit: [], TypePay: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -61,6 +61,17 @@ class PayInvoiceConsultant extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+        errors.no_id = obj.no_id ? false : true;
+        errors.price = obj.price ? false : true;
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
         obj.pay_date = obj.pay_date ? obj.pay_date.format() : '';
         obj.period_price = parseInt(this.state.obj.price) - parseInt(this.state.obj.prev_price);
        // console.log(obj);
@@ -90,6 +101,7 @@ class PayInvoiceConsultant extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -213,73 +225,77 @@ class PayInvoiceConsultant extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                    <form>
+                                <form>
                                         <div className="row">
                                             <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                            <div className="form-group">
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
+												
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_approve_id" className="">شماره آخرین صورت وضعیت تایید شده مدیر طرح</label>
                                                     <label className="form-control">{this.state.obj.prev_approve_id}</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_id" className="">شماره آخرین صورت وضعیت پرداخت شده مالی</label>
                                                     <label className="form-control">{this.state.obj.prev_id}</label>
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_approve_price" className="">مبلغ آخرین صورت وضعیت تایید شده مدیر طرح</label>
                                                     <label className="form-control">{this.state.obj.prev_approve_price?this.state.obj.prev_approve_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
-                                            <div className="col">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_price" className="">مبلغ آخرین صورت وضعیت پرداخت شده مالی</label>
                                                     <label className="form-control">{this.state.obj.prev_price?this.state.obj.prev_price.toLocaleString():0}</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="no_id" className="">شماره صورت وضعیت فعلی</label>
+                                                    <label htmlFor="no_id" className={this.state.errors.no_id ? "error-lable" : ''}>شماره صورت وضعیت فعلی</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.invoice_no}
+                                                    className={this.state.errors.no_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="price" className="">مبلغ قابل پرداخت تجمعی</label>
+                                                    <label htmlFor="price" className={this.state.errors.price ? "error-lable" : ''}>مبلغ قابل پرداخت تجمعی</label>
                                                     {/* <input name="price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.price} disabled={this.state.status === 'display'} /> */}
                                                            <NumberFormat  onValueChange={(values) =>this.numberChange("price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price}/>
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price}
+                                                       className={this.state.errors.price ? "form-control error-control" : 'form-control'}/>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="period_price" className="">مبلغ قابل پرداخت در دوره</label>
                                                     <label className="form-control">{this.state.obj.price?(parseInt(this.state.obj.price) - parseInt(this.state.obj.prev_price)).toLocaleString():0}</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
 
@@ -297,16 +313,16 @@ class PayInvoiceConsultant extends Component {
                                                         value={this.state.obj.type_id} onSelect={(values) => this.selectChange("type_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                        </div>
+                                        <div className="row">
+										<div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="credit_id" className="">نوع اعتبارات</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Typecredit}
                                                         value={this.state.obj.credit_id} onSelect={(values) => this.selectChange("credit_id", values)} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <input name="decsciption" className="form-control" onChange={this.handleChange}

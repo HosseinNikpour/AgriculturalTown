@@ -14,7 +14,7 @@ class PayInvoiceContractor extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], periods: [], StatusContract: [],
+            columns: columns, rows: [], contracts: [], periods: [], StatusContract: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',// selectedPeriod: '',
         }
 
@@ -56,6 +56,18 @@ class PayInvoiceContractor extends Component {
     }
     saveBtnClick() {
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+        errors.status_id = obj.status_id ? false : true;
+
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
+
         obj.date = obj.date ? obj.date.format() : '';
         obj.signification_date = obj.signification_date ? obj.signification_date.format() : '';
         var formData = new FormData();
@@ -90,6 +102,7 @@ class PayInvoiceContractor extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -200,31 +213,33 @@ class PayInvoiceContractor extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                    <form>
+                                <form>
                                         <div className="row">
                                             <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                            <div className="form-group">
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="status_id" className="">چرخه پیمان</label>
+                                                    <label htmlFor="status_id"  className={this.state.errors.status_id ? "error-lable" : ''}>چرخه پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.StatusContract}
+                                                    className={this.state.errors.status_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.status_id} onSelect={(values) => this.selectChange("status_id", values)} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="date" className="">تاریخ</label>
                                                     <DatePicker onChange={value => this.dateChange('date', value)}
@@ -232,7 +247,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            {/* <div className="col-4">
+                                            {/* <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="period_id" className="">دوره</label>
                                                     {this.state.period_id && <label className="form-control">{this.state.periods.find(a => a.key === this.state.period_id).label}</label>}
@@ -240,7 +255,7 @@ class PayInvoiceContractor extends Component {
                                                         value={this.state.period_id} onSelect={(values) => this.setState({ period_id: values })} />}
                                                 </div>
                                             </div> */}
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
                                                     <DatePicker onChange={value => this.dateChange('signification_date', value)}
@@ -248,7 +263,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'

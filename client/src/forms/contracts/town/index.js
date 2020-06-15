@@ -13,7 +13,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], provinces: [],
-            waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],
+            waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],  errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -58,6 +58,18 @@ class Town extends Component {
     async saveBtnClick() {
 
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.title = obj.title ? false : true;
+        errors.province_id = obj.province_id ? false : true;
+        errors.city = obj.city ? false : true;
+        
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
 
         let formData = new FormData();
         if (obj.f_file_dxf)
@@ -94,6 +106,7 @@ class Town extends Component {
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -186,22 +199,24 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="title" className="">نام شهرک</label>
-                                                    <input name="title" className="form-control" onChange={this.handleChange}
+                                                    <label htmlFor="title" className={this.state.errors.title ? "error-lable" : ''}>نام شهرک</label>
+                                                    <input name="title" className={this.state.errors.title ? "form-control error-control" : 'form-control'} onChange={this.handleChange}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="province_id" className="">استان</label>
+                                                    <label htmlFor="province_id" className={this.state.errors.province_id ? "error-lable" : ''}>استان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}
+                                                    className={this.state.errors.province_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="city" className="">شهرستان </label>
+                                                    <label htmlFor="city"className={this.state.errors.city ? "error-lable" : ''}>شهرستان </label>
                                                     <input name="city" className="form-control" onChange={this.handleChange}
+                                                    className={this.state.errors.city ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.city} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>

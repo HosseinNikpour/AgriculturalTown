@@ -58,6 +58,7 @@ class PayInvoiceContractor extends Component {
         let obj = this.state.obj;
         obj.start_date = obj.start_date ? obj.start_date.format() : '';
         obj.end_date = obj.end_date ? obj.end_date.format() : '';
+        
         var formData = new FormData();
        
        /* if (obj.f_file_record)
@@ -128,7 +129,7 @@ class PayInvoiceContractor extends Component {
             let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
             obj.prev_id = prevCont ? prevCont.no : 0;
-            obj.prev_price = prevCont ? prevCont.price : 0;
+            /*obj.prev_price = prevCont ? prevCont.price : 0;*/
 
           /*  let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
@@ -211,29 +212,30 @@ class PayInvoiceContractor extends Component {
                                 <div className="card-body">
                                     <form>
                                     <div className="row">
-                                            <div className="col-4">
+                                         <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                                    <label htmlFor="contract_id" className="">شماره پیمان </label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-											 <div className="col-4">
+											 <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-											  <div className="col-4">
+											 </div>
+                                     <div className="row">
+											  <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="insurance_id" className="">بیمه پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance}
                                                         value={this.state.obj.insurance_id} onSelect={(values) => this.selectChange("insurance_id", values)} />
                                                 </div>
                                             </div>
-											 </div>
-                                     <div className="row">
-											  <div className="col-4">
+											  <div className="col-3">
                                                 <div className="form-group">
 
                                                     <label htmlFor="start_date" className="">تاریخ شروع</label>
@@ -243,7 +245,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
 												</div>
-												<div className="col-4">
+												<div className="col-3">
 												 <div className="form-group">
 
                                                     <label htmlFor="end_date" className="">تاریخ پایان</label>
@@ -253,7 +255,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
 												 </div>
-												 <div className="col-4">
+												 <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="price" className="">مبلغ حق بیمه</label>
                                                     <input name="price" className="form-control" onChange={this.handleChange} type="number"

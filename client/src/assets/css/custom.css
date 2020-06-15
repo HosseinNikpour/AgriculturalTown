@@ -60,8 +60,12 @@
 .hidden {
     display: none;
 }
-.error{
-    background-color: red;
+.error-control{
+    /* background-color: red; */
+    border:solid 2px red;
+}
+.error-lable{
+   color:red;
 }
 .ant-message-notice {
     direction: rtl;

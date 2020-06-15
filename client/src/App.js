@@ -29,6 +29,7 @@ import PermissionStructure from './forms/admin/perStructure/index'
 import Company from './forms/contracts/company/index'
 import Town from './forms/contracts/town/index'
 import Contract from './forms/contracts/contract/index'
+import Agreement from './forms/contracts/agreement/index'
 import Project from './forms/contracts/project/index'
 import Extension from './forms/contracts/extension/index'
 import ValueChange from './forms/contracts/valueChange/index'
@@ -239,6 +240,7 @@ class App extends Component {
               <PrivateRoute path="/company" component={Company} />
               <PrivateRoute path="/town" component={Town} />
               <PrivateRoute path="/contract" component={Contract} />
+              <PrivateRoute path="/agreement" component={Agreement} />
               <PrivateRoute path="/project" component={Project} />
               <PrivateRoute path="/extension" component={Extension} />
               <PrivateRoute path="/tempDelivery" component={TempDelivery} />

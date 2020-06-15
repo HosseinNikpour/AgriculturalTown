@@ -205,22 +205,24 @@ class PayInvoiceContractor extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                    <form>
+                                <form>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                                    <label htmlFor="contract_id" className="">شماره پیمان </label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="insurance_no" className="">شماره بیمه نامه</label>
 
@@ -228,23 +230,21 @@ class PayInvoiceContractor extends Component {
                                                         value={this.state.obj.insurance_no} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="insurance_company_id" className="">نام بیمه گر</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance_company}
                                                         value={this.state.obj.insurance_company_id} onSelect={(values) => this.selectChange("insurance_company_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="fund" className="">سرمایه بیمه شده</label>
                                                     <input name="fund" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.fund} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="insurance_type_id" className="">نوع بیمه</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance_type}
@@ -253,7 +253,7 @@ class PayInvoiceContractor extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
 
                                                     <label htmlFor="start_date" className="">تاریخ شروع</label>
@@ -263,7 +263,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
 
                                                     <label htmlFor="end_date" className="">تاریخ پایان</label>
@@ -273,23 +273,22 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-                                            <div className="col-4">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="buy_close_id" className="">کلوزهای خریداری شده</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.buy_close}
                                                         mode="multiple" value={this.state.obj.buy_close_id} onChange={(values) => this.selectChange("buy_close_id", values)} />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-4">
+                                        
+                                        <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="price" className="">مبلغ حق بیمه</label>
                                                     <input name="price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.price} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                        </div>
+                                            </div>  
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
