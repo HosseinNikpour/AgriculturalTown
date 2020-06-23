@@ -4,8 +4,13 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "credit_predict";
 
+let baseQuery=`select cp.*, c.contract_no AS contract
+    ,co.title as vw_company ,c.title as vw_contract_title,c.file_agreement as vw_file_agreement
+    FROM credit_predict cp  LEFT JOIN contract c ON cp.contract_id = c.id
+                            left JOIN  Company as co ON c.company_id=co.id `;
+
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by id desc  `;
+    let query = ` ${baseQuery} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -16,7 +21,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where id = ${req.params.id} `;
+    let query = ` ${baseQuery} where id = ${req.params.id} `;
 
     pool.query(query)
         .then((results) => {

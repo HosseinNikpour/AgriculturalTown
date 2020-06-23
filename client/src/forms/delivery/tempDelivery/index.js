@@ -35,7 +35,7 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
 
             let hasDefect = [{ key: 1, label: 'بلی', value: true }, { key: 2, label: 'خیر', value: false }]

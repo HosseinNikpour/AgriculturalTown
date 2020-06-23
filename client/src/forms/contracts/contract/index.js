@@ -17,7 +17,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], contractTypes: [],
-            companies: [], projects: [], users: [], errors: {},
+            companies: [], projects: [], users: [], Agreements: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -41,13 +41,14 @@ class Town extends Component {
 
     fetchData() {
         console.log('[' + Date.now() + '] ',' before fetch');
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'),
-        getAllItem('town'), getAllItem('user')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
+        getAllItem('town/vw'), getAllItem('user'), getAllItem('Agreement/vw')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
-            let operationType = response[1].data.filter(a => a.groupid === 19).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let Agreements = response[5].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
+            let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             console.log('[' + Date.now() + '] ',' data loaded');
             data.forEach(e => {
@@ -62,7 +63,7 @@ class Town extends Component {
             console.log('[' + Date.now() + '] ',' after loop ');
             this.setState({
                 isFetching: false, rows: data, contractTypes,
-                companies, towns, users, operationType,
+                companies, towns, users, operationType, Agreements,
                 obj: { ...emptyItem }, showPanel: false, status: ''
             });
             console.log('[' + Date.now() + '] ',' after set tate ');
@@ -435,7 +436,7 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="f_file_announcement" className="">صورتجلسه ابلاغ</label>
+                                                    <label htmlFor="f_file_announcement" className="">نامه ابلاغ</label>
                                                     {this.state.status !== 'display' && <input name="f_file_announcement" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
                                                     {this.state.obj.file_announcement && <div><a target="_blank" href={this.state.obj.file_announcement}>مشاهده فایل</a>
@@ -484,6 +485,22 @@ class Town extends Component {
                                             </div>
                                           
                                         </div>
+                                        <div className="row">
+							           <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="study_agreement_id" className="">قرارداد طراح</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Agreements}                                   
+                                                        value={this.state.obj.study_agreement_id} onSelect={(values) => this.selectChange("study_agreement_id", values)}/>
+                                                </div>
+                                             </div>
+											   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="monitoring_agreement_id" className="">قرارداد نظارت</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Agreements}                                   
+                                                        value={this.state.obj.monitoring_agreement_id} onSelect={(values) => this.selectChange("monitoring_agreement_id", values)}/>
+                                                </div>
+                                             </div>
+											 </div>
                                         <div className='row'>
                                             <div className="col-12">
                                                 <div className="form-group">

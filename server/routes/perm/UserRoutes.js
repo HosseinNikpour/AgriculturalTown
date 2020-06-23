@@ -3,10 +3,21 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+const name="user";
+
+// router.get(`/vw`, function (req, res) {
+//     let query = `SELECT id, username, role_id FROM public.user `;
+
+//     pool.query(query)
+//         .then((results) => {
+//             return res.send(results.rows);
+//         })
+//         .catch((err) => {
+//             return res.send({ type: "Error", message: err.message })
+//         });
+// });
 
 
-
-let name = 'user';
 
 router.post(`/signin`, function (req, res) {
     const user = req.body.username;

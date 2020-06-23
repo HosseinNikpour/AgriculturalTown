@@ -14,7 +14,7 @@ class PayInvoiceContractor extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], periods: [], StatusContract: [],
+            columns: columns, rows: [], contracts: [], periods: [], StatusContract: [],  errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -35,10 +35,10 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('periods')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('agreement/vw'), getAllItem('BaseInfo/vw'), getAllItem('period')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-            let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let StatusContract = response[3].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let periods = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let StatusContract = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
                 e.date = e.date ? moment(e.date) : undefined;
@@ -57,6 +57,17 @@ class PayInvoiceContractor extends Component {
 
     saveBtnClick() {
         let obj = this.state.obj;
+        let errors = this.state.errors;
+
+        errors.contract_id = obj.contract_id ? false : true;
+        errors.state_id = obj.state_id ? false : true;
+
+        if (Object.values(errors).filter(a => a).length > 0) {
+            this.setState({ errors }, () => { this.scrollToFormRef(); });
+            alert("لطفا موارد الزامی را وارد کنید");
+        }
+        else {
+
         obj.date = obj.date ? obj.date.format() : '';
         obj.signification_date = obj.signification_date ? obj.signification_date.format() : '';
         var formData = new FormData();
@@ -68,7 +79,7 @@ class PayInvoiceContractor extends Component {
              formData.append("data", JSON.stringify(obj));
 
         if (this.state.status === 'new')
-            saveItem(obj, storeIndex).then((response) => {
+            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
@@ -79,7 +90,7 @@ class PayInvoiceContractor extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
-            updateItem(obj, storeIndex).then((response) => {
+            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);
                     this.fetchData();
@@ -90,7 +101,9 @@ class PayInvoiceContractor extends Component {
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
+    
     }
+}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -114,23 +127,13 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, rows, invioces } = this.state;
+        let { obj, contractTitle, contracts } = this.state;
         obj[name] = values;
 
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_id = prevCont ? prevCont.no : 0;
-            obj.prev_price = prevCont ? prevCont.price : 0;
-
-            let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_approve_id = prevInvo ? prevInvo.no : 0;
-            obj.prev_approve_price = prevInvo ? prevInvo.manager_price : 0;
-
-        }
+  }
         this.setState({ obj, contractTitle });
     }
     editClickHandle(item) {
@@ -172,6 +175,7 @@ class PayInvoiceContractor extends Component {
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        
         else {
             return (
                 <div className="app-main col-12" >
@@ -208,16 +212,26 @@ class PayInvoiceContractor extends Component {
                                     <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_id" className="">شماره پیمان/ قرارداد</label>
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره قرارداد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                       className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
+                                            <div className="col-8">
+                                                <div className="form-group">
+                                                    <label htmlFor="project_id" className="">نام قرارداد</label>
+                                                    <label className="form-control">{this.state.contractTitle}</label>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="status_id" className="">چرخه پیمان</label>
+                                                    <label htmlFor="state_id" className={this.state.errors.state_id ? "error-lable" : ''}>چرخه قرارداد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.StatusContract}
-                                                        value={this.state.obj.status_id} onSelect={(values) => this.selectChange("status_id", values)} />
+                                                         className={this.state.errors.state_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.state_id} onSelect={(values) => this.selectChange("state_id", values)} />
                                                 </div>
                                             </div>
 									       <div className="col-4">
@@ -228,9 +242,7 @@ class PayInvoiceContractor extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-										</div>
-								    <div className="row">
-									  <div className="col-4">
+                                            <div className="col-4">
                                             <div className="form-group">
                                                 <label htmlFor="period_id" className="">دوره</label>
                                                 {this.state.period_id && <label className="form-control">{this.state.periods.find(a => a.key === this.state.period_id).label}</label>}
@@ -238,7 +250,17 @@ class PayInvoiceContractor extends Component {
                                                     value={this.state.period_id} onSelect={(values) => this.setState({ period_id: values })} />}
                                             </div>
                                         </div>
-										 <div className="col-4">
+										</div>
+								    <div className="row">
+							            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
+                                                    <DatePicker onChange={value => this.dateChange('signification_date', value)}
+                                                        value={this.state.obj.signification_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
@@ -248,21 +270,13 @@ class PayInvoiceContractor extends Component {
                                                             onClick={() => this.deleteFile('file_record')}></i>}</div>}
                                                 </div>
                                             </div>
-							            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
-                                                    <DatePicker onChange={value => this.dateChange('signification_date', value)}
-                                                        value={this.state.obj.signification_date}
-                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
-                                                </div>
-                                            </div>
 									</div>
 								     <div className="row">
-                                            <div className="col-6">
+                                            <div className="col-12">
                                                 <div className="form-group">
-                                                    <label htmlFor="decsciption" className="">توضیحات</label>
-                                                    <input name="decsciption" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="description" className="">توضیحات</label>
+                                                    <input name="description" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>

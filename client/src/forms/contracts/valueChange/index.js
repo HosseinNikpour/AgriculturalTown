@@ -35,15 +35,15 @@ class ValueChange extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title,initial_amount:a.initial_amount } });
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('BaseInfo/vw')]).then((response) => {
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title, initial_amount: a.initial_amount } });
             let valueChange_no = response[2].data.filter(a => a.groupid === 30).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let yesNo = [{ key: 1, label: 'بلی', value: true }, { key: 2, label: 'خیر', value: false }]
             let data = response[0].data;
 
             this.setState({
                 isFetching: false, rows: data, contracts, valueChange_no, yesNo,
-                obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',initialAmount:0,
+                obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '', initialAmount: 0,
             });
         }).catch((error) => console.log(error))
     }
@@ -68,36 +68,36 @@ class ValueChange extends Component {
         else {
 
 
-        let formData = new FormData();
-        if (obj.f_file_signification) formData.append("file_signification", obj.f_file_signification);
-        if (obj.f_file_25percent) formData.append("file_25percent", obj.f_file_25percent);
-        formData.append("data", JSON.stringify(obj));
+            let formData = new FormData();
+            if (obj.f_file_signification) formData.append("file_signification", obj.f_file_signification);
+            if (obj.f_file_25percent) formData.append("file_25percent", obj.f_file_25percent);
+            formData.append("data", JSON.stringify(obj));
 
-        if (this.state.status === 'new')
-            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
-        else {
-            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            if (this.state.status === 'new')
+                saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            else {
+                updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            }
         }
     }
-}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -121,31 +121,31 @@ class ValueChange extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, initialAmount,rows, invioces } = this.state;
+        let { obj, contractTitle, contracts, initialAmount, rows, invioces } = this.state;
         obj[name] = values;
 
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            initialAmount=cont&&cont.initial_amount?parseInt(cont.initial_amount):0;
-          
+            initialAmount = cont && cont.initial_amount ? parseInt(cont.initial_amount) : 0;
+
         }
-        this.setState({ obj, contractTitle ,initialAmount});
+        this.setState({ obj, contractTitle, initialAmount });
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
-       let initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
-        this.setState({initialAmount, contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let initialAmount = cont && cont.initial_amount ? cont.initial_amount : 0;
+        this.setState({ initialAmount, contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
-        let initialAmount=cont&&cont.initial_amount?cont.initial_amount:0;
-        this.setState({initialAmount, contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        let initialAmount = cont && cont.initial_amount ? cont.initial_amount : 0;
+        this.setState({ initialAmount, contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     numberChange(name, values) {
-        const {formattedValue, value} = values;
+        const { formattedValue, value } = values;
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
@@ -196,13 +196,28 @@ class ValueChange extends Component {
                                     </div>
                                 </div>
                                 <div className="card-body">
+                                    <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.editClickHandle}
+                                        displayClick={this.displayClickHandle}
+                                        deleteClick={this.deleteClickHandle}></Grid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ref={(ref) => this.formRef = ref} className={this.state.showPanel ? 'row' : 'row hidden'}>
+                        <div className="col-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
+                                </div>
+                                <div className="card-body">
                                     <form>
                                         <div className="row">
                                             <div className="col-4">
-                                            <div className="form-group">
+                                                <div className="form-group">
                                                     <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
-                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
@@ -214,28 +229,28 @@ class ValueChange extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
-                                        <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_id" className="">مبلغ اولیه پیمان</label>
-                                                    <label className="form-control">{this.state.initialAmount?this.state.initialAmount.toLocaleString():0}</label>
+                                                    <label className="form-control">{this.state.initialAmount ? this.state.initialAmount.toLocaleString() : 0}</label>
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="no_id" className={this.state.errors.no_id ? "error-lable" : ''}>شماره تغییر مقادیر</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.valueChange_no}
-                                                    className={this.state.errors.no_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.no_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="increase_price" className={this.state.errors.increase_price ? "error-lable" : ''}>مبلغ افزایش یافته</label>
-                                                   {/* <input name="increase_price" className="form-control" onChange={this.handleChange} type="number"
+                                                    {/* <input name="increase_price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.increase_price} disabled={this.state.status === 'display'} /> */}
-                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("increase_price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.increase_price}
-                                                       className={this.state.errors.increase_price ? "form-control error-control" : 'form-control'}/>
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("increase_price", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.increase_price}
+                                                        className={this.state.errors.increase_price ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
                                         </div>
@@ -245,23 +260,23 @@ class ValueChange extends Component {
                                                     <label htmlFor="decrease_price" className={this.state.errors.decrease_price ? "error-lable" : ''}>مبلغ کاهش یافته</label>
                                                     {/* <input name="decrease_price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.decrease_price} disabled={this.state.status === 'display'} /> */}
-                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("decrease_price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.decrease_price}
-                                                       className={this.state.errors.decrease_price ? "form-control error-control" : 'form-control'}/>
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("decrease_price", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.decrease_price}
+                                                        className={this.state.errors.decrease_price ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="new_work" className="">بهای کار جدید</label>
+                                                    <label htmlFor="new_work" className="">مبلغ کار جدید</label>
                                                     {/* <input name="new_work" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.new_work} disabled={this.state.status === 'display'} /> */}
-                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("new_work",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.new_work}/>
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("new_work", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.new_work} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="change_price" className="">بهای تغییر مقادیر </label>
+                                                    <label htmlFor="change_price" className="">مبلغ تغییر مقادیر</label>
                                                     <label className="form-control">{(-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)).toLocaleString()}</label>
                                                 </div>
                                             </div>
@@ -278,54 +293,54 @@ class ValueChange extends Component {
                                                     <label htmlFor="contract_new_price" className={this.state.errors.contract_new_price ? "error-lable" : ''}>مبلغ پیمان با احتساب تغییر مقادیر(سند)</label>
                                                     {/* <input name="contract_new_price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.contract_new_price} disabled={this.state.status === 'display'} /> */}
-                                                           <NumberFormat  onValueChange={(values) =>this.numberChange("contract_new_price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.contract_new_price}
-                                                       className={this.state.errors.contract_new_price ? "form-control error-control" : 'form-control'}/>
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("contract_new_price", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.contract_new_price}
+                                                        className={this.state.errors.contract_new_price ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="increase_price_percent"  className="">درصد تغییرات(افزایش)</label>
-                                                    <label className="form-control">{(100* parseInt(this.state.obj.increase_price)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                    <label htmlFor="increase_price_percent" className="">درصد تغییرات(افزایش)</label>
+                                                    <label className="form-control">{(100 * parseInt(this.state.obj.increase_price) / parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="decrease_price_percent"  className="">درصد تغییرات( کاهش)</label>
-                                                    <label  className="form-control">{(100* parseInt(this.state.obj.decrease_price)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                    <label htmlFor="decrease_price_percent" className="">درصد تغییرات( کاهش)</label>
+                                                    <label className="form-control">{(100 * parseInt(this.state.obj.decrease_price) / parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
-                                        <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="new_work_percent" className="">درصد کارجدید</label>
-                                                    <label className="form-control">{(100* parseInt(this.state.obj.new_work)/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                    <label className="form-control">{(100 * parseInt(this.state.obj.new_work) / parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
-                                         <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="change_price_percent" className="">درصد کل افزایش یا کاهش</label>
-                                                    <label className="form-control">{(100* (-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price))/parseInt(this.state.initialAmount)).toFixed(2)}</label>
+                                                    <label className="form-control">{(100 * (-parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)) / parseInt(this.state.initialAmount)).toFixed(2)}</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
-										<div className="col-3">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="has_license" className="">مجوز جمع جبری دارد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has_license} onSelect={(values) => this.selectChange("has_license", values)} />
                                                 </div>
                                             </div>
-                                        <div className="col-3">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="has25" className="">ابلاغ 25 درصد دارد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has25} onSelect={(values) => this.selectChange("has25", values)} />
                                                 </div>
                                             </div>
-                                       <div className="col-3">
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_signification" className="">نامه ابلاغ تغییر مقادیر</label>
                                                     {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file'
@@ -335,8 +350,8 @@ class ValueChange extends Component {
                                                             onClick={() => this.deleteFile('file_signification')}></i>}</div>}
 
                                                 </div>
-                                            </div>    
-                                        <div className="col-3">
+                                            </div>
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_25percent" className="">نامه ابلاغ  25 درصد</label>
                                                     {this.state.status !== 'display' && <input name="f_file_25percent" className="form-control" onChange={this.fileChange} type='file'

@@ -31,7 +31,7 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 16, label: 'نوع اعتبار' },
 { value: 17, label: 'نوع پرداخت' },
 { value: 18, label: 'شاخص های اصلی کیفیت آب' },
-{ value: 19, label: 'نوع عملیات' },
+/*{ value: 19, label: 'نوع عملیات' },*/
 { value: 20, label: 'وضعیت جوی' },
 { value: 21, label: 'وضعیت کارگاه' },
 { value: 22, label: 'انواع ماشین آلات' },
@@ -47,5 +47,7 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 32, label: 'نوع بیمه' },
 { value: 33, label: 'نام بیمه گر' },
 { value: 34, label: 'شماره بیمه نامه' },
+{ value: 35, label: 'فراخوان' },
+{ value: 36, label: 'روش دعوت' },
 ]
 export const emptyItem = { title: '', sort: '' };

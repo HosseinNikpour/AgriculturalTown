@@ -7,7 +7,7 @@ import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class InvoiceConsultant extends Component {
     constructor(props) {
@@ -37,7 +37,7 @@ class InvoiceConsultant extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'),]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('agreement/vw'), getAllItem('BaseInfo/vw'),]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let invoice_no = response[2].data.filter(a => a.groupid === 14).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let dueTypes = response[2].data.filter(a => a.groupid === 15).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -46,12 +46,14 @@ class InvoiceConsultant extends Component {
                 //اینجا فیلدهای تاریخ میان
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
+                e.letter_date_manager = e.letter_date_manager ? moment(e.letter_date_manager) : undefined;
+                e.letter_date_branch = e.letter_date_branch ? moment(e.letter_date_branch) : undefined;
 
             });
 
             this.setState({
                 isFetching: false, rows: data, contracts, invoice_no, dueTypes
-                , obj: { ...emptyItem }, showPanel: false, status: '',contractTitle:''
+                , obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: ''
             });
         }).catch((error) => console.log(error))
     }
@@ -62,11 +64,11 @@ class InvoiceConsultant extends Component {
     saveBtnClick() {
         let obj = this.state.obj;
         let errors = this.state.errors;
-        
-        errors.no_id = obj.no_id ? false : true; 
-        errors.contract_id = obj.contract_id ? false : true; 
+
+        errors.no_id = obj.no_id ? false : true;
+        errors.contract_id = obj.contract_id ? false : true;
         errors.manager_price = obj.manager_price ? false : true;
-     
+
 
         if (Object.values(errors).filter(a => a).length > 0) {
             this.setState({ errors }, () => { this.scrollToFormRef(); });
@@ -74,43 +76,46 @@ class InvoiceConsultant extends Component {
         }
         else {
 
-        obj.start_date = obj.start_date ? obj.start_date.format() : '';
-        obj.end_date = obj.end_date ? obj.end_date.format() : '';
-        obj.period_price=parseInt(obj.manager_price)-parseInt(obj.prev_price);
-        
-        var formData = new FormData();
-        if (obj.f_file_invoice)
-            formData.append("file_invoice", obj.f_file_invoice);
+            obj.start_date = obj.start_date ? obj.start_date.format() : '';
+            obj.end_date = obj.end_date ? obj.end_date.format() : '';
+            obj.period_price = parseInt(obj.manager_price) - parseInt(obj.prev_price);
+            obj.letter_date_manager = obj.letter_date_manager ? obj.letter_date_manager.format() : '';
+            obj.letter_date_branch = obj.letter_date_branch ? obj.letter_date_branch.format() : '';
 
-        formData.append("data", JSON.stringify(obj));
 
-        if (this.state.status === 'new')
-            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
-        else {
-            delete obj.Contract;
-            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+            var formData = new FormData();
+            if (obj.f_file_invoice)
+                formData.append("file_invoice", obj.f_file_invoice);
 
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            formData.append("data", JSON.stringify(obj));
+
+            if (this.state.status === 'new')
+                saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            else {
+                delete obj.Contract;
+                updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            }
         }
     }
-}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -134,21 +139,25 @@ class InvoiceConsultant extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let {obj ,contractTitle,contracts,rows}= this.state;
+        let { obj, contractTitle, contracts, rows } = this.state;
         obj[name] = values;
-      
+
         if (name === 'contract_id') {
-            let cont =contracts.find(a => a.key === obj.contract_id);
+            let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_id=prevCont?prevCont.no:0;
-            obj.prev_price=prevCont?prevCont.manager_price:0;
+
+        }
+        else if (name === 'no_id') {
+            let prevs = rows.filter(a => a.contract_id === obj.contract_id)
+                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0));//[0];
+            let prevCont = prevs.filter(a => a.no_id < values)[0];
+            obj.prev_id = prevCont ? prevCont.no : 0;
+            obj.prev_price = prevCont ? prevCont.manager_price : 0;
         }
         this.setState({ obj, contractTitle });
     }
     numberChange(name, values) {
-        const {formattedValue, value} = values;
+        const { formattedValue, value } = values;
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
@@ -226,45 +235,46 @@ class InvoiceConsultant extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                <form>
+                                    <form>
                                         <div className="row">
                                             <div className="col-4">
-                                            <div className="form-group">
-                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
+                                                <div className="form-group">
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره قرارداد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
-                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label htmlFor="project_id" className="">نام قرارداد</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
-											</div>
+                                        </div>
                                         <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="no_id" className={this.state.errors.no_id ? "error-lable" : ''}>شماره صورت وضعیت</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.invoice_no}
+                                                        className={this.state.errors.no_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
+                                                </div>
+                                            </div>
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_id" className="">شماره آخرین صورت وضعیت تایید شده مدیر طرح</label>
                                                     <label className="form-control">{this.state.obj.prev_id}</label>
                                                 </div>
                                             </div>
-                                        
+
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="prev_price" className="">مبلغ آخرین صورت وضعیت تایید شده مدیر طرح</label>
-                                                    <label className="form-control">{this.state.obj.prev_price?this.state.obj.prev_price.toLocaleString():0}</label>
+                                                    <label className="form-control">{this.state.obj.prev_price ? this.state.obj.prev_price.toLocaleString() : 0}</label>
                                                 </div>
                                             </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="no_id"  className={this.state.errors.no_id ? "error-lable" : ''}>شماره صورت وضعیت</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.invoice_no}
-                                                    className={this.state.errors.no_id ? "form-control error-control" : 'form-control'}
-                                                        value={this.state.obj.no_id} onSelect={(values) => this.selectChange("no_id", values)} />
-                                                </div>
-                                            </div>
+
                                         </div>
                                         <div className="row">
                                             <div className="col-4">
@@ -292,8 +302,8 @@ class InvoiceConsultant extends Component {
                                                     <label htmlFor="consultant_price" className="">مبلغ ارائه شده مشاور</label>
                                                     {/* <input name="consultant_price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.consultant_price} disabled={this.state.status === 'display'} /> */}
-                                                        <NumberFormat  onValueChange={(values) =>this.numberChange("consultant_price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.consultant_price}/>
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("consultant_price", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.consultant_price} />
                                                 </div>
                                             </div>
                                         </div>
@@ -303,9 +313,9 @@ class InvoiceConsultant extends Component {
                                                     <label htmlFor="manager_price" className={this.state.errors.manager_price ? "error-lable" : ''}>مبلغ تایید مدیر طرح</label>
                                                     {/* <input name="manager_price" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.manager_price} disabled={this.state.status === 'display'} /> */}
-                                                        <NumberFormat  onValueChange={(values) =>this.numberChange("manager_price",values)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.manager_price}
-                                                       className={this.state.errors.manager_price ? "form-control error-control" : 'form-control'} />
+                                                    <NumberFormat onValueChange={(values) => this.numberChange("manager_price", values)}
+                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.manager_price}
+                                                        className={this.state.errors.manager_price ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -313,9 +323,47 @@ class InvoiceConsultant extends Component {
                                                     <label htmlFor="period_price" className="">کارکرد دوره</label>
                                                     {/* <input name="period_price" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.period_price} disabled={this.state.status === 'display'} /> */}
-                                                    <label className="form-control">{this.state.obj.manager_price?(parseInt(this.state.obj.manager_price)-parseInt(this.state.obj.prev_price)).toLocaleString():0}</label>
+                                                    <label className="form-control">{this.state.obj.manager_price ? (parseInt(this.state.obj.manager_price) - parseInt(this.state.obj.prev_price)).toLocaleString() : 0}</label>
                                                 </div>
                                             </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="letter_no_branch" className="">شماره نامه مدیر شعبه/مشاور</label>
+                                                    <input name="letter_no_branch" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.letter_no_branch} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+
+                                                    <label htmlFor="letter_date_branch" className="">تاریخ نامه مدیر شعبه/مشاور</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('letter_date_branch', value)}
+                                                        value={this.state.obj.letter_date_branch}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="letter_no_manager" className="">شماره نامه مدیر طرح</label>
+                                                    <input name="letter_no_manager" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.letter_no_manager} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+
+                                                    <label htmlFor="letter_date_manager" className="">تاریخ نامه مدیر طرح به معاون فنی</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('letter_date_manager', value)}
+                                                        value={this.state.obj.letter_date_manager}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_invoice" className="">روکش صورت وضعیت</label>
@@ -326,9 +374,7 @@ class InvoiceConsultant extends Component {
                                                             onClick={() => this.deleteFile('file_invoice')}></i>}</div>}
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <input name="decsciption" className="form-control" onChange={this.handleChange}

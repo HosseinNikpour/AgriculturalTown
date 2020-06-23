@@ -4,12 +4,15 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "WBS";
 
-
+let baseQuery=`w.*,b.title AS unit,c.title AS contract,o.title AS operation
+    FROM wbs w  LEFT JOIN baseinfo b ON w.unit_id = b.id
+                LEFT JOIN contract c ON w.contract_id = c.id
+                LEFT JOIN operation o ON w.operation_id = o.id`;
 
 
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by id desc  `;
+    let query = `${baseQuery} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -20,7 +23,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where contract_id = ${req.params.id} order by sort`;
+    let query = `${baseQuery} where contract_id = ${req.params.id} order by sort`;
 
     pool.query(query)
         .then((results) => {

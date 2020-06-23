@@ -4,8 +4,26 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "Company";
 
+router.get(`/vw`, function (req, res) {
+    let query = `SELECT id,title FROM ${name} `;
+
+    pool.query(query)
+        .then((results) => {
+            return res.send(results.rows);
+        })
+        .catch((err) => {
+            return res.send({ type: "Error", message: err.message })
+        });
+});
+
+let baseQuery=`SELECT c.*,
+    b1.title AS province,b2.title AS registration_province,b3.title AS certificate_type
+    FROM company c LEFT JOIN baseinfo b1 ON c.province_id = b1.id
+                   LEFT JOIN baseinfo b2 ON c.registration_province_id = b2.id
+                   LEFT JOIN baseinfo b3 ON c.certificate_type_id = b3.id `;
+                   
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by id desc  `;
+    let query = `${baseQuery} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -16,7 +34,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where id = ${req.params.id} `;
+    let query = `${baseQuery} where id = ${req.params.id} `;
 
     pool.query(query)
         .then((results) => {

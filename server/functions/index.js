@@ -27,14 +27,14 @@ const queryGen = (name, type, row) => {
             let x = key.replace('_id', '');
             if (row[x])  delete row[x];
         }
-
+      
     });
 
     if (type == 'insert') {
         let insertQuery = `INSERT INTO public.${name}(`, insertValues = '';
         Object.keys(row).forEach(key => {
             //console.log(key+'    '+row[key])
-            if ((row[key] ||row[key]===false )&& !key.startsWith('f_')) {
+            if ((row[key] ||row[key]===false )&& !key.startsWith('f_')&& !key.startsWith('vw_')) {
                 insertQuery += key + ',';
                 // console.log(typeof (row[key]));
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
@@ -56,7 +56,7 @@ const queryGen = (name, type, row) => {
     else if (type == 'update') {
         updateQuery = `UPDATE public.${name} SET `
         Object.keys(row).forEach(key => {
-            if ((row[key] ||row[key]===false )&& !key.startsWith('f_') && key != 'id') {
+            if ((row[key] ||row[key]===false )&& !key.startsWith('f_') && key != 'id'&& !key.startsWith('vw_')) {
 
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;

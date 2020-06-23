@@ -3,10 +3,11 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
+import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class PayInvoiceContractor extends Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class PayInvoiceContractor extends Component {
         this.selectChange = this.selectChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.newClickHandle = this.newClickHandle.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.editClickHandle = this.editClickHandle.bind(this);
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
         this.displayClickHandle = this.displayClickHandle.bind(this);
@@ -35,7 +37,7 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('insurance')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('insurance')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let insurance = response[2].data.map(a => { return { key: a.id, label: a.insurance_no, value: a.id, contract: a.contract_id } });;
             let data = response[0].data;
@@ -61,14 +63,14 @@ class PayInvoiceContractor extends Component {
         
         var formData = new FormData();
        
-       /* if (obj.f_file_record)
-        formData.append("file_record", obj.f_file_record); */
+        if (obj.f_file_contract)
+        formData.append("file_contract", obj.f_file_contract); 
      
      
              formData.append("data", JSON.stringify(obj));
 
              if (this.state.status === 'new')
-             saveItem(obj, storeIndex).then((response) => {
+             saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                  // console.log('new save res', response);
                  if (response.data.type !== "Error") {
                      message.success(successMessage, successDuration);
@@ -81,7 +83,7 @@ class PayInvoiceContractor extends Component {
                  }
              }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
          else {
-             updateItem(obj, storeIndex).then((response) => {
+            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                  //console.log('new save res', response);
                  if (response.data.type !== "Error") {
                      message.success(successMessage, successDuration);
@@ -114,30 +116,31 @@ class PayInvoiceContractor extends Component {
 
         this.setState({ obj: ob });
     }
+
+    numberChange(name, values) {
+        const {formattedValue, value} = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
+
+
     dateChange(name, value) {
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, rows, invioces } = this.state;
+        let { obj, contractTitle, contracts,insurance } = this.state;
         obj[name] = values;
 
         if (name === 'contract_id') {
-            let cont = contracts.find(a => a.key === obj.contract_id);
+            let cont = contracts.find(a => a.key === values);
             contractTitle = cont && cont.title ? cont.title : '';
-            let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_id = prevCont ? prevCont.no : 0;
-            /*obj.prev_price = prevCont ? prevCont.price : 0;*/
-
-          /*  let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_approve_id = prevInvo ? prevInvo.no : 0;
-            obj.prev_approve_price = prevInvo ? prevInvo.manager_price : 0;*/
+            insurance=insurance.filter(a=>a.contract_id===values);
 
         }
-        this.setState({ obj, contractTitle });
+        this.setState({ obj, contractTitle,insurance });
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
@@ -256,13 +259,29 @@ class PayInvoiceContractor extends Component {
                                                 </div>
 												 </div>
 												 <div className="col-3">
-                                                <div className="form-group">
+                                                 <div className="form-group">
                                                     <label htmlFor="price" className="">مبلغ حق بیمه</label>
-                                                    <input name="price" className="form-control" onChange={this.handleChange} type="number"
-                                                        value={this.state.obj.price} disabled={this.state.status === 'display'} />
+                                                    {/* <input name="price" className="form-control" onChange={this.handleChange} type="number"
+                                                        value={this.state.obj.price} disabled={this.state.status === 'display'} /> */}
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.price}/>
+                                                </div>
+											
+                                            </div>
+                                            </div>
+                                            <div className="row">
+                                            <div className="col-3">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_contract" className="">بارگذاری الحاقیه</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_contract" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    {this.state.obj.file_contract && <div><a target="_blank" href={this.state.obj.file_contract}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_contract')}></i>}</div>}
                                                 </div>
                                             </div>
-								</div>
+								
+                                                </div>
+                                          
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />

@@ -35,7 +35,7 @@ class Delivery extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label:a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let data = response[0].data;
             data.forEach(e => {

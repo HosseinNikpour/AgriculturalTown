@@ -35,7 +35,7 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('BaseInfo/vw')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
            // let periods = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let StatusContract = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -59,7 +59,7 @@ class PayInvoiceContractor extends Component {
         let errors = this.state.errors;
 
         errors.contract_id = obj.contract_id ? false : true;
-        errors.status_id = obj.status_id ? false : true;
+        errors.state_id = obj.state_id ? false : true;
 
 
         if (Object.values(errors).filter(a => a).length > 0) {
@@ -233,10 +233,10 @@ class PayInvoiceContractor extends Component {
                                         <div className="row">
                                             <div className="col-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="status_id"  className={this.state.errors.status_id ? "error-lable" : ''}>چرخه پیمان</label>
+                                                    <label htmlFor="state_id"  className={this.state.errors.state_id ? "error-lable" : ''}>چرخه پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.StatusContract}
-                                                    className={this.state.errors.status_id ? "form-control error-control" : 'form-control'}
-                                                        value={this.state.obj.status_id} onSelect={(values) => this.selectChange("status_id", values)} />
+                                                    className={this.state.errors.state_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.state_id} onSelect={(values) => this.selectChange("state_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-3">
@@ -257,7 +257,7 @@ class PayInvoiceContractor extends Component {
                                             </div> */}
                                             <div className="col-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
+                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ (تعلیق-خاتمه فسخ)</label>
                                                     <DatePicker onChange={value => this.dateChange('signification_date', value)}
                                                         value={this.state.obj.signification_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
@@ -265,7 +265,7 @@ class PayInvoiceContractor extends Component {
                                             </div>
                                             <div className="col-3">
                                                 <div className="form-group">
-                                                    <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه</label>
+                                                    <label htmlFor="f_file_record" className="">نامه ابلاغ  (تعلیق-خاتمه فسخ)</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
                                                     {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>

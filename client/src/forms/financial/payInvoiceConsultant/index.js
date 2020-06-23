@@ -37,7 +37,7 @@ class PayInvoiceConsultant extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('invoiceConsultant')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('agreement/vw'), getAllItem('BaseInfo/vw'), getAllItem('invoiceConsultant')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let invoice_no = response[2].data.filter(a => a.groupid === 14).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let Typecredit = response[2].data.filter(a => a.groupid === 16).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -131,16 +131,19 @@ class PayInvoiceConsultant extends Component {
         if (name === 'contract_id') {
             let cont = contracts.find(a => a.key === obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
-            let prevCont = rows.filter(a => a.contract_id === obj.contract_id)
-                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
-            obj.prev_id = prevCont ? prevCont.no : 0;
-            obj.prev_price = prevCont ? prevCont.price : 0;
-
+           
             let prevInvo = invioces.filter(a => a.contract_id === obj.contract_id)
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
             obj.prev_approve_id = prevInvo ? prevInvo.no : 0;
             obj.prev_approve_price = prevInvo ? prevInvo.manager_price : 0;
 
+        }
+        else if (name === 'no_id') {
+            let prevs = rows.filter(a => a.contract_id === obj.contract_id)
+                .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0));//[0];
+            let prevCont = prevs.filter(a => a.no_id < values)[0];
+            obj.prev_id = prevCont ? prevCont.no : 0;
+            obj.prev_price = prevCont ? prevCont.manager_price : 0;
         }
         this.setState({ obj, contractTitle });
     }
@@ -229,7 +232,7 @@ class PayInvoiceConsultant extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                             <div className="form-group">
-                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
+                                                    <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره قرارداد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
                                                     className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
@@ -238,7 +241,7 @@ class PayInvoiceConsultant extends Component {
                                             </div>
                                             <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label htmlFor="project_id" className="">نام قرارداد</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
@@ -322,7 +325,26 @@ class PayInvoiceConsultant extends Component {
                                                         value={this.state.obj.credit_id} onSelect={(values) => this.selectChange("credit_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+                                        <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="letter_no_manager" className="">شماره نامه معاون فنی و اجرایی</label>
+                                                    <input name="letter_no_manager" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.letter_no_manager} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>								
+								       <div className="col-4">
+                                                <div className="form-group">
+
+                                                    <label htmlFor="letter_date_manager" className="">تاریخ نامه معاون فنی و اجرایی</label>
+
+                                                    <DatePicker onChange={value => this.dateChange('letter_date_manager', value)}
+                                                        value={this.state.obj.letter_date_manager}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+												 </div>
+                                                 </div>
+                                                 <div className="row">
+                                            <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <input name="decsciption" className="form-control" onChange={this.handleChange}

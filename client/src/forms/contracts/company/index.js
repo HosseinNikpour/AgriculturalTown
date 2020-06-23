@@ -30,7 +30,7 @@ class Company extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw')]).then((response) => {
             let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } })
             let certificateTypes = response[1].data.filter(a => a.groupid === 9).map(a => { return { key: a.id, label: a.title, value: a.id } })
       
@@ -212,7 +212,7 @@ class Company extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="province_id" className="">استان</label>
+                                                    <label htmlFor="province_id" className="">استان بومی (دفتر مرکزی)</label>
                                                     <Select {...selectDefaultProp} options={this.state.provinces} disabled={this.state.status === 'display'}
                                                         value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)}
                                                     />
@@ -220,7 +220,7 @@ class Company extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="city" className="">شهرستان</label>
+                                                    <label htmlFor="city" className="">شهرستان بومی (دفتر مرکزی)</label>
                                                     <input name="city" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.city} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -232,29 +232,6 @@ class Company extends Component {
                                                     <label htmlFor="address" className="">نشانی کامل</label>
                                                     <input name="address" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.address} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="postalcode" className="">کد پستی</label>
-                                                    <input name="postalcode" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.postalcode} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="tell" className="">تلفن</label>
-                                                    <input name="tell" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.tell} disabled={this.state.status === 'display'} />
-                                                </div>
-                                            </div>
-                                            <div className="col-4">
-                                                <div className="form-group">
-                                                    <label htmlFor="fax" className="">فکس</label>
-                                                    <input name="fax" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.fax} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>
@@ -283,6 +260,40 @@ class Company extends Component {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="postalcode" className="">کد پستی</label>
+                                                    <input name="postalcode" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.postalcode} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="tell" className="">تلفن</label>
+                                                    <input name="tell" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.tell} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="fax" className="">فکس</label>
+                                                    <input name="fax" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.fax} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div className="row">
+											<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="email" className="">ایمیل</label>
+                                                    <input name="email" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.email} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+											</div>
+                                       
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
                                     </form>

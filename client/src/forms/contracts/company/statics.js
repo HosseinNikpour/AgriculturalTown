@@ -2,16 +2,16 @@
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
     { dataIndex: 'title', key: 'title', title: 'نام اختصاری' },
-    { dataIndex: 'meli_code', key: 'meli_code', title: 'شناسه ملی' },
-    { dataIndex: 'economic_code', key: 'economic_code', title: 'کد اقتصادی' },
-    { dataIndex: 'registration_number', key: 'registration_number', title: 'شماره ثبت' },
+   // { dataIndex: 'meli_code', key: 'meli_code', title: 'شناسه ملی' },
+  //  { dataIndex: 'economic_code', key: 'economic_code', title: 'کد اقتصادی' },
+  //  { dataIndex: 'registration_number', key: 'registration_number', title: 'شماره ثبت' },
     { dataIndex: 'certificate_type', key: 'certificate_type', title: 'نوع گواهینامه' },
-    { dataIndex: 'province', key: 'province', title: 'استان' },
-    { dataIndex: 'city', key: 'city', title: 'شهرستان' },
-    { dataIndex: 'tell', key: 'tell', title: 'تلفن' },
-    { dataIndex: 'fax', key: 'fax', title: 'فکس' },
-    // { key: 'rating1', title: 'رتبه های اخذ شده مشاور' },
-    // { key: 'rating2', title: 'رتبه های اخذ شده پیمانکار' },
+    { dataIndex: 'province', key: 'province', title: 'استان بومی (دفتر مرکزی)' },
+    { dataIndex: 'city', key: 'city', title: 'شهرستان بومی (دفتر مرکزی)' },
+    //{ dataIndex: 'tell', key: 'tell', title: 'تلفن' },
+   // { dataIndex: 'fax', key: 'fax', title: 'فکس' },
+    { key: 'rating1', title: 'رتبه های اخذ شده مشاور' },
+     { key: 'rating2', title: 'رتبه های اخذ شده پیمانکار' },
 ];
 export const storeIndex = "Company";
 export const pageHeder = 'شناسنامه شرکت ها';

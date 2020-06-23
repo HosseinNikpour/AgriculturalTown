@@ -5,7 +5,7 @@ import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp ,numberDefaultProp  } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, numberDefaultProp } from '../../../components/statics'
 import Approve from '../../../components/approve/index';
 import History from '../../../components/approve/history';
 import { findNextStep } from '../../../functions/index';
@@ -19,7 +19,7 @@ class WeeklyOperation extends Component {
         this.state = {
             columns: columns, rows: [], periods: [], contracts: [], errors: {},
             //contract_id: 0, period_id: 0, parent_id: 0, prev_parent_id: 0, prev_period_id: 0,
-            tableData: [], isFetching: true, showPanel: false, status: '',
+            tableData: [], isFetching: true, showPanel: false, status: '', contractTitle: ""
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -38,9 +38,9 @@ class WeeklyOperation extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period'),
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('period'),
         getItem("weeklyOperation", 'PermissionStructure')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
             let canAdd = response[3].data[0].item_creator_id === roleId || roleId > 3 ? true : false;
@@ -53,7 +53,7 @@ class WeeklyOperation extends Component {
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
-      //  
+        //  
         let { contract_id, parent_id, period_id } = this.state;
         parent_id = parent_id ? parent_id : 0;
 
@@ -103,7 +103,7 @@ class WeeklyOperation extends Component {
         }
         else {*/
 
-        
+
         let rows = tbl.map(a => ({
             operation: a.operation,
             unit: a.unit,
@@ -150,33 +150,41 @@ class WeeklyOperation extends Component {
             }).catch((error) => console.log(error));
         }
 
-    
 
-}    
-   numberChange(name, values) {
-        const {formattedValue, value} = values;
+
+    }
+    numberChange(name, values) {
+        const { formattedValue, value } = values;
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
     }
-	
+
     handleChange(e, i) {
         let tableData = this.state.tableData;
         tableData[i][e.target.name] = e.target.value;
         this.setState({ tableData });
     }
     selectChange(name, values) {
+        let contractTitle = this.state.contractTitle;
         if (name === 'contract_id') {
+            let cont = this.state.contracts.find(a => a.key == values);
+            contractTitle = cont && cont.title ? cont.title : '';
+
             let pervItems = this.state.rows.filter(a => a.contract_id === values);
             if (pervItems[0]) {
                 let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
-                let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
-                let period_id = periods[periods.length - 1].key;
-                let prev_parent_id = pervItems[0].id;
-                this.setState({ contract_id: values, period_id, prev_parent_id });
+                if (prevPeriod) {
+                    let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date);
+                    let period_id = periods[periods.length - 1].key;
+                    let prev_parent_id = pervItems[0].id;
+                    this.setState({ contractTitle, contract_id: values, period_id, prev_parent_id });
+                }
+                else
+                    this.setState({ contract_id: values, contractTitle });
             }
             else
-                this.setState({ contract_id: values });
+                this.setState({ contract_id: values, contractTitle });
         }
 
     }
@@ -227,7 +235,7 @@ class WeeklyOperation extends Component {
         this.setState({
             contract_id: "", period_id: "", parent_id: "", prev_parent_id: "",
             prev_period_id: "", status: '', showPanel: false, tableData: [], showTable: false
-        }, () => { this.scrollToGridRef();this.fetchData(); });
+        }, () => { this.scrollToGridRef(); this.fetchData(); });
     }
     render() {
         const { isFetching } = this.state;
@@ -274,7 +282,7 @@ class WeeklyOperation extends Component {
                                                 {this.state.contract_id && <label className="form-control">{this.state.contracts.find(a => a.key === this.state.contract_id).label}</label>}
                                                 {!this.state.contract_id &&
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
-                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />}
                                             </div>
                                         </div>
@@ -292,6 +300,14 @@ class WeeklyOperation extends Component {
                                                 <button className='btn btn-primary' onClick={this.fetchDetailData}>مشاهده</button>
                                             </div>
                                         </div>}
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">نام پیمان</label>
+                                                <label className="form-control">{this.state.contractTitle}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr />
                                     <div className={this.state.showTable ? 'row' : 'hidden'}>
@@ -316,14 +332,14 @@ class WeeklyOperation extends Component {
                                                             <td><label className='tableSpan'>{i + 1}</label></td>
                                                             <td><label className='tableSpan'>{item.operation}</label></td>
                                                             <td><label className='tableSpan'>{item.unit}</label></td>
-                                                            <td><label className='tableSpan'>{item.totalWork}</label></td>
+                                                            <td><label className='tableSpan'>{item.totalWork.toLocaleString()}</label></td>
 
-                                                            <td><label className='tableSpan'>{item.cumulative_done}</label></td>
+                                                            <td><label className='tableSpan'>{item.cumulative_done.toLocaleString()}</label></td>
 
                                                             <td><input name="current_done" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                 value={item.current_done} type='number' disabled={this.state.status === 'display'} /></td>
 
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_done) + parseInt(item.current_done)}</label></td>
+                                                            <td><label className='tableSpan'>{(parseInt(item.cumulative_done) + parseInt(item.current_done)).toLocaleString()}</label></td>
                                                         </tr>
                                                     })}
 

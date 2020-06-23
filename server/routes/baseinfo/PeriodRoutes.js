@@ -6,7 +6,7 @@ const name = "Period";
 
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM ${name} order by end_date desc  `;
+    let query = `SELECT * FROM ${name} order by end_date   `;
 
     pool.query(query)
         .then((results) => {

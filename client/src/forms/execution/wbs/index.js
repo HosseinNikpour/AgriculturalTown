@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { getItem,  getAllItem,  upsertItem } from '../../../api/index';
+import { getItem, getAllItem, upsertItem } from '../../../api/index';
 import { message, Select } from 'antd'
 import Loading from '../../../components/common/loading';
 import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, numberDefaultProp
+import {
+    successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, numberDefaultProp
 } from '../../../components/statics'
 
 class WBS extends Component {
@@ -16,7 +17,7 @@ class WBS extends Component {
             columns: columns, rows: [],
             contracts: [], units: [], opGroups: [], operations: [],
             contract_id: '', opGroup_id: '',
-            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
+            isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: "",
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -31,11 +32,11 @@ class WBS extends Component {
     }
 
     fetchData() {
-        Promise.all([getAllItem('contract'), getAllItem('BaseInfo'), getAllItem('operation')]).then((response) => {
+        Promise.all([getAllItem('contract/vw'), getAllItem('BaseInfo'), getAllItem('operation')]).then((response) => {
             //    response[0].data.forEach(a => console.log(a.contract_no + ' - ' + a.company));
             let units = response[1].data.filter(a => a.groupid === 11).map(a => { return { key: a.id, label: a.title, value: a.id } })
             let opGroups = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } })
-            let contracts = response[0].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id } })
+            let contracts = response[0].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let operations = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } })
             this.setState({ isFetching: false, contracts, units, opGroups, operations });
         }).catch((error) => console.log(error))
@@ -51,20 +52,20 @@ class WBS extends Component {
         //  alert('انتخاب حداقل یک ردیف الزامیست')
         //else {
         let sum = 0;
-        let errorRows=[];
-        rows.forEach((r,i) => {
+        let errorRows = [];
+        rows.forEach((r, i) => {
             sum += parseInt(r.price_change);
-            if (!r.unit_id&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.operation_id&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.price&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.price_change&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.sort&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.value&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
-            else if (!r.value_change&&errorRows.indexOf(i+1)<0)errorRows.push(i+1);
+            if (!r.unit_id && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.operation_id && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.price && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.price_change && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.sort && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.value && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
+            else if (!r.value_change && errorRows.indexOf(i + 1) < 0) errorRows.push(i + 1);
         });
         //  console.log(sum);
-        if (errorRows.length>0) {
-           alert('لطفا ستون های الزامی را وارد کنید . ردیف های '+errorRows.toString())
+        if (errorRows.length > 0) {
+            alert('لطفا ستون های الزامی را وارد کنید . ردیف های ' + errorRows.toString())
         }
         else {
             rows.forEach(r => {
@@ -93,6 +94,12 @@ class WBS extends Component {
         rows[i][e.target.name] = e.target.value;
         this.setState({ rows });
     }
+    selectChangeContract(value) {
+
+        let cont = this.state.contracts.find(a => a.key == value);
+        let contractTitle = cont && cont.title ? cont.title : '';
+        this.setState({ contract_id: value, contractTitle });
+    }
     selectChange(name, values, i) {
         let rows = this.state.rows;
         rows[i][name] = values;
@@ -115,7 +122,7 @@ class WBS extends Component {
     }
     newClickHandle() {
         let rows = this.state.rows;
-        rows.push({...emptyItem});
+        rows.push({ ...emptyItem });
         this.setState({ rows });
 
     }
@@ -125,13 +132,13 @@ class WBS extends Component {
         rows.splice(i, 1);
         this.setState({ rows });
     }
-    numberChange(name, values,i) {
-        const {formattedValue, value} = values;
-         let rows = this.state.rows;
+    numberChange(name, values, i) {
+        const { formattedValue, value } = values;
+        let rows = this.state.rows;
         rows[i][name] = value;
         this.setState({ rows });
- }
-	
+    }
+
     newRangeClickHandle() {
         this.setState({ isFetching: true });
         let opGroup_id = this.state.opGroup_id ? this.state.opGroup_id : 0;
@@ -181,7 +188,7 @@ class WBS extends Component {
                                             <div className="form-group">
                                                 <label htmlFor="contract_id" className="">پیمان</label>
                                                 <Select {...selectDefaultProp} options={this.state.contracts} disabled={this.state.status === 'display'}
-                                                    value={this.state.contract_id} onSelect={(value) => this.setState({ contract_id: value })}
+                                                    value={this.state.contract_id} onSelect={(value) => this.selectChangeContract(value)}
                                                 />
 
                                             </div>  </div>
@@ -200,8 +207,16 @@ class WBS extends Component {
                                                     <button style={{ fontSize: '17px' }} className="botton" onClick={this.newRangeClickHandle} >درج ردیف ها  <i className="far fa-file-import"></i></button>
                                                 </div>
                                             </div>}
-                                    </div>
 
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">نام پیمان</label>
+                                                <label className="form-control">{this.state.contractTitle}</label>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     {this.state.showPanel &&
                                         <div className='row'>
@@ -242,15 +257,15 @@ class WBS extends Component {
                                                                 <td>
                                                                     {/* <input name="price" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                     value={(item.price)} type='number' /> */}
-                                                                       <NumberFormat  onValueChange={(values) =>this.numberChange("price",values,i)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={item.price}/>
-                                                                    </td>
+                                                                    <NumberFormat onValueChange={(values) => this.numberChange("price", values, i)}
+                                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={item.price} />
+                                                                </td>
                                                                 <td>
                                                                     {/* <input name="price_change" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                     value={(item.price_change)} type='number' /> */}
-                                                                       <NumberFormat  onValueChange={(values) =>this.numberChange("price_change",values,i)} 
-                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={item.price_change}/>
-                                                                    </td>
+                                                                    <NumberFormat onValueChange={(values) => this.numberChange("price_change", values, i)}
+                                                                        {...numberDefaultProp} disabled={this.state.status === 'display'} value={item.price_change} />
+                                                                </td>
                                                                 <td>{/* <input name="price_diff" className="form-control" onChange={(e)=>this.handleChange(e,i)}
                                                                     value={(item.price_change-item.price)} type='number' disabled={true}/> */}
                                                                     {(item.price_change - item.price).toLocaleString()}
@@ -258,10 +273,10 @@ class WBS extends Component {
                                                                 <td>{item.wieght}</td>
                                                                 <td><input name="sort" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                     value={(item.sort)} type='number' /></td>
-                                                                <td> 
-                                                                  
-                                                                     <i className="far fa-trash-alt" onClick={(e) => this.deleteRecord(e, i)}></i>
-                                                                     </td>
+                                                                <td>
+
+                                                                    <i className="far fa-trash-alt" onClick={(e) => this.deleteRecord(e, i)}></i>
+                                                                </td>
                                                             </tr>
                                                         })}
 

@@ -18,7 +18,7 @@ class WeeklyMachine extends Component {
 
         this.state = {
             columns: columns, rows: [], periods: [], contracts: [],
-            tableData: [], isFetching: true, showPanel: false, status: '',
+            tableData: [], isFetching: true, showPanel: false, status: '', contractTitle: "",
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -37,9 +37,9 @@ class WeeklyMachine extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period'),
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('period'),
         getAllItem('baseinfo'), getItem("weeklyMachine", 'PermissionStructure')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
+            let contracts = response[1].data.map(a => {return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let machineTypes = response[3].data.filter(a => a.groupid === 22).map(a => { return { key: a.id, label: a.title, value: a.id } });
 
@@ -61,25 +61,7 @@ class WeeklyMachine extends Component {
         getItem(parent_id, 'WeeklyMachineDetail').then((response) => {
             let data = response.data ? response.data : [];
             let tableData = data;// [];
-            // let per = this.state.periods.find(a => a.key === period_id);
-            // let s = moment(per.start_date), e = moment(per.end_date).add(1, 'days');
-
-            // while (s.isBefore(e)) {
-            //     let curr = data.find(a => moment(a.date).format('jYYYY/jMM/jDD') === s.format('jYYYY/jMM/jDD'))
-
-            //     tableData.push({
-            //         date: s.format('jYYYY/jMM/jDD'),
-            //         day: s.format('ddd'),
-            //         shift_count: curr ? curr.shift_count : 0,
-            //         weather_status_id: curr ? curr.weather_status_id : "",
-            //         workshop_status_id: curr ? curr.workshop_status_id : "",
-            //         rain: curr ? curr.rain : 0
-            //     });
-
-            //     s.add(1, 'days');
-            // }
-
-
+       
             this.setState({ tableData, showTable: true, isFetching: false });
         }).catch((error) => console.log(error))
     }
@@ -152,17 +134,21 @@ class WeeklyMachine extends Component {
         this.setState({ tableData });
     }
     selectChange(name, values) {
+        let contractTitle = this.state.contractTitle;
         if (name === 'contract_id') {
+            let cont = this.state.contracts.find(a => a.key == values);
+            contractTitle = cont && cont.title ? cont.title : '';
+
             let pervItems = this.state.rows.filter(a => a.contract_id === values);
             if (pervItems[0]) {
                 let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
                 let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
                 let period_id = periods[periods.length - 1].key;
                 let prev_parent_id = pervItems[0].id;
-                this.setState({ contract_id: values, period_id, prev_parent_id });
+                this.setState({ contract_id: values, period_id, prev_parent_id ,contractTitle});
             }
             else
-                this.setState({ contract_id: values });
+                this.setState({ contract_id: values,contractTitle });
         }
 
     }
@@ -280,6 +266,14 @@ class WeeklyMachine extends Component {
                                                 <button className='btn btn-primary' onClick={this.fetchDetailData}>مشاهده</button>
                                             </div>
                                         </div>}
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">نام پیمان</label>
+                                                <label className="form-control">{this.state.contractTitle}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr />
                                     <div className={this.state.showTable ? 'row' : 'hidden'}>

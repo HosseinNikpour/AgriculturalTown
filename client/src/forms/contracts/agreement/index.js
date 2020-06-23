@@ -17,7 +17,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], contractTypes: [],
-            companies: [], projects: [], users: [], errors: {},
+            companies: [], projects: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -40,13 +40,13 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo'), getAllItem('company'),
-        getAllItem('town'), getAllItem('user')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
+        getAllItem('town/vw')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
-            let operationType = response[1].data.filter(a => a.groupid === 19).map(a => { return { key: a.id, label: a.title, value: a.id } });
+         
+            let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             data.forEach(e => {
 
@@ -59,7 +59,7 @@ class Town extends Component {
             //console.log(data);
             this.setState({
                 isFetching: false, rows: data, contractTypes,
-                companies, towns, users, operationType,
+                companies, towns, operationType,
                 obj: { ...emptyItem }, showPanel: false, status: ''
             });
         }).catch((error) => console.log(error))
@@ -273,7 +273,7 @@ class Town extends Component {
                                                     <label htmlFor="town_id" className={this.state.errors.town_id ? "error-lable" : ''}>نام شهرک</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.towns}
                                                         className={this.state.errors.town_id ? "form-control error-control" : 'form-control'}
-                                                        value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)} />
+                                                        mode="multiple" value={this.state.obj.town_id} onChange={(values) => this.selectChange("town_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
@@ -470,7 +470,7 @@ class Town extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="f_file_announcement" className="">صورتجلسه ابلاغ</label>
+                                                    <label htmlFor="f_file_announcement" className="">نامه ابلاغ</label>
                                                     {this.state.status !== 'display' && <input name="f_file_announcement" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
                                                     {this.state.obj.file_announcement && <div><a target="_blank" href={this.state.obj.file_announcement}>مشاهده فایل</a>

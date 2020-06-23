@@ -1,18 +1,22 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+  { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
   { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان  ' }, 
+  { dataIndex: 'vw_file_agreement',key: 'vw_file_agreement', title: ' قرارداد ' ,render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  },
  // { dataIndex: 'prev_approve_id',key: 'prev_approve_id', title: 'شماره آخرین صورت وضعیت تایید شده مدیر طرح' }, 
   //{ dataIndex: 'prev_id',key: 'prev_id', title: 'شماره آخرین صورت وضعیت پرداخت شده مالی' }, 
-  { dataIndex: 'prev_approve_price',key: 'prev_approve_price', title: 'مبلغ آخرین صورت وضعیت تایید شده مدیر طرح', render: function (text) { return  text?text.toLocaleString():0 } }, 
-  { dataIndex: 'prev_price',key: 'prev_price', title: 'مبلغ آخرین صورت وضعیت پرداخت شده مالی', render: function (text) { return  text?text.toLocaleString():0 } }, 
+  //{ dataIndex: 'prev_approve_price',key: 'prev_approve_price', title: 'مبلغ آخرین صورت وضعیت تایید شده مدیر طرح', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
+  //{ dataIndex: 'prev_price',key: 'prev_price', title: 'مبلغ آخرین صورت وضعیت پرداخت شده مالی', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
   { dataIndex: 'no',key: 'no', title: 'شماره صورت وضعیت فعلی' },
  
-  { dataIndex: 'price',key: 'price', title: 'مبلغ قابل پرداخت تجمعی', render: function (text) { return  text?text.toLocaleString():0 } }, 
-  { dataIndex: 'period_price',key: 'period_price', title: 'مبلغ قابل پرداخت در دوره', render: function (text) { return  text?text.toLocaleString():0 } }, 
-  { dataIndex: 'pay_date',key: 'pay_date', title: 'تاریخ سند پرداخت' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } }, 
-  { dataIndex: 'type',key: 'type', title: 'نوع پرداخت' },
-  { dataIndex: 'credit',key: 'credit', title:'نوع اعتبارات' }, 
+  { dataIndex: 'price',key: 'price', title: ' مبلغ قابل پرداخت تجمعی   ', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
+  //{ dataIndex: 'period_price',key: 'period_price', title: 'مبلغ قابل پرداخت در دوره', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
+  //{ dataIndex: 'pay_date',key: 'pay_date', title: 'تاریخ سند پرداخت' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } }, 
+ // { dataIndex: 'type',key: 'type', title: 'نوع پرداخت' },
+  //{ dataIndex: 'credit',key: 'credit', title:'نوع اعتبارات' }, 
+ // { dataIndex: 'letter_date_manager',key: 'letter_date_manager', title: 'تاریخ نامه معاون فنی' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
+//{ dataIndex: 'letter_no_manager', key: 'letter_no_manager', title: 'شماره نامه معاون فنی' },
   //{ dataIndex: 'decsciption',key: 'decsciption', title: 'توضیحات' },
 
     // { dataIndex: 'creator_id',key: 'creator_id', title: 'ایجاد کننده' }, 

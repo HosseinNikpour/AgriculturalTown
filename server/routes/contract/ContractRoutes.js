@@ -5,6 +5,34 @@ const func = require('../../functions/index');
 const name = "Contract";
 var jwt = require('jsonwebtoken');
 
+
+
+
+router.get(`/vw`, function (req, res) {
+    let query = `SELECT c.id,c.title,duration,initial_amount,contract_no,co.title as company,co.certificate_type_id as company_type_id
+    FROM  Contract as c left JOIN  Company as co ON c.company_id=co.id `;
+
+    pool.query(query)
+        .then((results) => {
+            return res.send(results.rows);
+        })
+        .catch((err) => {
+            return res.send({ type: "Error", message: err.message })
+        });
+});
+
+
+let baseQuery=`SELECT c.*,co1.title AS company, t.title AS town,b.title AS contract_type
+                ,co2.title as vw_monitoring_company
+               
+    FROM contract c LEFT JOIN company co1 ON c.company_id = co1.id
+                    LEFT JOIN agreement a ON c.monitoring_agreement_id = a.id
+                    LEFT JOIN company co2 ON a.company_id = co2.id
+                    LEFT JOIN town t ON c.town_id = t.id
+                    LEFT JOIN baseinfo b ON c.contract_type_id = b.id `;
+
+
+
 router.get(`/`, function (req, res) {
     let userId = req.query.userId,
         token = req.query.token;
@@ -28,7 +56,7 @@ router.get(`/`, function (req, res) {
             break;
     }
 
-    let query = `SELECT * FROM vw_${name} ${where} order by id desc  `;
+    let query = `${baseQuery} ${where} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -39,7 +67,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where id = ${req.params.id} `;
+    let query = `${baseQuery} where id = ${req.params.id} `;
 
     pool.query(query)
         .then((results) => {
@@ -49,6 +77,7 @@ router.get(`/:id`, function (req, res) {
             return res.send({ type: "Error", message: err.message })
         });
 });
+
 router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);

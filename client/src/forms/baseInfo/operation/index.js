@@ -31,7 +31,7 @@ class Operation extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('baseInfo')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('baseInfo/vw')]).then((response) => {
             let data = response[0].data;
             let categoies = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let units = response[1].data.filter(a => a.groupid === 11).map(a => { return { key: a.id, label: a.title, value: a.id } })

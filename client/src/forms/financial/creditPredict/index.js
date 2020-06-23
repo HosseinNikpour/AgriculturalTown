@@ -37,7 +37,7 @@ class CreditPredict extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('invoiceContractor'), getAllItem('payInvoiceContractor')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('invoiceContractor'), getAllItem('payInvoiceContractor')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } }); let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let data = response[0].data;
             let invioces = response[2].data;
@@ -46,6 +46,8 @@ class CreditPredict extends Component {
             data.forEach(e => {
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
+                e.invoice_paid_date = e.invoice_paid_date ? moment(e.invoice_paid_date) : undefined;
+                e.invoice_approved_date = e.invoice_approved_date ? moment(e.invoice_approved_date) : undefined;
 
             });
 
@@ -72,6 +74,10 @@ class CreditPredict extends Component {
             alert("لطفا موارد الزامی را وارد کنید");
         }
         else {
+
+          
+  obj.invoice_paid_date = obj.invoice_paid_date ? obj.invoice_paid_date.format() : '';	
+  obj.invoice_approved_date = obj.invoice_approved_date ? obj.invoice_approved_date.format() : '';	
 
         if (this.state.status === 'new')
             saveItem(obj, storeIndex).then((response) => {
@@ -239,7 +245,7 @@ class CreditPredict extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="period_id" className="">شروع دوره گزارش</label>
+                                                    <label htmlFor="start_date" className="">تاریخ گزارش</label>
                                                     <DatePicker onChange={value => this.dateChange('start_date', value)}
                                                         value={this.state.obj.start_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
@@ -247,7 +253,7 @@ class CreditPredict extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="period_id" className="">پایان دوره گزارش</label>
+                                                    <label htmlFor="end_date" className="">پایان دوره گزارش</label>
                                                     <DatePicker onChange={value => this.dateChange('end_date', value)}
                                                         value={this.state.obj.end_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
@@ -263,7 +269,7 @@ class CreditPredict extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="invoice_paid_period" className="">دوره پرداخت</label>
+                                                    <label htmlFor="invoice_paid_period" className="">شماره آخرین صورت وضعیت پرداخت شده</label>
                                                     <label className="form-control">{this.state.obj.invoice_paid_period}</label>
                                                 </div>
                                             </div>
@@ -275,7 +281,7 @@ class CreditPredict extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="invoice_approved_period" className="">دوره تایید</label>
+                                                    <label htmlFor="invoice_approved_period" className="">شماره آخرین صورت وضعیت تایید شده </label>
                                                     <label className="form-control">{this.state.obj.invoice_approved_period}</label>
                                                 </div>
                                             </div>
@@ -283,7 +289,7 @@ class CreditPredict extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                             <div className="form-group">
-                                                    <label htmlFor="price_until_now" className={this.state.errors.price_until_now ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از آخرین دوره تایید تا دوره گزارش</label>
+                                                    <label htmlFor="price_until_now" className={this.state.errors.price_until_now ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از آخرین تاریخ تایید تا تاریخ گزارش</label>
                                                     {/* <input name="price_until_now" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.price_until_now} disabled={this.state.status === 'display'} /> */}
                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_now",values)} 
@@ -294,7 +300,7 @@ class CreditPredict extends Component {
                                             </div>
                                             <div className="col-4">
                                             <div className="form-group">
-                                                    <label htmlFor="price_until_end" className={this.state.errors.price_until_end ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از دوره گزارش تا پایان کار</label>
+                                                    <label htmlFor="price_until_end" className={this.state.errors.price_until_end ? "error-lable" : ''}>برآورد مبلغ صورت وضعیت از تاریخ گزارش تا پایان کار</label>
                                                     {/* <input name="price_until_end" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.price_until_end} disabled={this.state.status === 'display'} /> */}
                                                          <NumberFormat  onValueChange={(values) =>this.numberChange("price_until_end",values)} 
@@ -302,9 +308,26 @@ class CreditPredict extends Component {
 													     className={this.state.errors.price_until_end ? "form-control error-control" : 'form-control'}/>
                                                 </div>
                                             </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="invoice_paid_date" className="">تاریخ آخرین  صورت وضعیت پرداخت شده</label>
+                                                    <DatePicker onChange={value => this.dateChange('invoice_paid_date', value)}
+                                                        value={this.state.obj.invoice_paid_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+												 </div> 
+												 
 											 </div>
 											 <div className="row">
-                                            <div className="col-12">
+                                             <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="invoice_approved_date" className="">تاریخ آخرین صورت وضعیت تایید شده</label>
+                                                    <DatePicker onChange={value => this.dateChange('invoice_approved_date', value)}
+                                                        value={this.state.obj.invoice_approved_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+												 </div> 
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <textarea name="decsciption" className="form-control" onChange={this.handleChange}

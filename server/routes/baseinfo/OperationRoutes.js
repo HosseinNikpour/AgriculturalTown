@@ -5,11 +5,13 @@ const func = require('../../functions/index');
 const name = "Operation";
 
 
-
+let baseQuery=`select o.*,b.title AS category,b2.title AS unit
+                FROM operation o LEFT JOIN baseinfo b ON o.category_id = b.id
+                                 LEFT JOIN baseinfo b2 ON o.unit_id = b2.id `
 
 
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by sort  `;
+    let query = `${baseQuery} order by sort  `;
 
     pool.query(query)
         .then((results) => {
@@ -20,7 +22,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where category_id = ${req.params.id} order by sort`;
+    let query = `${baseQuery} where category_id = ${req.params.id} order by sort`;
 
     pool.query(query)
         .then((results) => {

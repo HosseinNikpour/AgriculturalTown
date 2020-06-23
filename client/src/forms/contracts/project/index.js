@@ -29,7 +29,7 @@ class Project extends Component {
 
     scrollToFormRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem("town")]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem("town/vw")]).then((response) => {
             let towns = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
            
             this.setState({ isFetching: false, rows: response[0].data, towns: towns 

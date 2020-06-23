@@ -4,8 +4,15 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "value_change";
 
+
+let baseQuery=`select w.* ,c.contract_no AS contract, b.title AS no
+    ,co.title as vw_company ,c.title as vw_contract_title
+   FROM value_change w LEFT JOIN contract c ON w.contract_id = c.id
+                       LEFT JOIN baseinfo b ON w.no_id = b.id
+                       left JOIN  Company as co ON c.company_id=co.id `;
+
 router.get(`/`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} order by id desc  `;
+    let query = ` ${baseQuery} order by id desc  `;
 
     pool.query(query)
         .then((results) => {
@@ -16,7 +23,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `SELECT * FROM vw_${name} where id = ${req.params.id} `;
+    let query = `${baseQuery} where id = ${req.params.id} `;
 
     pool.query(query)
         .then((results) => {
