@@ -4,7 +4,7 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "Town";
 
-let baseQuery=`t.*,b1.title AS province,b2.title AS activity_type,
+let baseQuery=`select t.*,b1.title AS province,b2.title AS activity_type
 --b3.title AS ownership_type,
 --b4.title AS water_supply,
 --b5.title AS power_supply,

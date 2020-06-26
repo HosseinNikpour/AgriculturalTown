@@ -4,7 +4,7 @@ const router = express.Router();
 
 const name = "Weekly_User";
 
-let baseQuery=` w.*,p.title AS period,c.title AS contract,u.name AS "current_user"
+let baseQuery=`select w.*,p.title AS period,c.title AS contract,u.name AS "current_user"
     FROM weekly_user w LEFT JOIN period p ON w.period_id = p.id
                             LEFT JOIN contract c ON w.contract_id = c.id
                             LEFT JOIN "user" u ON w.current_user_id = u.id `;

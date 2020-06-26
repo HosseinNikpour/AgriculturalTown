@@ -2,12 +2,11 @@ const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
-const name = "WBS";
+const name = "WBS_Study";
 
-let baseQuery=`select w.*,b.title AS unit,c.title AS contract,o.title AS operation
-    FROM wbs w  LEFT JOIN baseinfo b ON w.unit_id = b.id
-                LEFT JOIN contract c ON w.contract_id = c.id
-                LEFT JOIN operation o ON w.operation_id = o.id`;
+let baseQuery=`select w.* ,c.title AS contract,o.title AS operation
+    FROM WBS_Study as w  LEFT JOIN agreement c ON w.contract_id = c.id
+                      LEFT JOIN operation o ON w.operation_id = o.id `;
 
 
 
@@ -37,14 +36,13 @@ router.post('/upsert', function (req, res) {
 
     let rows = req.body.rows;
     let contractId = req.body.rows[0].contract_id;
+    console.log(req.body);
     pool.query(`delete from public.${name} WHERE contract_id=${contractId}`).then((results) => {
         let query = `INSERT INTO public.${name}(
-        creator_id, create_date, contract_id, operation_id, unit_id, value, value_change, value_diff, 
-        price, price_change, price_diff, wieght, sort)
+        creator_id, create_date, contract_id, operation_id, weight, sort)
         VALUES `;
         rows.forEach(e => {
-            query += `(${e.user_id},'${new Date().toLocaleString()}',${e.contract_id},${e.operation_id},${e.unit_id},${e.value},${e.value_change},${e.value_diff},
-            ${e.price},${e.price_change},${e.price_diff},${e.wieght},${e.sort}),`
+            query += `(${req.body.user_id},'${new Date().toLocaleString()}',${e.contract_id},${e.operation_id},${e.weight},${e.sort}),`
         });
         query = query.slice(0, -1);
         console.log(query)

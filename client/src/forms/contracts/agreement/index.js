@@ -38,7 +38,12 @@ class Town extends Component {
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
     //  scrollToFormRef = () => window.scrollTo({ top: 700, behavior: 'smooth' })
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
-
+    // rows.forEach(e => {
+    //     e.item_creator = users.find(a => a.key === e.item_creator_id).label;
+    //     e.item_approver =e.item_approver_id.map(x => users.find(a => a.key === x).label).toString();
+    //     e.item_viewer =e.item_viewer_id.map(x => users.find(a => a.key === x).label).toString();
+    //     e.item_editor =e.item_editor_id.map(x => users.find(a => a.key === x).label).toString();
+    // });
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
         getAllItem('town/vw')]).then((response) => {
@@ -54,6 +59,7 @@ class Town extends Component {
                 e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
                 e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
+                e.town =e.town_id.map(x => towns.find(a => a.key === x).label).toString();
 
             });
             //console.log(data);

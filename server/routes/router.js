@@ -35,6 +35,9 @@ router.use('/WeeklyUser', require('./execution/WeeklyUserRoutes'));
 router.use('/WeeklyUserDetail', require('./execution/WeeklyUserDetailRoutes'));
 router.use('/WeeklyMachine', require('./execution/WeeklyMachineRoutes'));
 router.use('/WeeklyMachineDetail', require('./execution/WeeklyMachineDetailRoutes'));
+router.use('/StudyWBS', require('./execution/StudyWBSRoutes'));
+router.use('/StudyOperation', require('./execution/StudyOperationRoutes'));
+router.use('/StudyOperationDetail', require('./execution/StudyOperationDetailRoutes'));
 
 router.use('/CreditPredict', require('./financial/CreditPredictRoutes'));
 router.use('/InvoiceConsultant', require('./financial/InvoiceConsultantRoutes'));

@@ -21,9 +21,10 @@ import Login from './components/security/login'
 import User from './forms/admin/user/index';
 import BaseInfo from './forms/baseInfo/baseInfo/index';
 import Period from './forms/baseInfo/period/index';
-import Operation from './forms/baseInfo/operation/index'
-import WBS from './forms/execution/wbs/index'
-import PermissionStructure from './forms/admin/perStructure/index'
+import Operation from './forms/baseInfo/operation/index';
+import WBS from './forms/execution/wbs/index';
+import StudyWBS from './forms/execution/studyWbs/index';
+import PermissionStructure from './forms/admin/perStructure/index';
 
 //user level
 import Company from './forms/contracts/company/index'
@@ -47,6 +48,7 @@ import WeeklyOperation from './forms/execution/weeklyOperation/index'
 import WeeklyWeather from './forms/execution/weeklyWeather/index'
 import WeeklyUser from './forms/execution/weeklyUser/index'
 import WeeklyMachine from './forms/execution/weeklyMachine/index'
+import StudyOperation from './forms/execution/studyOperation/index'
 
 import CreditPredict from './forms/financial/creditPredict/index'
 import InvoiceConsultant from './forms/financial/invoiceConsultant/index'
@@ -234,6 +236,7 @@ class App extends Component {
               <PrivateRoute path="/period" component={Period} role="admin" />
               <PrivateRoute path="/operation" component={Operation} role="admin" />
               <PrivateRoute path="/wbs" component={WBS} role="admin" />
+              <PrivateRoute path="/studyWbs" component={StudyWBS} role="admin" />
               <PrivateRoute path="/user" component={User} role="admin" />
               <PrivateRoute path="/permissionStructure" component={PermissionStructure} role="admin" />
 
@@ -254,6 +257,7 @@ class App extends Component {
               <PrivateRoute path="/weeklyWeather" component={WeeklyWeather} />
               <PrivateRoute path="/weeklyMachine" component={WeeklyMachine} />
               <PrivateRoute path="/weeklyUser" component={WeeklyUser} />
+              <PrivateRoute path="/studyOperation" component={StudyOperation} />
 
               <PrivateRoute path="/contractCycle" component={ContractCycle} />
               <PrivateRoute path="/projectCycle" component={ProjectCycle} />

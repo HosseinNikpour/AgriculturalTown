@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export const URL = 'http://localhost:5000/'
-//export const URL = '/'
+//export const URL = 'http://localhost:5000/'
+export const URL = '/'
 export const config = {
     headers: {
         "Accept": "application/json;odata=verbose",
@@ -18,6 +18,7 @@ export const config = {
 export const getAllItem = (storeIndex,params) => {
     config.params = { userId: JSON.parse(localStorage.getItem('user')).id, token: localStorage.getItem('token') }
     if(params)config.params={...config.params,...params}
+  
     return axios.get(
         URL + "api/" + storeIndex,
         config
