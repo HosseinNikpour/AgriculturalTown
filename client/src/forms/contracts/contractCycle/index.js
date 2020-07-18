@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
 class PayInvoiceContractor extends Component {
     constructor(props) {
@@ -39,6 +39,7 @@ class PayInvoiceContractor extends Component {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
            // let periods = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let StatusContract = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
+          
             let data = response[0].data;
             data.forEach(e => {
                 e.date = e.date ? moment(e.date) : undefined;
@@ -85,10 +86,17 @@ class PayInvoiceContractor extends Component {
                     this.fetchData();
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                   // console.log(response.data.message)
+                   
                 }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            }).catch((error) => {  console.log(error); message.error(errorMessage, errorDuration); });
         else {
             updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
                 if (response.data.type !== "Error") {
@@ -96,8 +104,12 @@ class PayInvoiceContractor extends Component {
                     this.fetchData();
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }

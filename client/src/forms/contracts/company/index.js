@@ -4,7 +4,7 @@ import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp } from '../../../components/statics'
 
 class Company extends Component {
     constructor(props) {
@@ -31,9 +31,10 @@ class Company extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw')]).then((response) => {
-            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } })
+            let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            provinces.unshift({key:null,label:'-------',value:null});
             let certificateTypes = response[1].data.filter(a => a.groupid === 9).map(a => { return { key: a.id, label: a.title, value: a.id } })
-      
+            certificateTypes.unshift({key:null,label:'-------',value:null});
             this.setState({ isFetching: false, rows: response[0].data, provinces: provinces, certificateTypes: certificateTypes 
                 , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
@@ -64,8 +65,12 @@ class Company extends Component {
                     //   this.setState({ obj: empty  ,status:'', showPanel: false });
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => console.log(error) );
         else {
@@ -76,8 +81,12 @@ class Company extends Component {
                     this.fetchData();
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => console.log(error));
         }

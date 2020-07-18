@@ -8,12 +8,12 @@ const name = "Weekly_Operation_detail";
 
 
 router.get(`/getPrev`, function (req, res) {
-    console.log(req.query)
+  //  console.log(req.query)
     let query = `SELECT operation, unit,sum(current_done) as prev_done
     FROM public.weekly_operation_detail as d join public.weekly_operation as m on d.parent_id=m.id
     where m.contract_id= ${req.query.contract_id} and period_id< ${req.query.period_id}
     group by operation, unit  `;
-console.log(query)
+//console.log(query)
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);

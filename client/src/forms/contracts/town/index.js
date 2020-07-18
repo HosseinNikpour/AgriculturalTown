@@ -5,7 +5,7 @@ import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, numberDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorMessageDuplicate, errorDuration, selectDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], provinces: [],
-            waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [],  errors: {},
+            waterSupply: [], activities: [], ownerships: [], powerSupply: [], gasSupply: [], locations: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -45,6 +45,16 @@ class Town extends Component {
             let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let waterIndex = response[1].data.filter(a => a.groupid === 18).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
+
+            provinces.unshift({ key: null, label: '-------', value: null });
+            activities.unshift({ key: null, label: '-------', value: null });
+            ownerships.unshift({ key: null, label: '-------', value: null });
+            waterSupply.unshift({ key: null, label: '-------', value: null });
+            powerSupply.unshift({ key: null, label: '-------', value: null });
+            gasSupply.unshift({ key: null, label: '-------', value: null });
+            locations.unshift({ key: null, label: '-------', value: null });
+            waterIndex.unshift({ key: null, label: '-------', value: null });
+           
             this.setState({
                 isFetching: false, rows: response[0].data, waterSupply,
                 provinces, activities, ownerships, powerSupply, waterIndex,
@@ -57,7 +67,7 @@ class Town extends Component {
         this.fetchData();
     }
 
-     saveBtnClick() {
+    saveBtnClick() {
 
         let obj = this.state.obj;
         let errors = this.state.errors;
@@ -65,8 +75,8 @@ class Town extends Component {
         errors.title = obj.title ? false : true;
         errors.province_id = obj.province_id ? false : true;
         errors.city = obj.city ? false : true;
-        errors.coordinate_e=obj.coordinate_e&&obj.coordinate_e.toString().length!==6?true:false;
-        errors.coordinate_n=obj.coordinate_n&&obj.coordinate_n.toString().length!==7?true:false;
+        errors.coordinate_e = obj.coordinate_e && obj.coordinate_e.toString().length !== 6 ? true : false;
+        errors.coordinate_n = obj.coordinate_n && obj.coordinate_n.toString().length !== 7 ? true : false;
 
         if (Object.values(errors).filter(a => a).length > 0) {
             this.setState({ errors }, () => { this.scrollToFormRef(); });
@@ -74,47 +84,55 @@ class Town extends Component {
         }
         else {
 
-        let formData = new FormData();
-        if (obj.f_file_dxf)
-            formData.append("file_dxf", obj.f_file_dxf);
-        if (obj.f_file_kmz)
-            formData.append("file_kmz", obj.f_file_kmz);
-        formData.append("data", JSON.stringify(obj));
-
-        										
-	    if (obj.f_file_plan)
-        formData.append("file_plan", obj.f_file_plan);
-    formData.append("data", JSON.stringify(obj));
-
-        if (this.state.status === 'new')
-            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
-        else {
+            let formData = new FormData();
+            if (obj.f_file_dxf)
+                formData.append("file_dxf", obj.f_file_dxf);
+            if (obj.f_file_kmz)
+                formData.append("file_kmz", obj.f_file_kmz);
+            formData.append("data", JSON.stringify(obj));
 
 
-            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            if (obj.f_file_plan)
+                formData.append("file_plan", obj.f_file_plan);
+            formData.append("data", JSON.stringify(obj));
+
+            if (this.state.status === 'new')
+                saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            else {
+
+
+                updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        // this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
+                        this.fetchData();
+                    }
+                    else {
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            }
         }
     }
-}
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -124,7 +142,7 @@ class Town extends Component {
         this.setState({ obj: ob });
     }
     numberChange(name, values) {
-        const {formattedValue, value} = values;
+        const { formattedValue, value } = values;
         let ob = this.state.obj;
         ob[name] = value;
         this.setState({ obj: ob });
@@ -223,7 +241,7 @@ class Town extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="province_id" className={this.state.errors.province_id ? "error-lable" : ''}>استان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.provinces}
-                                                    className={this.state.errors.province_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.province_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.province_id} onSelect={(values) => this.selectChange("province_id", values)} />
                                                 </div>
                                             </div>
@@ -231,7 +249,7 @@ class Town extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="city" className={this.state.errors.city ? "error-lable" : ''}>شهرستان </label>
                                                     <input name="city" className="form-control" onChange={this.handleChange}
-                                                    className={this.state.errors.city ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.city ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.city} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
@@ -352,11 +370,11 @@ class Town extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="operation_type_id" className=""> نوع عملیات زیرساخت</label>
                                                     <Select {...selectDefaultProp} options={this.state.operationType} disabled={this.state.status === 'display'}
-                                                      mode="multiple"  value={this.state.obj.operation_type_id} onChange={(values) => this.selectChange("operation_type_id", values)}
+                                                        mode="multiple" value={this.state.obj.operation_type_id} onChange={(values) => this.selectChange("operation_type_id", values)}
                                                     />
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
 
                                         <div className="row">
@@ -371,48 +389,65 @@ class Town extends Component {
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="coordinate_e" className={this.state.errors.coordinate_e ? "error-lable" : ''}>مختصات نقطه مرکزی (E)</label>
-                                                    <input name="coordinate_e"  onChange={this.handleChange} type='number'
-                                                    className={this.state.errors.coordinate_e ? "form-control error-control" : 'form-control'} 
+                                                    <input name="coordinate_e" onChange={this.handleChange} type='number'
+                                                        className={this.state.errors.coordinate_e ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.coordinate_e} disabled={this.state.status === 'display'} />
-                                                    {this.state.errors.coordinate_e &&<lable className="text-danger">مقدار قابل قبول 6 رقم میباشد</lable>}
+                                                    {this.state.errors.coordinate_e && <lable className="text-danger">مقدار قابل قبول 6 رقم میباشد</lable>}
                                                 </div>
                                             </div>
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="coordinate_n" className={this.state.errors.coordinate_n ? "error-lable" : ''}>مختصات نقطه مرکزی (N)</label>
-                                                    <input name="coordinate_n"  onChange={this.handleChange} type='number'
-                                                        className={this.state.errors.coordinate_n ? "form-control error-control" : 'form-control'} 
+                                                    <input name="coordinate_n" onChange={this.handleChange} type='number'
+                                                        className={this.state.errors.coordinate_n ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.coordinate_n} disabled={this.state.status === 'display'} />
-                                                         {this.state.errors.coordinate_n &&<lable className="text-danger">مقدار قابل قبول 7 رقم میباشد</lable>}
+                                                    {this.state.errors.coordinate_n && <lable className="text-danger">مقدار قابل قبول 7 رقم میباشد</lable>}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className='row'>
-                                        <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="water_quality_EC" className="">کیفیت آب -EC (میکروزیمنس بر سانتیمتر)</label>
                                                     <input name="water_quality_EC" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.water_quality_EC} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											  <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="water_quality_PH" className="">کیفیت آب  -PH</label>
                                                     <input name="water_quality_PH" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.water_quality_PH} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											  <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="water_quality_TDS" className=""> کیفیت  آب  -TDS (میلی‌گرم بر لیتر)</label>
                                                     <input name="water_quality_TDS" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.water_quality_TDS} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											 </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="exploitable_area" className="">مساحت قابل بهره برداری</label>
+                                                    <input name="exploitable_area" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.exploitable_area} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="operating_area" className="">مساحت در حال بهره برداری</label>
+                                                    <input name="operating_area" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.operating_area} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+                                        </div>
 
                                         <div className="row">
-                                           
+
                                             <div className="col">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_dxf" className="">بارگزاری فایل کروکی DXF</label>
@@ -443,7 +478,7 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_plan')}></i>}</div>}
                                                 </div>
 
-                                        </div>
+                                            </div>
                                         </div>
                                         <div className='row'>
                                             <div className="col">

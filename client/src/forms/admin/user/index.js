@@ -6,7 +6,7 @@ import { saveItem, getAllItem, updateItem, removeItem, updatePassword } from '..
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, genPass, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration,selectDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration,selectDefaultProp } from '../../../components/statics'
 
 moment.loadPersian()
 class User extends Component {
@@ -63,8 +63,12 @@ class User extends Component {
                    // this.setState({ obj: emptyItem, status: '', showPanel: false });
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => console.log(error));
         else if (this.state.status === 'edit')

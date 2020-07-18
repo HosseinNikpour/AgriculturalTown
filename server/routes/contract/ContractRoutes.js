@@ -67,7 +67,7 @@ router.get(`/`, function (req, res) {
         });
 });
 router.get(`/:id`, function (req, res) {
-    let query = `${baseQuery} where id = ${req.params.id} `;
+    let query = `${baseQuery} where c.id = ${req.params.id} `;
 
     pool.query(query)
         .then((results) => {

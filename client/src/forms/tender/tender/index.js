@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class Tender extends Component {
     constructor(props) {
@@ -16,7 +16,7 @@ class Tender extends Component {
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], contracts: [], town: [], group: [], Typetender: [], ServiceType: [], 
+            columns: columns, rows: [], contracts: [], town: [], group: [], Typetender: [], ServiceType: [],
             operation_type: [], DocumentType: [], ModifierType: [], CommissionResult: [], call_method: [], invite_method: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
@@ -37,7 +37,7 @@ class Tender extends Component {
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
-    
+
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('BaseInfo/vw'), getAllItem('town/vw')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
@@ -52,14 +52,27 @@ class Tender extends Component {
             let call_method = response[2].data.filter(a => a.groupid === 35).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let invite_method = response[2].data.filter(a => a.groupid === 36).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
+           
+            town.unshift({ key: null, label: '-------', value: null });
+            group.unshift({ key: null, label: '-------', value: null });
+            Typetender.unshift({ key: null, label: '-------', value: null });
+            ServiceType.unshift({ key: null, label: '-------', value: null });
+            operation_type.unshift({ key: null, label: '-------', value: null });
+            DocumentType.unshift({ key: null, label: '-------', value: null });
+            ModifierType.unshift({ key: null, label: '-------', value: null });
+            CommissionResult.unshift({ key: null, label: '-------', value: null });
+            call_method.unshift({ key: null, label: '-------', value: null });
+            invite_method.unshift({ key: null, label: '-------', value: null });
+          
+
             data.forEach(e => {
-               // e.publish_date = e.publish_date ? moment(e.publish_date) : undefined;
-               // e.get_doc_date = e.get_doc_date ? moment(e.get_doc_date) : undefined;
-              //  e.upload_date = e.upload_date ? moment(e.upload_date) : undefined;
+                // e.publish_date = e.publish_date ? moment(e.publish_date) : undefined;
+                // e.get_doc_date = e.get_doc_date ? moment(e.get_doc_date) : undefined;
+                //  e.upload_date = e.upload_date ? moment(e.upload_date) : undefined;
                 e.commission_date = e.commission_date ? moment(e.commission_date) : undefined;
-               // e.open_packets_date = e.open_packets_date ? moment(e.open_packets_date) : undefined;
-               // e.say_to_winner_date = e.say_to_winner_date ? moment(e.say_to_winner_date) : undefined;
-              //  e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
+                // e.open_packets_date = e.open_packets_date ? moment(e.open_packets_date) : undefined;
+                // e.say_to_winner_date = e.say_to_winner_date ? moment(e.say_to_winner_date) : undefined;
+                //  e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
                 e.invite_date = e.invite_date ? moment(e.invite_date) : undefined;
             });
 
@@ -82,65 +95,73 @@ class Tender extends Component {
         errors.town_id = obj.town_id ? false : true;
         errors.service_type_id = obj.service_type_id ? false : true;
         errors.operation_type_id = obj.operation_type_id ? false : true;
-        
+
 
         if (Object.values(errors).filter(a => a).length > 0) {
             this.setState({ errors }, () => { this.scrollToFormRef(); });
             alert("لطفا موارد الزامی را وارد کنید");
         }
         else {
-       // obj.publish_date = obj.publish_date ? obj.publish_date.format() : '';
-       // obj.get_doc_date = obj.get_doc_date ? obj.get_doc_date.format() : '';
-       // obj.upload_date = obj.upload_date ? obj.upload_date.format() : '';
-        obj.commission_date = obj.commission_date ? obj.commission_date.format() : '';
-       // obj.open_packets_date = obj.open_packets_date ? obj.open_packets_date.format() : '';
-       // obj.say_to_winner_date = obj.say_to_winner_date ? obj.say_to_winner_date.format() : '';
-       // obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
-        obj.invite_date = obj.invite_date ? obj.invite_date.format() : '';
-        
-        var formData = new FormData();
+            // obj.publish_date = obj.publish_date ? obj.publish_date.format() : '';
+            // obj.get_doc_date = obj.get_doc_date ? obj.get_doc_date.format() : '';
+            // obj.upload_date = obj.upload_date ? obj.upload_date.format() : '';
+            obj.commission_date = obj.commission_date ? obj.commission_date.format() : '';
+            // obj.open_packets_date = obj.open_packets_date ? obj.open_packets_date.format() : '';
+            // obj.say_to_winner_date = obj.say_to_winner_date ? obj.say_to_winner_date.format() : '';
+            // obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
+            obj.invite_date = obj.invite_date ? obj.invite_date.format() : '';
+
+            var formData = new FormData();
 
 
-        if (obj.f_file_record)
-        formData.append("file_record", obj.f_file_record); 
+            if (obj.f_file_record)
+                formData.append("file_record", obj.f_file_record);
 
-        if (obj.f_file_invite)
-        formData.append("file_invite", obj.f_file_invite); 
+            if (obj.f_file_invite)
+                formData.append("file_invite", obj.f_file_invite);
 
-        formData.append("data", JSON.stringify(obj));
+            formData.append("data", JSON.stringify(obj));
 
-        if (this.state.status === 'new')
-            saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
-        else {
-            updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
-                if (response.data.type !== "Error") {
-                    message.success(successMessage, successDuration);
-                    this.fetchData();
-                }
-                else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
-                }
-            }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            if (this.state.status === 'new')
+                saveItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            else {
+                updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
+                    if (response.data.type !== "Error") {
+                        message.success(successMessage, successDuration);
+                        this.fetchData();
+                    }
+                    else {
+                        if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                        message.error(errorMessageDuplicate, errorDuration);
+                        else{
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
+                    }
+                }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
+            }
         }
     }
-}
 
-numberChange(name, values) {
-    const { formattedValue, value } = values;
-    let ob = this.state.obj;
-    ob[name] = value;
-    this.setState({ obj: ob });
-}
+    numberChange(name, values) {
+        const { formattedValue, value } = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
     fileChange(e, name) {
         let ob = this.state.obj;
         if (!name)
@@ -254,67 +275,67 @@ numberChange(name, values) {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                <form>
-                                 <div className="row">
-                                           <div className="col-8">
+                                    <form>
+                                        <div className="row">
+                                            <div className="col-8">
                                                 <div className="form-group">
                                                     <label htmlFor="title" className={this.state.errors.title ? "error-lable" : ''}>عنوان</label>
                                                     <input name="title" className="form-control" onChange={this.handleChange}
-                                                    className={this.state.errors.title ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.title ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.title} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											 <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="town_id" className={this.state.errors.town_id ? "error-lable" : ''}>شهرک</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.town}
-                                                    className={this.state.errors.town_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.town_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)} />
                                                 </div>
                                             </div>
-										</div>
-								 <div className="row">
-									 	<div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="group_id" className="">گروه</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.group}
                                                         value={this.state.obj.group_id} onSelect={(values) => this.selectChange("group_id", values)} />
                                                 </div>
                                             </div>
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="type_id" className="">نوع مناقصه</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Typetender}
                                                         value={this.state.obj.type_id} onSelect={(values) => this.selectChange("type_id", values)} />
                                                 </div>
                                             </div>
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="service_type_id" className={this.state.errors.service_type_id ? "error-lable" : ''}>نوع خدمات</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.ServiceType}
-                                                    className={this.state.errors.service_type_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.service_type_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.service_type_id} onSelect={(values) => this.selectChange("service_type_id", values)} />
                                                 </div>
                                             </div>
-									 </div>
-							     <div className="row">
-									 	<div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="operation_type_id"  className={this.state.errors.operation_type_id ? "error-lable" : ''}>نوع عملیات</label>
+                                                    <label htmlFor="operation_type_id" className={this.state.errors.operation_type_id ? "error-lable" : ''}>نوع عملیات</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.operation_type}
-                                                     className={this.state.errors.operation_type_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.operation_type_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.operation_type_id} onSelect={(values) => this.selectChange("operation_type_id", values)} />
                                                 </div>
-                                         </div>
-										<div className="col-4">
+                                            </div>
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="modifier_type_id" className="">مراحل بررسی</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.ModifierType}
                                                         value={this.state.obj.modifier_type_id} onSelect={(values) => this.selectChange("modifier_type_id", values)} />
                                                 </div>
                                             </div>
-									
-									 <div className="col-4">
+
+                                            <div className="col-4">
                                                 <div className="form-group">
 
                                                     <label htmlFor="commission_date" className="">تاریخ تشکیل کمیسیون</label>
@@ -323,60 +344,60 @@ numberChange(name, values) {
                                                         value={this.state.obj.commission_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
-												 </div>
-									 </div>
-								
-								 <div className="row">
-											   
-                                              <div className="col-4">												 
-											   <div className="form-group">
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="commission_result_id" className="">نتیجه کمیسیون</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.CommissionResult}
                                                         value={this.state.obj.commission_result_id} onSelect={(values) => this.selectChange("commission_result_id", values)} />
                                                 </div>
                                             </div>
-											<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invite_method_id" className={this.state.errors.invite_method_id ? "error-lable" : ''}>روش دعوت</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.invite_method}
-                                                    className={this.state.errors.invite_method_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.invite_method_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.invite_method_id} onSelect={(values) => this.selectChange("invite_method_id", values)} />
                                                 </div>
                                             </div>
-											<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="call_method_id" className={this.state.errors.call_method_id ? "error-lable" : ''}>فراخوان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.call_method}
-                                                    className={this.state.errors.call_method_id ? "form-control error-control" : 'form-control'}
+                                                        className={this.state.errors.call_method_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.call_method_id} onSelect={(values) => this.selectChange("call_method_id", values)} />
                                                 </div>
                                             </div>
-											</div>
-									 <div className="row">
-									   <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="recommender_count" className="">تعداد پیشنهاد دهنده</label>
                                                     <input name="recommender_count" className="form-control" onChange={this.handleChange} type="number"
                                                         value={this.state.obj.recommender_count} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											   <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="tender_no" className="">شماره دعوتنامه</label>
                                                     <input name="tender_no" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.tender_no} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											   <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="invite_no" className="">شماره مناقصه</label>
                                                     <input name="invite_no" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.invite_no} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-                                      </div>
-                                 <div className="row">
-	                                    <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
 
                                                     <label htmlFor="invite_date" className="">تاریخ دعوتنامه</label>
@@ -385,94 +406,94 @@ numberChange(name, values) {
                                                         value={this.state.obj.invite_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
-												 </div>	
-												  <div className="col-4">
-                                                     <div className="form-group">
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="init_amount" className={this.state.errors.init_amount ? "error-lable" : ''}>مبلغ پایه برآورد</label>
                                                     {/* <input name="init_amount" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.init_amount} disabled={this.state.status === 'display'} /> */}
                                                     <NumberFormat onValueChange={(values) => this.numberChange("init_amount", values)}
                                                         {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.init_amount}
                                                         className={this.state.errors.init_amount ? "form-control error-control" : 'form-control'} />
-                                                      </div>
-                                                       </div> 
-												<div className="col-4">	   
-												<div className="form-group">
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="first_winner_name" className="">نام شرکت برنده اول</label>
                                                     <input name="first_winner_name" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.first_winner_name} disabled={this.state.status === 'display'} />
-                                                </div> 
-												</div> 
-                                               </div>
-									<div className="row"> 
-									            <div className="col-4">
-                                                     <div className="form-group">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="first_winner_amount" className={this.state.errors.first_winner_amount ? "error-lable" : ''}>مبلغ پیشنهادی برنده اول</label>
                                                     {/* <input name="first_winner_amount" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.first_winner_amount} disabled={this.state.status === 'display'} /> */}
                                                     <NumberFormat onValueChange={(values) => this.numberChange("first_winner_amount", values)}
                                                         {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.first_winner_amount}
                                                         className={this.state.errors.first_winner_amount ? "form-control error-control" : 'form-control'} />
-                                                      </div>
-                                                       </div> 
-									
-										    <div className="col-4">	   
-												<div className="form-group">
+                                                </div>
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="second_winner_name" className="">نام شرکت برنده دوم</label>
                                                     <input name="second_winner_name" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.second_winner_name} disabled={this.state.status === 'display'} />
-                                                </div> 
-												</div> 
-											<div className="col-4">
-                                                     <div className="form-group">
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="second_winner_amount" className={this.state.errors.second_winner_amount ? "error-lable" : ''}>مبلغ پیشنهادی برنده دوم</label>
                                                     {/* <input name="second_winner_amount" className="form-control" onChange={this.handleChange} type='number'
                                                         value={this.state.obj.second_winner_amount} disabled={this.state.status === 'display'} /> */}
                                                     <NumberFormat onValueChange={(values) => this.numberChange("second_winner_amount", values)}
                                                         {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.second_winner_amount}
                                                         className={this.state.errors.second_winner_amount ? "form-control error-control" : 'form-control'} />
-                                                      </div>
-                                                       </div> 	
-												
-									
-									          </div>
-									
-                                       <div className="row">
-									   <div className="col-4">
-                                               <div className="form-group">
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="f_file_invite" className="">بارگذاری دعوتنامه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_invite" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
                                                     {this.state.obj.file_invite && <div><a target="_blank" href={this.state.obj.file_invite}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_invite')}></i>}</div>}
-                                                
-											  </div>
-											  </div>
-								            
-								                <div className="col-4">
-                                               <div className="form-group">
+
+                                                </div>
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="form-group">
                                                     <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
                                                     />}
                                                     {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_record')}></i>}</div>}
-                                                
-											  </div>
-											  </div>
-								            
-											</div>
-								 <div className="row">        
-                                          <div className="col-12">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="description" className="">توضیحات</label>
                                                     <input name="description" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.description} disabled={this.state.status === 'display'} />
                                                 </div>
-                                               </div>                                        
-	                                     </div>	  
-                             											
+                                            </div>
+                                        </div>
+
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />

@@ -37,5 +37,5 @@ export const emptyItem = {
     power_supply_id : '' ,power_rate : '' ,gas_supply_id : '' ,gas_rate : '' ,total_units : '' ,
     used_units : '' ,used_number : '' ,location_id : '' ,coordinate_e : '' ,coordinate_n : '' ,
     file_dxf : '' ,file_kmz : '' ,f_file_dxf : '' ,f_file_kmz : '',operation_type_id:[],water_index_id:'',
-    decsciption:''
+    decsciption:'', exploitable_area:0,operating_area :0
 };

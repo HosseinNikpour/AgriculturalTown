@@ -7,7 +7,7 @@ import Grid from '../../../components/common/grid3';
 import NumberFormat from 'react-number-format';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp  } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp  } from '../../../components/statics'
 
 class PayInvoiceContractor extends Component {
     constructor(props) {
@@ -45,6 +45,11 @@ class PayInvoiceContractor extends Component {
             let insurance_type = response[2].data.filter(a => a.groupid === 32).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let buy_close = response[2].data.filter(a => a.groupid === 31).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
+
+            insurance_company.unshift({ key: null, label: '-------', value: null });
+            insurance_type.unshift({ key: null, label: '-------', value: null });
+            buy_close.unshift({ key: null, label: '-------', value: null });
+            
             data.forEach(e => {
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
@@ -82,8 +87,12 @@ class PayInvoiceContractor extends Component {
                     //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
@@ -95,8 +104,12 @@ class PayInvoiceContractor extends Component {
                     //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }

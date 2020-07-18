@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
 class Extension extends Component {
     constructor(props) {
@@ -41,6 +41,8 @@ class Extension extends Component {
             let exNo = response[2].data.filter(a => a.groupid === 13).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
             let types = [{ key: 1, label: "پیمان", value: 1 }, { key: 2, label: "قرارداد", value: 2 }]
+         
+         
             data.forEach(e => {
 
                 e.letter_date = e.letter_date ? moment(e.letter_date) : undefined;
@@ -98,8 +100,12 @@ class Extension extends Component {
                         this.fetchData();
                     }
                     else {
-                        message.error(errorMessage, errorDuration);
-                        console.log('error : ', response);
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             else {
@@ -111,8 +117,12 @@ class Extension extends Component {
                         this.fetchData();
                     }
                     else {
-                        message.error(errorMessage, errorDuration);
-                        console.log('error : ', response);
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             }
@@ -228,7 +238,7 @@ class Extension extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                <form>
+                                    <form>
                                         <div className="row">
                                             <div className="col-3">
                                                 <div className="form-group">
@@ -280,10 +290,10 @@ class Extension extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-											
+
                                         </div>
                                         <div className="row">
-										<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="total_duration" className="">جمع مدت اولیه پیمان به اضافه مدت تمدیدهای قبل</label>
                                                     <label className="form-control">{this.state.obj.total_duration}</label>
@@ -297,15 +307,15 @@ class Extension extends Component {
                                                         className={this.state.errors.duration ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
-                                            
-                                         {/* <div className="col-4">
+
+                                            {/* <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ پایان(محاسباتی)</label>
                                                     <label className="form-control">{this.state.obj.end_date_calc}</label>
                                                 </div>
                                             </div> */}
-											
-												<div className="col-4">
+
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ پایان ابلاغ فعلی</label>
                                                     <DatePicker onChange={value => this.dateChange('end_date', value)}
@@ -313,11 +323,11 @@ class Extension extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                             </div>
-											
+
                                         </div>
                                         <div className="row">
-									
-											<div className="col-4">
+
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="allow_late" className="">مدت تاخیرات مجاز</label>
                                                     <input name="allow_late" className="form-control" onChange={this.handleChange} type="number"
@@ -334,7 +344,7 @@ class Extension extends Component {
                                                             onClick={() => this.deleteFile('file_signification')}></i>}</div>}
                                                 </div>
                                             </div>
-											   <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_late" className="">سند لایحه تاخیرات</label>
                                                     {this.state.status !== 'display' && <input name="f_file_late" className="form-control" onChange={this.fileChange} type='file'
@@ -344,10 +354,10 @@ class Extension extends Component {
                                                             onClick={() => this.deleteFile('file_late')}></i>}</div>}
                                                 </div>
                                             </div>
-                                            </div>
-                                           
-                                         
-                                    
+                                        </div>
+
+
+
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />
                                     </form>

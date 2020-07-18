@@ -33,12 +33,12 @@ export const storeIndex = "Agreement";
 export const pageHeder = 'شناسنامه قرارداد';
 
 export const emptyItem = {
-    title: '', operation_type_id:[], contract_no: '', town_id:[], company_id: '',
-    colleague1_id: '', colleague2_id: '', contract_type_id: '', contract_date: undefined, announcement_date: '',
-    land_delivery_date: '', end_date: '', duration: '', initial_amount: "", client_initial_amount: '',
-    coefficient: undefined, file_agreement: '', file_announcement: '', file_delivery: '', project_manager_name: '',
-    project_manager_contacts: '', study_surface: '', study_surface_final: '', mapping_surface: '',
-	 mapping_surface_final: '', fax: '', email: ''
+ title : '' ,contract_no : '' ,town_id : [] ,company_id : '' ,colleague1_id : '' ,colleague2_id : '' ,
+ contract_type_id : '' ,contract_date : '' ,announcement_date : '' ,end_date : '' ,duration : '' ,
+ initial_amount : '' ,client_initial_amount : '' ,coefficient : '' ,file_agreement : '' ,
+ file_announcement : '' ,study_surface : '' ,study_surface_final : '' ,mapping_surface : '' ,
+ mapping_surface_final : '' ,project_manager_name : '' ,project_manager_contacts : '' ,fax : '' ,
+ email : '' ,operation_type_id : [] ,description : '' ,
 }
 
 

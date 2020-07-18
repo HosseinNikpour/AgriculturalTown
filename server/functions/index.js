@@ -10,37 +10,41 @@ const saveFile = (file, entityName, fieldName, title, createNew) => {
         });
 
     let fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
-    //  if (createNew && fs.existsSync(fileName))
-    //     fileName = `${dir}\\${title}.${file.name.substr(file.name.lastIndexOf('.') + 1)}`
     fs.writeFileSync(fileName, file.data);//, () => {
     return (fileName.replace('.\\Docs', ''));
-    //  });
+
 
 }
 
 const queryGen = (name, type, row) => {
-    //   console.log('****************');
-    //     console.log(row);
-    //     console.log('****************');
+    // console.log('****************');
+    // console.log(row);
+    // console.log('****************');
     Object.keys(row).forEach(key => {
         if (key.endsWith('_id')) {
             let x = key.replace('_id', '');
-            if (row[x])  delete row[x];
+            console.log(x)
+            delete row[x];
+           // }
         }
-      
+
     });
 
     if (type == 'insert') {
         let insertQuery = `INSERT INTO public.${name}(`, insertValues = '';
         Object.keys(row).forEach(key => {
-            //console.log(key+'    '+row[key])
-            if ((row[key] ||row[key]===false )&& !key.startsWith('f_')&& !key.startsWith('vw_')) {
+
+            if (!key.startsWith('f_') && !key.startsWith('vw_')) {
                 insertQuery += key + ',';
                 // console.log(typeof (row[key]));
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     insertValues += `${row[key]},`;
                 else if (Array.isArray(row[key]))
                     insertValues += `'{${row[key]}}',`;
+                else if (!row[key]) {
+                    //    console.log(key+'    '+row[key]+'   '+typeof (row[key]))
+                    insertValues += `null,`;
+                }
                 else {
 
                     insertValues += `'${row[key]}',`
@@ -56,12 +60,14 @@ const queryGen = (name, type, row) => {
     else if (type == 'update') {
         updateQuery = `UPDATE public.${name} SET `
         Object.keys(row).forEach(key => {
-            if ((row[key] ||row[key]===false )&& !key.startsWith('f_') && key != 'id'&& !key.startsWith('vw_')) {
+            if (!key.startsWith('f_') && key != 'id' && !key.startsWith('vw_')) {
 
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;
                 else if (Array.isArray(row[key]))
-                updateQuery += `${key} ='{${row[key]}}',`;
+                    updateQuery += `${key} ='{${row[key]}}',`;
+                else if (!row[key])
+                    updateQuery += `${key} = null,`;
                 else {
                     if (row[key] === '**d**')
                         updateQuery += `${key} = null,`;
@@ -89,7 +95,7 @@ const returnContractIds = (userId, token) => {
     if (!user) return -2;
 
     if (user.id != userId) return -3;
-    if (user.role_id>3) return 0;
+    if (user.role_id > 3) return 0;
     let field = '';
     switch (user.role_id) {
         case 2:

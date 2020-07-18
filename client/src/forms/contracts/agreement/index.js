@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -38,28 +38,35 @@ class Town extends Component {
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
     //  scrollToFormRef = () => window.scrollTo({ top: 700, behavior: 'smooth' })
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
-    // rows.forEach(e => {
-    //     e.item_creator = users.find(a => a.key === e.item_creator_id).label;
-    //     e.item_approver =e.item_approver_id.map(x => users.find(a => a.key === x).label).toString();
-    //     e.item_viewer =e.item_viewer_id.map(x => users.find(a => a.key === x).label).toString();
-    //     e.item_editor =e.item_editor_id.map(x => users.find(a => a.key === x).label).toString();
-    // });
+
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
         getAllItem('town/vw')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
-         
+
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
+            
+            contractTypes.unshift({ key: null, label: '-------', value: null });
+            companies.unshift({ key: null, label: '-------', value: null });
+            operationType.unshift({ key: null, label: '-------', value: null });
+            //certificateTypes.unshift({ key: null, label: '-------', value: null });
+
             data.forEach(e => {
 
                 e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
                 e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
-                e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
+              //  e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
-                e.town =e.town_id.map(x => towns.find(a => a.key === x).label).toString();
+                e.town = e.town_id.map(x => {
+                    let z = towns.find(a => a.key === x);
+
+                    return (z && z.label) ? z.label : "---"
+
+                })
+                    .toString();
 
             });
             //console.log(data);
@@ -95,16 +102,16 @@ class Town extends Component {
         }
         else {
             obj['coefficient'] = obj.initial_amount / obj.client_initial_amount;
-          
+
             obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
             obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
-            obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
-           // obj.end_date = obj.end_date ? obj.end_date.format() : '';
-           obj['end_date']=moment(obj.announcement_date).add(obj.duration, 'days').format()
-           
+           // obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
+            // obj.end_date = obj.end_date ? obj.end_date.format() : '';
+            obj['end_date'] = moment(obj.announcement_date).add(obj.duration, 'days').format()
+
             var formData = new FormData();
 
-            if (obj.f_file_delivery) formData.append("file_delivery", obj.f_file_delivery);
+           // if (obj.f_file_delivery) formData.append("file_delivery", obj.f_file_delivery);
             if (obj.f_file_announcement) formData.append("file_announcement", obj.f_file_announcement);
             if (obj.f_file_agreement) formData.append("file_agreement", obj.f_file_agreement);
 
@@ -118,8 +125,12 @@ class Town extends Component {
                         this.fetchData();
                     }
                     else {
-                        message.error(errorMessage, errorDuration);
-                        console.log('error : ', response);
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             else {
@@ -129,8 +140,12 @@ class Town extends Component {
                         this.fetchData();
                     }
                     else {
-                        message.error(errorMessage, errorDuration);
-                        console.log('error : ', response);
+                        if (response.data.message.indexOf('duplicate key value violates unique constraint') > -1)
+                            message.error(errorMessageDuplicate, errorDuration);
+                        else {
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             }
@@ -245,7 +260,7 @@ class Town extends Component {
                                     {this.state.status === 'new' ? 'اضافه کردن آیتم جدید' : this.state.status === 'edit' ? 'ویرایش آیتم' : 'مشاهده آیتم'}
                                 </div>
                                 <div className="card-body">
-                                <form>
+                                    <form>
                                         <div className="row">
                                             <div className="col-8">
                                                 <div className="form-group">
@@ -265,7 +280,7 @@ class Town extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
-										
+
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_no" className={this.state.errors.contract_no ? "error-lable" : ''}>شماره قرارداد</label>
@@ -384,9 +399,9 @@ class Town extends Component {
                                                         value={(parseFloat(this.state.obj.initial_amount) / parseFloat(this.state.obj.client_initial_amount)).toFixed(2)} disabled={true} />
                                                 </div>
                                             </div>
-											   
-                                          
-											  <div className="col-4">
+
+
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="study_surface" className={this.state.errors.study_surface ? "error-lable" : ''}>سطح مطالعات (قرارداد)</label>
                                                     {/* <input name="study_surface" className="form-control" onChange={this.handleChange} type='number'
@@ -396,7 +411,7 @@ class Town extends Component {
                                                         className={this.state.errors.study_surface ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
-										   <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="study_surface_final" className={this.state.errors.study_surface_final ? "error-lable" : ''}>سطح نهایی مطالعات</label>
                                                     {/* <input name="study_surface_final" className="form-control" onChange={this.handleChange} type='number'
@@ -406,12 +421,12 @@ class Town extends Component {
                                                         className={this.state.errors.study_surface_final ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
-                                           
+
                                         </div>
-                                      
+
                                         <div className="row">
-                                      
-							           <div className="col-4">
+
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="mapping_surface" className={this.state.errors.mapping_surface ? "error-lable" : ''}>سطح نقشه برداری (قرارداد)</label>
                                                     {/* <input name="mapping_surface" className="form-control" onChange={this.handleChange} type='number'
@@ -420,8 +435,8 @@ class Town extends Component {
                                                         {...numberDefaultProp} disabled={this.state.status === 'display'} value={this.state.obj.mapping_surface}
                                                         className={this.state.errors.mapping_surface ? "form-control error-control" : 'form-control'} />
                                                 </div>
-												 </div>
-										<div className="col-4">
+                                            </div>
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="mapping_surface_final" className={this.state.errors.mapping_surface_final ? "error-lable" : ''}>سطح نهایی نقشه برداری</label>
                                                     {/* <input name="mapping_surface_final" className="form-control" onChange={this.handleChange} type='number'
@@ -431,16 +446,16 @@ class Town extends Component {
                                                         className={this.state.errors.mapping_surface_final ? "form-control error-control" : 'form-control'} />
                                                 </div>
                                             </div>
-											<div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_manager_name" className="">مدیر پروژه</label>
                                                     <input name="project_manager_name" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.project_manager_name} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											</div>
-											 <div className="row">
-											 <div className="col-4">
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="project_manager_contacts" className="">تلفن همراه مدیر پروژه</label>
                                                     <input name="project_manager_contacts" className="form-control" onChange={this.handleChange}
@@ -454,17 +469,17 @@ class Town extends Component {
                                                         value={this.state.obj.fax} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											   <div className="col-4">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="email" className="">ایمیل</label>
                                                     <input name="email" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.email} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
-											
+
                                         </div>
-										<div className="row">
-                                        <div className="col-4">
+                                        <div className="row">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_agreement" className="">موافقتنامه </label>
                                                     {this.state.status !== 'display' && <input name="f_file_agreement" className="form-control" onChange={this.fileChange} type='file'
@@ -484,10 +499,10 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_announcement')}></i>}</div>}
 
                                                 </div>
-                                            </div> 
-                                      
                                             </div>
-                                            <div className="row">
+
+                                        </div>
+                                        <div className="row">
                                             <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="description" className="">توضیحات</label>

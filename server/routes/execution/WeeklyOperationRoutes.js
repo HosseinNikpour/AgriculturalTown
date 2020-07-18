@@ -34,9 +34,11 @@ router.get(`/:id`, function (req, res) {
 
 router.post('/', function (req, res) {
     let rows = req.body.rows;
+    console.log(req.body);
     let query = `INSERT INTO public.${name}(creator_id, create_date, current_user_id, status, contract_id, period_id)
         VALUES (${req.body.creator_id},'${req.body.create_date}',${req.body.current_user_id},'${req.body.status}',${req.body.contract_id},${req.body.period_id}) RETURNING id`;
-    pool.query(query).then((results) => {
+        console.log(query)
+        pool.query(query).then((results) => {
         let parent_id = results.rows[0].id;
         let query_d = `INSERT INTO public.${name}_detail(
                 operation, unit, total_work, cumulative_done, current_done, parent_id, sort)

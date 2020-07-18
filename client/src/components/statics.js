@@ -4,6 +4,9 @@ export const successDuration = 3;
 export const errorMessage = "خطا در ذخیره سازی اطلاعات";
 export const errorDuration = 3;
 
+export const errorMessageDuplicate = "اطلاعات مربوط به این سطر قبلا وارد سیستم شده";
+export const errorDurationDuplicate = 5;
+
 export const selectDefaultProp = {
     className: "form-control", direction: "rtl", placeholder: 'انتخاب ...',
     filterOption: true, optionFilterProp: "label", showSearch: true

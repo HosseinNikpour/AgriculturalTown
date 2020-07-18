@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -102,8 +102,12 @@ class Town extends Component {
                         this.fetchData();
                     }
                     else {
+                        if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
                         message.error(errorMessage, errorDuration);
                         console.log('error : ', response);
+                    }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             else {
@@ -114,8 +118,12 @@ class Town extends Component {
                         this.fetchData();
                     }
                     else {
-                        message.error(errorMessage, errorDuration);
-                        console.log('error : ', response);
+                        if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                        message.error(errorMessageDuplicate, errorDuration);
+                        else{
+                            message.error(errorMessage, errorDuration);
+                            console.log('error : ', response);
+                        }
                     }
                 }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
             }

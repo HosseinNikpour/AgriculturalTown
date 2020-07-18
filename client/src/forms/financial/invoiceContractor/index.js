@@ -7,7 +7,7 @@ import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp ,numberDefaultProp} from '../../../components/statics'
 
 class InvoiceContractor extends Component {
     constructor(props) {
@@ -101,15 +101,16 @@ class InvoiceContractor extends Component {
 
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         else {
                  
-            //اینجا فقط فیلد هایی رو میاریک که انتهاشون ایدی داره
-            //البته بدون ایدی 
-            delete obj.Contract;
            
             updateItem(formData, storeIndex, 'multipart/form-data').then((response) => {
 
@@ -119,8 +120,12 @@ class InvoiceContractor extends Component {
                     this.fetchData();
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => { console.log(error); message.error(errorMessage, errorDuration); });
         }
