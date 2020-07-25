@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem} from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
@@ -35,24 +35,30 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getItem("tempDelivery", 'PermissionStructure')]).then((response) => {
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } })
             let hasDefect = [{ key: 1, label: 'بلی', value: true }, { key: 2, label: 'خیر', value: false }]
             let data = response[0].data;
             console.log(data);
+
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[2].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[2].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[2].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[2].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
             data.forEach(e => {
-                //اینجا فیلدهای تاریخ میان
-                e.contractor_date = e.contractor_date ? moment(e.contractor_date) : '';
-                e.consultant_date = e.consultant_date ? moment(e.consultant_date) : '';
-                e.branch_date = e.branch_date ? moment(e.branch_date) : '';
-                e.manager_date = e.manager_date ? moment(e.manager_date) : '';
-                e.commision_date = e.commision_date ? moment(e.commision_date) : '';
-                e.remove_defect_date = e.remove_defect_date ? moment(e.remove_defect_date) : '';
-                e.elimination_defects_date = e.elimination_defects_date ? moment(e.elimination_defects_date) : '';
+               
+                e.contractor_date = e.contractor_date ? moment(e.contractor_date) : undefined;
+                e.consultant_date = e.consultant_date ? moment(e.consultant_date) :  undefined;
+                e.branch_date = e.branch_date ? moment(e.branch_date) :  undefined;
+                e.manager_date = e.manager_date ? moment(e.manager_date) : undefined;
+                e.commision_date = e.commision_date ? moment(e.commision_date) : undefined;
+                e.remove_defect_date = e.remove_defect_date ? moment(e.remove_defect_date) :  undefined;
+                e.elimination_defects_date = e.elimination_defects_date ? moment(e.elimination_defects_date) :  undefined;
             });
 
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contracts, hasDefect
                 , obj: { ...emptyItem }, showPanel: false, status: ''
             });
@@ -200,10 +206,13 @@ class Town extends Component {
         this.setState({ obj: ob });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd } = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
                 <div className="app-main col-12" >
@@ -215,16 +224,16 @@ class Town extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>

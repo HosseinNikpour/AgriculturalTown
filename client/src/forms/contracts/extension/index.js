@@ -48,7 +48,7 @@ class Extension extends Component {
                 e.letter_date = e.letter_date ? moment(e.letter_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
                 e.end_date_calc = e.end_date_calc ? moment(e.end_date_calc) : undefined;
-                e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
+               /* e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;*/
             });
 
             this.setState({
@@ -81,7 +81,7 @@ class Extension extends Component {
             obj.letter_date = obj.letter_date ? obj.letter_date.format() : '';
             obj.end_date = obj.end_date ? obj.end_date.format() : '';
             obj.end_date_calc = obj.end_date_calc ? obj.end_date_calc.format() : '';
-            obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
+         /*   obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';*/
             var formData = new FormData();
 
             if (obj.f_file_signification)

@@ -143,7 +143,7 @@ class WeeklyMachine extends Component {
             if (pervItems[0]) {
                 let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
                 let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
-                let period_id = periods[periods.length - 1].key;
+                let period_id = periods[0].key;//periods.length - 1
                 let prev_parent_id = pervItems[0].id;
                 this.setState({ contract_id: values, period_id, prev_parent_id ,contractTitle});
             }

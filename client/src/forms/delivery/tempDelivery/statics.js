@@ -27,4 +27,4 @@ export const columns = [
 export const storeIndex = "tempDelivery";
 export const pageHeder = 'تحویل موقت';
 
-export const emptyItem = { contractor_date : '' ,consultant_date : '' ,branch_date : '' ,manager_date : '' ,with_defect : '' ,commision_date : '' ,remove_defect_date : '' ,file_defect : '' ,file_record : '' ,file_signification : '' ,contract_id : '' ,project_id : ''   };
+export const emptyItem = { contractor_date : '' ,consultant_date : '' ,branch_date : '' ,manager_date : '' ,with_defect : '' ,commision_date : '' ,remove_defect_date : '' ,file_defect : '' ,file_record : '' ,file_signification : '' ,contract_id : '' };

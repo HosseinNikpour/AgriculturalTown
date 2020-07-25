@@ -483,9 +483,9 @@ class Town extends Component {
                                         <div className='row'>
                                             <div className="col">
                                                 <div className="form-group">
-                                                    <label htmlFor="decsciption" className="">توضیحات</label>
-                                                    <textarea name="decsciption" className="form-control" onChange={this.handleChange}
-                                                        value={this.state.obj.decsciption} disabled={this.state.status === 'display'} row="2" />
+                                                    <label htmlFor="description" className="">توضیحات</label>
+                                                    <textarea name="description" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.description} disabled={this.state.status === 'display'} row="2" />
                                                 </div>
                                             </div>
                                         </div>

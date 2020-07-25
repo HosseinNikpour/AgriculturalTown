@@ -10,8 +10,8 @@ export const columns = [
     { dataIndex: 'city', key: 'city', title: 'شهرستان بومی (دفتر مرکزی)' },
     //{ dataIndex: 'tell', key: 'tell', title: 'تلفن' },
    // { dataIndex: 'fax', key: 'fax', title: 'فکس' },
-    { key: 'rating1', title: 'رتبه های اخذ شده مشاور' },
-     { key: 'rating2', title: 'رتبه های اخذ شده پیمانکار' },
+    { key: 'rating1',dataIndex: 'rating1', title: 'رتبه های اخذ شده مشاور' },
+     { key: 'rating2',dataIndex:'rating2', title: 'رتبه های اخذ شده پیمانکار' },
 ];
 export const storeIndex = "Company";
 export const pageHeder = 'شناسنامه شرکت ها';

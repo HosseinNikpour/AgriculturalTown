@@ -2,14 +2,12 @@ const pool = require('../../db/pool');
 const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
-const name = "pay_invoice_consultant";
+const name = "invoice_contractor_Approve";
 
-let baseQuery=`select i.*, c.contract_no AS contract,b2.title AS no, b3.title AS credit
-    ,co.title as vw_company ,c.title as vw_contract_title,c.file_agreement as vw_file_agreement,b1.title AS vw_contract_type
-    FROM pay_invoice_consultant i LEFT JOIN agreement c ON i.contract_id = c.id
-                                  LEFT JOIN baseinfo b1 ON c.contract_type_id = b1.id
+let baseQuery = `select i.*, c.contract_no AS contract,b2.title AS no
+    ,co.title as vw_company ,c.title as vw_contract_title,c.file_agreement as vw_file_agreement
+    FROM ${name} i LEFT JOIN contract c ON i.contract_id = c.id
                                   LEFT JOIN baseinfo b2 ON i.no_id = b2.id
-                                  LEFT JOIN baseinfo b3 ON i.credit_id = b3.id
                                   left JOIN  Company as co ON c.company_id=co.id `;
 
 router.get(`/`, function (req, res) {
@@ -35,7 +33,13 @@ router.get(`/:id`, function (req, res) {
         });
 });
 router.post('/', function (req, res) {
-    let data = req.body;
+    let data = JSON.parse(req.body.data);
+    let files = req.files;
+    let file_letter_manager = files && files.file_letter_manager ? func.saveFile(files.file_letter_manager, name, 'file_letter_manager',data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_manager"] = file_letter_manager;
+    let file_letter_employer = files && files.file_letter_employer ? func.saveFile(files.file_letter_employer, name, 'file_letter_employer',data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_employer"] = file_letter_employer;
+
     let query = func.queryGen(name, 'insert', data);
     console.log(query)
     pool.query(query)
@@ -47,7 +51,14 @@ router.post('/', function (req, res) {
         });
 });
 router.put('/:id', function (req, res) {
-    let data = req.body;
+    let data = JSON.parse(req.body.data);
+    let files = req.files;
+    let file_letter_manager = files && files.file_letter_manager ? func.saveFile(files.file_letter_manager, name, 'file_letter_manager',data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_manager"] = data['file_letter_manager'] == false ? '**d**' : file_letter_manager;
+    let file_letter_employer = files && files.file_letter_employer ? func.saveFile(files.file_letter_employer, name, 'file_letter_employer', data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_employer"] = data['file_letter_employer'] == false ? '**d**' : file_letter_employer;
+
+
     let query = func.queryGen(name, 'update', data);
     pool.query(query)
         .then((results) => {

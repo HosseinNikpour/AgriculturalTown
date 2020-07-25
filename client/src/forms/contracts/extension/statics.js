@@ -29,4 +29,4 @@ export const columns = [
 export const storeIndex = "extension";
 export const pageHeder = 'تمدید';
 
-export const emptyItem = { contract_id : ''  ,no_id : '' ,letter_no : '' ,letter_date : '' ,total_duration : '' ,duration : '' ,end_date : '' ,end_date_calc : '',Announcement_date : '' ,allow_late : '' ,file_signification : '' ,file_late : ''  };
+export const emptyItem = { contract_id : ''  ,no_id : '' ,letter_no : '' ,letter_date : '' ,total_duration : '' ,duration : '' ,end_date : '' ,end_date_calc : '',/*Announcement_date : '' ,*/allow_late : '' ,file_signification : '' ,file_late : ''  };

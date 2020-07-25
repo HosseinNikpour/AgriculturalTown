@@ -83,9 +83,9 @@ router.post('/', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
     //  console.log(files.file_agreement);
-    let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.title) : '';
-    let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.title) : '';
-    let file_delivery = files && files.file_delivery ? func.saveFile(files.file_delivery, name, 'file_delivery', data.title) : '';
+    let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement',data.contract_no) : '';
+    let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.contract_no) : '';
+    let file_delivery = files && files.file_delivery ? func.saveFile(files.file_delivery, name, 'file_delivery', data.contract_no) : '';
     data["file_agreement"] = file_agreement;
     data["file_announcement"] = file_announcement;
     data["file_delivery"] = file_delivery;
@@ -105,9 +105,9 @@ router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
     //  console.log(files.file_agreement);
-    let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.title) : '';
-    let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.title) : '';
-    let file_delivery = files && files.file_delivery ? func.saveFile(files.file_delivery, name, 'file_delivery', data.title) : '';
+    let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.contract_no) : '';
+    let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.contract_no) : '';
+    let file_delivery = files && files.file_delivery ? func.saveFile(files.file_delivery, name, 'file_delivery', data.contract_no) : '';
     data["file_agreement"] = data['file_agreement'] == false ? '**d**' : file_agreement;
     data["file_announcement"] = data['file_announcement'] == false ? '**d**' : file_announcement;
     data["file_delivery"] = data['file_delivery'] == false ? '**d**' : file_delivery;

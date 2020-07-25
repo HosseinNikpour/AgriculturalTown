@@ -17,20 +17,20 @@ export const emptyItem = {
     entity_name: '', item_creator_id: '', item_approver_id: [], item_viewer_id: [], item_editor_id:[],
 };
 export const entities = [
-    // {key:'BaseInfo', value: 'BaseInfo', label: 'اطلاعات پایه' },
-// {key:'company', value: 'Company', label: 'شناسنامه شرکت ها' },
-// {key:'1', value: 'شناسنامه شهرکها', label: 'شناسنامه شهرکها' },
-// {key:'2', value: 'شناسنامه قرارداد', label: 'شناسنامه قرارداد' },
-// {key:'3', value: 'شناسنامه پروژه', label: 'شناسنامه پروژه' },
+
 {key:'weeklyOperation', value: 'weeklyOperation', label: 'گزارش هفتگی عملیات اجرایی' },
 {key:'weeklyWeather', value: 'weeklyWeather', label: 'گزارش هفتگی وضعیت جوی' },
 {key:'weeklyUser', value: 'weeklyUser', label: 'گزارش هفتگی نیروی انسانی' },
 {key:'weeklyMachine', value: 'weeklyMachine', label: 'گزارش هفتگی ماشین آلات' },
-    // { value: 6, label: 'اطلاعات پایه' },
-    // { value: 7, label: 'اطلاعات پایه' },
-    // { value: 8, label: 'اطلاعات پایه' },
-    // { value: 9, label: 'اطلاعات پایه' },
-    // { value: 10, label: 'اطلاعات پایه' },
-    // { value: 11, label: 'اطلاعات پایه' },
-    // { value: 12, label: 'اطلاعات پایه' },
+{key:'invoiceContractorApprove', value: 'invoiceContractorApprove', label: 'تایید صورت وضعیت-کارفرما' },
+{key:'invoiceContractor', value: 'invoiceContractor', label: 'صورت وضعیت پیمانکار' },
+{key:'invoiceConsultant', value: 'invoiceConsultant', label: 'صورت حساب مشاور' },
+{key:'invoiceContractorPay', value: 'invoiceContractorPay', label: 'پرداخت صورت وضعیت' },
+{key:'invoiceConsultantApprove', value: 'invoiceConsultantApprove', label: 'صورتحساب-تایید کارفرما' },
+{key:'invoiceConsultantPay', value: 'invoiceConsultantPay', label: 'پرداخت صورتحساب' },
+{key:'creditPredict', value: 'creditPredict', label: 'پیش بینی اعتبار' },
+{key:'tender', value: 'tender', label: 'مناقصه' },
+{key:'tempDelivery', value: 'tempDelivery', label: 'تحویل موقت' },
+{key:'delivery', value: 'delivery', label: 'تحویل قطعی' },
+
 ]

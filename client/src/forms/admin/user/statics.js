@@ -10,7 +10,11 @@ export const columns = [
 
 ];
 
-export const roles = [  { key: 'admin', label: 'ادمین', value: 'admin' },
+export const roles = [  { key: 'abgEdit', label: 'مدیرطرح - ویرایش', value: 'abgEdit' },
+                        { key: 'abgview', label: 'مدیرطرح - مشاهده', value: 'abgview' },
+                        { key: 'owner1', label: 'کارفرما - دفتر فنی', value: 'owner1' },
+                        { key: 'owner2', label: 'کارفرما - امورمالی', value: 'owner2' },
+                        { key: 'owner3', label: 'کارفرما - سایر', value: 'owner3' },
                         { key: 'manager', label: 'مدیر شعبه', value: 'manager' },
                         { key: 'engineer', label: 'مشاور', value: 'engineer' },
                         { key: 'contractor', label: 'پیمانکار', value: 'contractor' }]

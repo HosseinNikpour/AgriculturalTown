@@ -4,7 +4,7 @@ export const columns = [
   { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
  { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان ' },
  { dataIndex: 'vw_contract_title',key: 'vw_contract_title', title: 'عنوان پروژه ' },
- { dataIndex: 'status',key: 'status', title: 'چرخه پیمان' }, 
+ { dataIndex: 'state',key: 'state', title: 'چرخه پیمان' }, 
  { dataIndex: 'date',key: 'date', title: 'تاریخ', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
  //{ dataIndex: 'period',key: 'period', title: 'دوره' }, 
  { dataIndex: 'file_record',key: 'file_record', title: 'نامه ابلاغ  (تعلیق-خاتمه فسخ)',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  },

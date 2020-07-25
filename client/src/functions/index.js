@@ -46,6 +46,7 @@ export const findNextStep = async (entityName, contractId, state, currentUserId)
                 user_id = 1;
                 break;
             case -1:
+                case 0:
                 user_id = -1;
                 break;
         }

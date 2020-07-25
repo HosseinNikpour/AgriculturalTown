@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
@@ -14,6 +14,7 @@ class Delivery extends Component {
         this.formRef = React.createRef();
 
         this.state = {
+            
             columns: columns, rows: [], contracts: [], project: '', errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
@@ -35,9 +36,17 @@ class Delivery extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')
+        , getItem("delivery", 'PermissionStructure')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label:a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let data = response[0].data;
+
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[2].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[2].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[2].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[2].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
             data.forEach(e => {
                 e.contractor_date = e.contractor_date ? moment(e.contractor_date) : undefined;
                 e.consultant_date = e.consultant_date ? moment(e.consultant_date) : undefined;
@@ -50,6 +59,7 @@ class Delivery extends Component {
             });
 
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contracts
                 , obj: { ...emptyItem }, showPanel: false, status: ''
             });
@@ -196,33 +206,37 @@ class Delivery extends Component {
         this.setState({ obj: ob });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd} = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
+        }
+        else if(!canRead && !canEdit && !canAdd ){
+          return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
         }
         else {
             return (
 
                 <div className="app-main col-12" >
 
-                    <div className="row" >
+                    <div className="row">
                         <div className="col-12">
                             <div className="card">
                                 <div className="card-header">
+                                
                                     <div className="row">
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>
@@ -246,7 +260,7 @@ class Delivery extends Component {
                                             </div>
                                             <div className="col-8">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label  className="">نام پیمان</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>

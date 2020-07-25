@@ -6,7 +6,18 @@
     font-family: 'iran_sansregular';
     font-size: 15px;
 }
-
+.center {
+    line-height: 200px;
+    height: 200px;
+    border: 3px solid green;
+    text-align: center;
+  }
+  
+  .center p {
+    line-height: 1.5;
+    display: inline-block;
+    vertical-align: middle;
+  }
 .ant-popover {
     width: 250px;
     border-radius: 6px;

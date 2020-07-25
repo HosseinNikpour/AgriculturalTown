@@ -38,9 +38,9 @@ router.post('/', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
    
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+data.no_id) : '';
     data["file_signification"] = file_signification;
-    let file_25percent = files && files.file_25percent ? func.saveFile(files.file_25percent, name, 'file_25percent', data.title) : '';
+    let file_25percent = files && files.file_25percent ? func.saveFile(files.file_25percent, name, 'file_25percent',data.contract_id+"_"+data.no_id) : '';
     data["file_25percent"] = file_25percent;
     // console.log(data);
     let query = func.queryGen(name, 'insert', data);
@@ -56,9 +56,9 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.contract_id+"_"+data.no_id) : '';
        data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
-       let file_25percent = files && files.file_25percent ? func.saveFile(files.file_25percent, name, 'file_25percent', data.title) : '';
+       let file_25percent = files && files.file_25percent ? func.saveFile(files.file_25percent, name, 'file_25percent',data.contract_id+"_"+data.no_id) : '';
        data["file_25percent"] = data['file_25percent'] == false ? '**d**' : file_25percent;
     let query = func.queryGen(name, 'update', data);
     pool.query(query)

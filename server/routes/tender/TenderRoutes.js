@@ -44,9 +44,9 @@ router.post('/', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
 
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title+"_"+data.town_id) : '';
     data["file_record"] = file_record;
-    let file_invite = files && files.file_invite ? func.saveFile(files.file_invite, name, 'file_invite', data.id) : '';
+    let file_invite = files && files.file_invite ? func.saveFile(files.file_invite, name, 'file_invite', data.title+"_"+data.town_id) : '';
     data["file_invite"] = file_invite;
        // console.log(data);
     let query = func.queryGen(name, 'insert', data);
@@ -62,9 +62,9 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.id) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_recod', data.title+"_"+data.town_id ) : '';
     data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
-    let file_invite = files && files.file_invite ? func.saveFile(files.file_invite, name, 'file_invite', data.id) : '';
+    let file_invite = files && files.file_invite ? func.saveFile(files.file_invite, name, 'file_invite', data.title+"_"+data.town_id) : '';
     data["file_invite"] = data['file_invite'] == false ? '**d**' : file_invite;
     let query = func.queryGen(name, 'update', data);
     pool.query(query)

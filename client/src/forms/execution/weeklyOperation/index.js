@@ -43,8 +43,8 @@ class WeeklyOperation extends Component {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
-            let canAdd = response[3].data[0].item_creator_id === roleId || roleId > 3 ? true : false;
-            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 3 ? true : false;
+            let canAdd = response[3].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 11 ? true : false;
             this.setState({
                 canAdd, canEdit,
                 isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
@@ -176,7 +176,7 @@ class WeeklyOperation extends Component {
                 let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
                 if (prevPeriod) {
                     let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date);
-                    let period_id = periods[periods.length - 1].key;
+                    let period_id = periods[0].key;
                     let prev_parent_id = pervItems[0].id;
                     this.setState({ contractTitle, contract_id: values, period_id, prev_parent_id });
                 }

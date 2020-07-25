@@ -53,9 +53,10 @@ import StudyOperation from './forms/execution/studyOperation/index'
 import CreditPredict from './forms/financial/creditPredict/index'
 import InvoiceConsultant from './forms/financial/invoiceConsultant/index'
 import InvoiceContractor from './forms/financial/invoiceContractor/index'
-import PayInvoiceConsultant from './forms/financial/payInvoiceConsultant/index'
-import PayInvoiceContractor from './forms/financial/payInvoiceContractor/index'
-
+import InvoiceConsultantApprove from './forms/financial/invoiceConsultantApprove/index'
+import InvoiceContractorApprove from './forms/financial/invoiceContractorApprove/index'
+import InvoiceContractorPay from './forms/financial/invoiceContractorPay/index'
+import InvoiceConsultantPay from './forms/financial/invoiceConsultantPay/index'
 
 import Home from './components/home'
 import Test from './components/test'
@@ -248,8 +249,10 @@ class App extends Component {
               <PrivateRoute path="/extension" component={Extension} />
               <PrivateRoute path="/tempDelivery" component={TempDelivery} />
               <PrivateRoute path="/delivery" component={Delivery} />
-              <PrivateRoute path="/payInvoiceContractor" component={PayInvoiceContractor} />
-              <PrivateRoute path="/payInvoiceConsultant" component={PayInvoiceConsultant} />
+              <PrivateRoute path="/invoiceContractorApprove" component={InvoiceContractorApprove} />
+              <PrivateRoute path="/invoiceContractorPay" component={InvoiceContractorPay} />
+              <PrivateRoute path="/invoiceConsultantApprove" component={InvoiceConsultantApprove} />
+              <PrivateRoute path="/invoiceConsultantPay" component={InvoiceConsultantPay} />
               <PrivateRoute path="/invoiceContractor" component={InvoiceContractor} />
               <PrivateRoute path="/invoiceConsultant" component={InvoiceConsultant} />
               <PrivateRoute path="/creditPredict" component={CreditPredict} />

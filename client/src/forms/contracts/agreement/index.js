@@ -36,7 +36,6 @@ class Town extends Component {
     }
 
     scrollToFormRef = () => window.scrollTo({ top: this.formRef.offsetTop, behavior: 'smooth' })
-    //  scrollToFormRef = () => window.scrollTo({ top: 700, behavior: 'smooth' })
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
@@ -52,13 +51,12 @@ class Town extends Component {
             contractTypes.unshift({ key: null, label: '-------', value: null });
             companies.unshift({ key: null, label: '-------', value: null });
             operationType.unshift({ key: null, label: '-------', value: null });
-            //certificateTypes.unshift({ key: null, label: '-------', value: null });
 
             data.forEach(e => {
 
                 e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
                 e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
-              //  e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
+            
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
                 e.town = e.town_id.map(x => {
                     let z = towns.find(a => a.key === x);
@@ -102,16 +100,12 @@ class Town extends Component {
         }
         else {
             obj['coefficient'] = obj.initial_amount / obj.client_initial_amount;
-
             obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
             obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
-           // obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
-            // obj.end_date = obj.end_date ? obj.end_date.format() : '';
             obj['end_date'] = moment(obj.announcement_date).add(obj.duration, 'days').format()
 
             var formData = new FormData();
 
-           // if (obj.f_file_delivery) formData.append("file_delivery", obj.f_file_delivery);
             if (obj.f_file_announcement) formData.append("file_announcement", obj.f_file_announcement);
             if (obj.f_file_agreement) formData.append("file_agreement", obj.f_file_agreement);
 

@@ -7,7 +7,7 @@ import NumberFormat from 'react-number-format';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage, errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp, numberDefaultProp } from '../../../components/statics'
 
 class PayInvoiceContractor extends Component {
     constructor(props) {
@@ -39,7 +39,7 @@ class PayInvoiceContractor extends Component {
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('insurance')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
-            let insurance = response[2].data.map(a => { return { key: a.id, label: a.insurance_no, value: a.id, contract: a.contract_id } });;
+            let insurance = response[2].data.map(a => { return { key: a.id, label: a.insurance_no, value: a.id, contract_id: a.contract_id } });;
             let data = response[0].data;
             data.forEach(e => {
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;
@@ -47,7 +47,7 @@ class PayInvoiceContractor extends Component {
             });
 
             this.setState({
-                isFetching: false, rows: data, contracts, insurance,
+                isFetching: false, rows: data, contracts, insurance,filterdInsurance:[],
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
             });
         }).catch((error) => console.log(error))
@@ -139,16 +139,18 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, insurance } = this.state;
+        let { obj, contractTitle, contracts, insurance ,filterdInsurance} = this.state;
         obj[name] = values;
-
+      //  
         if (name === 'contract_id') {
+           obj.insurance_id=undefined;
             let cont = contracts.find(a => a.key === values);
             contractTitle = cont && cont.title ? cont.title : '';
-            insurance = insurance.filter(a => a.contract_id === values);
-
+            filterdInsurance = insurance.filter(a => a.contract_id === values);
         }
-        this.setState({ obj, contractTitle, insurance });
+      
+            
+        this.setState({ obj, contractTitle, filterdInsurance });
     }
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
@@ -242,7 +244,7 @@ class PayInvoiceContractor extends Component {
                                             <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="insurance_id" className="">بیمه پیمان</label>
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.insurance}
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.filterdInsurance}
                                                         value={this.state.obj.insurance_id} onSelect={(values) => this.selectChange("insurance_id", values)} />
                                                 </div>
                                             </div>

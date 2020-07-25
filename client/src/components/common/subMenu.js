@@ -70,8 +70,10 @@ class SubMenu extends Component {
                 return (<ul>
                     <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/invoiceContractor" >صورت وضعیت پیمانکاران</Link></li>
                     <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/invoiceConsultant" >صورتحساب مشاورین</Link></li>
-                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/payInvoiceContractor" >پرداخت صورت وضعیت</Link></li>
-                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/payInvoiceConsultant" >پرداخت صورتحساب</Link></li>
+                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/invoiceContractorApprove" >تایید صورت وضعیت-کارفرما</Link></li>
+                    <li className={this.menuClassNames(6)} onClick={() => this.menuHandleClick(6)}> <Link to="/invoiceContractorPay" >پرداخت صورت وضعیت</Link></li>
+                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/invoiceConsultantApprove" >تایید صورت حساب-کارفرما</Link></li>
+                    <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/invoiceConsultantPay" >پرداخت صورتحساب</Link></li>
                     <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/creditPredict" >پیش بینی اعتبار</Link></li>
                 </ul>)
             case 5:

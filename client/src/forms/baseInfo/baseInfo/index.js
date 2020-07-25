@@ -5,7 +5,7 @@ import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, types, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage, errorDuration } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration } from '../../../components/statics'
 
 
 class BaseInfo extends Component {
@@ -50,8 +50,12 @@ class BaseInfo extends Component {
                   //  this.setState({ obj: emptyItem, isEdit: false, showPanel: false });
                 }
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
         else {
@@ -64,8 +68,12 @@ class BaseInfo extends Component {
                 }
 
                 else {
-                    message.error(errorMessage, errorDuration);
-                    console.log('error : ', response);
+                    if(response.data.message.indexOf('duplicate key value violates unique constraint')>-1)
+                    message.error(errorMessageDuplicate, errorDuration);
+                    else{
+                        message.error(errorMessage, errorDuration);
+                        console.log('error : ', response);
+                    }
                 }
             }).catch((error) => {console.log(error);  message.error(errorMessage, errorDuration);});
         }

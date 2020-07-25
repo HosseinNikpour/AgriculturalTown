@@ -4,7 +4,7 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "contract_cycle";
 
-let baseQuery=`SELECT w.*,  p.title AS period,b.title AS status,c.contract_no AS contract
+let baseQuery=`SELECT w.*,  p.title AS period,b.title AS state,c.contract_no AS contract
     ,co.title as vw_company ,c.title as vw_contract_title
     FROM contract_cycle w LEFT JOIN period p ON w.period_id = p.id
                           LEFT JOIN contract c ON w.contract_id = c.id
@@ -39,7 +39,7 @@ router.post('/', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
    
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract+" - "+data.status) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record',data.contract_id+"_"+data.state_id) : '';
     data["file_record"] = file_record;
     // console.log(data);
     let query = func.queryGen(name, 'insert', data);
@@ -55,7 +55,7 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.title) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract_id+"_"+data.state_id) : '';
        data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
 
     let query = func.queryGen(name, 'update', data);

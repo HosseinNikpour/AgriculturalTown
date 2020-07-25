@@ -41,7 +41,7 @@ export const pageHeder = 'مناقصات';
 
 export const emptyItem = { 
 title : '' ,town_id : ''
-,group_id : '' ,type_id : '' ,service_type_id : '' ,operation_type_id : '',modifier_type_id : '' ,commission_date : '' ,commission_result_id : '' ,ofile_record : '' ,description : '' 
+,group_id : '' ,type_id : '' ,service_type_id : '' ,operation_type_id : '',modifier_type_id : '' ,commission_date : '' ,commission_result_id : '' ,file_record : '' ,description : '' 
 };
 
 

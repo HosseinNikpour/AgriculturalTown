@@ -52,7 +52,7 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_contract = files && files.file_contract ? func.saveFile(files.file_contract, name, 'file_contract', data.title) : '';
+    let file_contract = files && files.file_contract ? func.saveFile(files.file_contract, name, 'file_contract', data.contract_id+"_"+data.insurance_no) : '';
     data["file_contract"] = file_contract;
     let query = func.queryGen(name, 'insert',data);
    
@@ -67,7 +67,7 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_contract = files && files.file_contract ? func.saveFile(files.file_contract, name, 'file_contract', data.title) : '';
+    let file_contract = files && files.file_contract ? func.saveFile(files.file_contract, name, 'file_contract', data.contract_id+"_"+data.insurance_no) : '';
     data["file_contract"] = data['file_contract'] == false ? '**d**' : file_contract;
 
     let query = func.queryGen(name, 'update',data);

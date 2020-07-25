@@ -37,8 +37,8 @@ router.post('/', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
    
-    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late',data.contract_id+"_"+data.no_id) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+data.no_id) : '';
     
     data["file_late"] = file_late;
     data["file_signification"] = file_signification;
@@ -58,8 +58,8 @@ router.post('/', function (req, res) {
 router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     let files = req.files;
-    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.title) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.title) : '';
+    let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.contract_id+"_"+data.no_id) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.contract_id+"_"+data.no_id) : '';
     
     data["file_late"] = data['file_late'] == false ? '**d**' : file_late;
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;

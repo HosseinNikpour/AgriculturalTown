@@ -10,13 +10,15 @@ export const columns = [
   //{ dataIndex: 'prev_price',key: 'prev_price', title: 'مبلغ آخرین صورت وضعیت پرداخت شده مالی', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
   { dataIndex: 'no',key: 'no', title: 'شماره صورت وضعیت فعلی' },
  
-  { dataIndex: 'price',key: 'price', title: ' مبلغ قابل پرداخت تجمعی   ', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
+  { dataIndex: 'price',key: 'price', title: ' مبلغ قابل تایید دفتر فنی کارفرما   ', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
   //{ dataIndex: 'period_price',key: 'period_price', title: 'مبلغ قابل پرداخت در دوره', render: function (text) { return  text?parseInt(text).toLocaleString():0 }  }, 
-  //{ dataIndex: 'pay_date',key: 'pay_date', title: 'تاریخ سند پرداخت' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } }, 
- // { dataIndex: 'type',key: 'type', title: 'نوع پرداخت' },
-  //{ dataIndex: 'credit',key: 'credit', title:'نوع اعتبارات' }, 
- // { dataIndex: 'letter_date_manager',key: 'letter_date_manager', title: 'تاریخ نامه معاون فنی' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
-//{ dataIndex: 'letter_no_manager', key: 'letter_no_manager', title: 'شماره نامه معاون فنی' },
+ 
+   //{dataIndex: 'letter_date_manager',key: 'letter_date_manager', title: 'تاریخ نامه مدیر طرح' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
+  //{dataIndex: 'letter_no_manager', key: 'letter_no_manager', title: 'شماره نامه مدیر طرح' },
+  {dataIndex: 'file_letter_manager',key: 'file_letter_manager', title: 'بارگذاری سند نامه مدیر طرح',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
+  //{dataIndex: 'letter_date_employer',key: 'letter_date_employer', title: 'تاریخ  تایید دفتر فنی کارفرما' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
+  //{dataIndex: 'letter_no_employer', key: 'letter_no_employer', title: 'شماره نامه دفتر فنی کارفرما' },
+    {dataIndex: 'file_letter_employer',key: 'file_letter_employer', title: 'بارگذاری نامه دفتر فنی کارفرما به مالی',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
   //{ dataIndex: 'decsciption',key: 'decsciption', title: 'توضیحات' },
 
     // { dataIndex: 'creator_id',key: 'creator_id', title: 'ایجاد کننده' }, 
@@ -26,9 +28,9 @@ export const columns = [
 
    ];
 
-export const storeIndex = "payInvoiceContractor";
-export const pageHeder = 'پرداخت صورت وضعیت پیمانکار';
+export const storeIndex = "InvoiceContractorApprove";
+export const pageHeder = 'تایید صورت وضعیت-کارفرما';
 
-export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : ''  ,price : '' ,period_price : '' ,pay_date : '' ,type_id : '' ,credit_id : '' ,decsciption : '' ,};
+export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : ''  ,price : '' ,period_price : ''   ,decsciption : ''};
 
 

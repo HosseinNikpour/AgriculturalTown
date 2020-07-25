@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const func = require('../../functions/index');
 const name = "temp_delivery";
+const moment=require('moment-jalaali');
 
 let baseQuery=`select d.*, c.contract_no AS contract
     ,co.title as vw_company ,c.title as vw_contract_title
@@ -35,11 +36,12 @@ router.post('/', function (req, res) {
 
     let data = JSON.parse(req.body.data);
     let files = req.files;
+    
     console.log(data)
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',  data.contract) : '';
-    let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects',  data.contract) : '';
+    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',  data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects',  data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     data["file_elimination_defects"] = file_elimination_defects;
     data["file_defect"] = file_defect;
     data["file_record"] = file_record;
@@ -48,7 +50,7 @@ router.post('/', function (req, res) {
     let query = func.queryGen(name, 'insert', data);
     console.log(query)
 
-    console.log(query)
+   
     pool.query(query)
         .then((results) => {
             return res.send(results.rows);
@@ -61,10 +63,10 @@ router.put('/:id', function (req, res) {
     let data = JSON.parse(req.body.data);
     console.log(data)
     let files = req.files;
-    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract) : '';
-    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract) : '';
-    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.contract) : '';
-    let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects', data.contract) : '';
+    let file_defect = files && files.file_defect ? func.saveFile(files.file_defect, name, 'file_defect', data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     data["file_elimination_defects"] = data['file_elimination_defects'] == false ? '**d**' : file_elimination_defects;
     data["file_defect"] = data['file_defect'] == false ? '**d**' : file_defect;
     data["file_record"] = data['file_record'] == false ? '**d**' : file_record;

@@ -42,8 +42,10 @@ router.use('/StudyOperationDetail', require('./execution/StudyOperationDetailRou
 router.use('/CreditPredict', require('./financial/CreditPredictRoutes'));
 router.use('/InvoiceConsultant', require('./financial/InvoiceConsultantRoutes'));
 router.use('/InvoiceContractor', require('./financial/InvoiceContractorRoutes'));
-router.use('/PayInvoiceConsultant', require('./financial/PayInvoiceConsultantRoutes'));
-router.use('/PayInvoiceContractor', require('./financial/PayInvoiceContractorRoutes'));
+router.use('/InvoiceConsultantApprove', require('./financial/InvoiceConsultantApproveRoutes'));
+router.use('/InvoiceContractorApprove', require('./financial/InvoiceContractorApproveRoutes'));
+router.use('/InvoiceContractorPay', require('./financial/InvoiceContractorPayRoutes'));
+router.use('/InvoiceConsultantPay', require('./financial/InvoiceConsultantPayRoutes'));
 
 router.use('/Tender', require('./tender/tenderRoutes'));
 

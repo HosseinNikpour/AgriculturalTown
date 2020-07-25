@@ -23,9 +23,9 @@ const queryGen = (name, type, row) => {
     Object.keys(row).forEach(key => {
         if (key.endsWith('_id')) {
             let x = key.replace('_id', '');
-            console.log(x)
+            //  console.log(x)
             delete row[x];
-           // }
+            // }
         }
 
     });
@@ -60,14 +60,17 @@ const queryGen = (name, type, row) => {
     else if (type == 'update') {
         updateQuery = `UPDATE public.${name} SET `
         Object.keys(row).forEach(key => {
+         //   console.log(`${key}   ${!row[key]}    ${key.startsWith('file_')}`)
             if (!key.startsWith('f_') && key != 'id' && !key.startsWith('vw_')) {
 
                 if (typeof (row[key]) == 'number' || typeof (row[key]) == 'boolean')
                     updateQuery += `${key} =${row[key]},`;
                 else if (Array.isArray(row[key]))
                     updateQuery += `${key} ='{${row[key]}}',`;
-                else if (!row[key])
-                    updateQuery += `${key} = null,`;
+                else if (!row[key]) {
+                    if (!key.startsWith('file_'))
+                        updateQuery += `${key} = null,`;
+                }
                 else {
                     if (row[key] === '**d**')
                         updateQuery += `${key} = null,`;
@@ -76,6 +79,7 @@ const queryGen = (name, type, row) => {
                 }
             }
         })
+
         updateQuery = updateQuery.slice(0, -1);
         updateQuery = updateQuery + ` WHERE  id=${row['id']}`
         return updateQuery;
@@ -112,10 +116,10 @@ const returnContractIds = (userId, token) => {
             break;
     }
     let query = `SELECT id FROM conract where ${field} = ${user.id} `;
-    console.log(query)
+    // console.log(query)
     pool.query(query)
         .then((results) => {
-            console.log(results.rows);
+            //    console.log(results.rows);
             return results.rows.toString();
         })
         .catch((err) => {
