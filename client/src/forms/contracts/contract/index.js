@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import NumberFormat from 'react-number-format';
@@ -42,7 +42,7 @@ class Town extends Component {
     fetchData() {
         // console.log('[' + Date.now() + '] ', ' before fetch');
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
-        getAllItem('town/vw'), getAllItem('user'), getAllItem('Agreement/vw')]).then((response) => {
+        getAllItem('town/vw'), getAllItem('user'), getAllItem('Agreement/vw')  , getItem("contract", 'PermissionStructure')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -50,6 +50,16 @@ class Town extends Component {
             let Agreements = response[5].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
+
+
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[6].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[6].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[6].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[6].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
+
+
 
             contractTypes.unshift({ key: null, label: '-------', value: null });
             companies.unshift({ key: null, label: '-------', value: null });
@@ -70,6 +80,7 @@ class Town extends Component {
             //console.log(data);
             console.log('[' + Date.now() + '] ', ' after loop ');
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contractTypes,
                 companies, towns, users, operationType, Agreements,
                 obj: { ...emptyItem }, showPanel: false, status: ''
@@ -225,10 +236,13 @@ class Town extends Component {
         this.setState({ obj: ob });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd } = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
 
@@ -242,16 +256,16 @@ class Town extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>

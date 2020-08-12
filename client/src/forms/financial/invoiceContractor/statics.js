@@ -1,6 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+   { dataIndex: 'id',key: 'id', title: 'شناسه ' },
    { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
    { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان  ' }, 
    { dataIndex: 'vw_file_agreement',key: 'vw_file_agreement', title: ' قرارداد ',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  },
@@ -30,6 +31,6 @@ export const columns = [
 export const storeIndex = "invoiceContractor";
 export const pageHeder = 'صورت وضعیت پیمانکار';
 
-export const emptyItem = { contract_id : ''  ,prev_id : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,end_date : '' ,contractor_price : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
+export const emptyItem = { contract_id : ''  ,prev_id : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,letter_no_branch: '' ,letter_no_manager: '' ,end_date : '' ,contractor_price : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
 
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem,getItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
@@ -35,7 +35,7 @@ class Town extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw') , getItem("town", 'PermissionStructure')]).then((response) => {
             let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let activities = response[1].data.filter(a => a.groupid === 2).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let ownerships = response[1].data.filter(a => a.groupid === 4).map(a => { return { key: a.id, label: a.title, value: a.id } });
@@ -45,6 +45,16 @@ class Town extends Component {
             let locations = response[1].data.filter(a => a.groupid === 3).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let waterIndex = response[1].data.filter(a => a.groupid === 18).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
+     
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[2].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[2].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[2].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[2].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
+
+
+
 
             provinces.unshift({ key: null, label: '-------', value: null });
             activities.unshift({ key: null, label: '-------', value: null });
@@ -56,6 +66,7 @@ class Town extends Component {
             waterIndex.unshift({ key: null, label: '-------', value: null });
            
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: response[0].data, waterSupply,
                 provinces, activities, ownerships, powerSupply, waterIndex,
                 gasSupply, locations, operationType,
@@ -80,7 +91,7 @@ class Town extends Component {
 
         if (Object.values(errors).filter(a => a).length > 0) {
             this.setState({ errors }, () => { this.scrollToFormRef(); });
-            alert("خطا در ذخیره سازی اطلاعات");
+            alert("لطفا موارد الزامی را وارد کنید");
         }
         else {
 
@@ -192,10 +203,13 @@ class Town extends Component {
         this.setState({ obj: { ...emptyItem }, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd } = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
                 <div className="app-main col-12" >
@@ -207,16 +221,16 @@ class Town extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>
@@ -408,23 +422,23 @@ class Town extends Component {
                                         <div className='row'>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="water_quality_EC" className="">کیفیت آب -EC (میکروزیمنس بر سانتیمتر)</label>
-                                                    <input name="water_quality_EC" className="form-control" onChange={this.handleChange} type='number'
-                                                        value={this.state.obj.water_quality_EC} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="water_quality_ec" className="">کیفیت آب -EC (میکروزیمنس بر سانتیمتر)</label>
+                                                    <input name="water_quality_ec" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.water_quality_ec} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="water_quality_PH" className="">کیفیت آب  -PH</label>
-                                                    <input name="water_quality_PH" className="form-control" onChange={this.handleChange} type='number'
-                                                        value={this.state.obj.water_quality_PH} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="water_quality_ph" className="">کیفیت آب  -PH</label>
+                                                    <input name="water_quality_ph" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.water_quality_ph} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="water_quality_TDS" className=""> کیفیت  آب  -TDS (میلی‌گرم بر لیتر)</label>
-                                                    <input name="water_quality_TDS" className="form-control" onChange={this.handleChange} type='number'
-                                                        value={this.state.obj.water_quality_TDS} disabled={this.state.status === 'display'} />
+                                                    <label htmlFor="water_quality_tds" className=""> کیفیت  آب  -TDS (میلی‌گرم بر لیتر)</label>
+                                                    <input name="water_quality_tds" className="form-control" onChange={this.handleChange} type='number'
+                                                        value={this.state.obj.water_quality_tds} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                         </div>

@@ -54,7 +54,7 @@ class PayInvoiceConsultant extends Component {
             data.forEach(e => {
                 //اینجا فیلدهای تاریخ میان
                 e.pay_date = e.pay_date ? moment(e.pay_date) : undefined;
-                e.Credit_date = e.payCredit_date_date ? moment(e.Credit_date) : undefined;
+                e.credit_date = e.credit_date ? moment(e.credit_date) : undefined;
                 e.letter_date_secretariat = e.letter_date_secretariat ? moment(e.letter_date_secretariat) : undefined;
               
  
@@ -85,7 +85,7 @@ class PayInvoiceConsultant extends Component {
         }
         else {
         obj.pay_date = obj.pay_date ? obj.pay_date.format() : '';
-        obj.Credit_date = obj.Credit_date ? obj.Credit_date.format() : '';
+        obj.credit_date = obj.credit_date ? obj.credit_date.format() : '';
         obj.letter_date_secretariat = obj.letter_date_secretariat ? obj.letter_date_secretariat.format() : '';
          
         obj.period_price = parseInt(this.state.obj.price) - parseInt(this.state.obj.prev_price);
@@ -374,10 +374,10 @@ class PayInvoiceConsultant extends Component {
 										 <div className="col-4">
                                                 <div className="form-group">
 
-                                                    <label htmlFor="Credit_date" className="">تاریخ سررسید اسناد</label>
+                                                    <label htmlFor="credit_date" className="">تاریخ سررسید اسناد</label>
 
-                                                    <DatePicker onChange={value => this.dateChange('Credit_date', value)}
-                                                        value={this.state.obj.Credit_date}
+                                                    <DatePicker onChange={value => this.dateChange('credit_date', value)}
+                                                        value={this.state.obj.credit_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
 												 </div>	

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem } from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
@@ -37,16 +37,27 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('insurance')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('insurance')
+        , getItem("insuranceAppendix", 'PermissionStructure')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let insurance = response[2].data.map(a => { return { key: a.id, label: a.insurance_no, value: a.id, contract_id: a.contract_id } });;
             let data = response[0].data;
+
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[3].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[3].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[3].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
+
+
             data.forEach(e => {
                 e.start_date = e.start_date ? moment(e.start_date) : undefined;
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
             });
 
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contracts, insurance,filterdInsurance:[],
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
             });
@@ -131,8 +142,6 @@ class PayInvoiceContractor extends Component {
         ob[name] = value;
         this.setState({ obj: ob });
     }
-
-
     dateChange(name, value) {
         let ob = this.state.obj;
         ob[name] = value;
@@ -153,14 +162,18 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj, contractTitle, filterdInsurance });
     }
     editClickHandle(item) {
-        let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let contractTitle = cont && cont.title ? cont.title : '';
-        this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
+        let {  contractTitle, contracts, insurance ,filterdInsurance} = this.state;
+        let cont = contracts.find(a => a.key == item.contract_id);
+        contractTitle = cont && cont.title ? cont.title : '';
+        filterdInsurance = insurance.filter(a => a.contract_id === item.contract_id);
+        this.setState({ filterdInsurance,contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
+        let {  contractTitle, contracts, insurance ,filterdInsurance} = this.state;
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
-        let contractTitle = cont && cont.title ? cont.title : '';
-        this.setState({ contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
+        contractTitle = cont && cont.title ? cont.title : '';
+        filterdInsurance = insurance.filter(a => a.contract_id === item.contract_id);
+        this.setState({ filterdInsurance,contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
     deleteClickHandle(item) {
         //console.log(item)
@@ -187,10 +200,13 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj: ob });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd } = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
                 <div className="app-main col-12" >
@@ -202,16 +218,16 @@ class PayInvoiceContractor extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>

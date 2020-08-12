@@ -21,9 +21,9 @@ export const columns = [
     // { dataIndex: 'location',key: 'location', title: 'location' }, 
     // { dataIndex: 'coordinate_e',key: 'coordinate_e', title: 'coordinate_e' }, 
     // {dataIndex: 'coordinate_n',key: 'coordinate_n', title: 'coordinate_n' }, 
-  //  { dataIndex: 'water_quality_EC',key: 'water_quality_EC', title: 'کیفیت آب -EC (میکروزیمنس بر سانتیمتر)' }, 
-  //  { dataIndex: 'water_quality_PH',key: 'water_quality_PH', title: 'کیفیت آب  -PH' }, 
-   // { dataIndex: 'water_quality_TDS',key: 'pure_area', title: ' کیفیت  آب  -TDS (میلی‌گرم بر لیتر)' },
+  //  { dataIndex: 'water_quality_ec',key: 'water_quality_ec', title: 'کیفیت آب -EC (میکروزیمنس بر سانتیمتر)' }, 
+  //  { dataIndex: 'water_quality_ph',key: 'water_quality_ph', title: 'کیفیت آب  -PH' }, 
+   // { dataIndex: 'water_quality_tds',key: 'water_quality_tds', title: ' کیفیت  آب  -TDS (میلی‌گرم بر لیتر)' },
    //  { dataIndex: 'file_dxf',key: 'file_dxf', title: 'بارگزاری فایل کروکی DXF',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} }, 
    //  { dataIndex: 'file_kmz',key: 'file_kmz', title: 'بارگزاری فایل کروکی KMZ',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
    //  { dataIndex: 'file_plan',key: 'file_plan', title: 'بارگذاری فایل  pdf  پلان شهرک',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
@@ -36,7 +36,7 @@ export const emptyItem = {
     activity_type_id : '' ,ownership_type_id : '' ,water_supply_id : '' ,water_rate : '' ,
     power_supply_id : '' ,power_rate : '' ,gas_supply_id : '' ,gas_rate : '' ,total_units : '' ,
     used_units : '' ,used_number : '' ,location_id : '' ,coordinate_e : '' ,coordinate_n : '' ,
-    file_dxf : '' ,file_kmz : '' ,f_file_dxf : '' ,f_file_kmz : '',operation_type_id:[],water_index_id:'',
+    file_dxf : '' ,water_quality_ec: '' ,water_quality_ph: '' ,water_quality_tds: '' ,    file_kmz : '' , file_plan : '' ,f_file_dxf : '' ,f_file_kmz : '',operation_type_id:[],water_index_id:'',
     description:'', exploitable_area:0,operating_area :0
     
 };

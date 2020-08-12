@@ -1,12 +1,14 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+   { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
+
    { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
  { dataIndex: 'contract',key: 'contract', title: 'شماره قرارداد' },
  { dataIndex: 'vw_contract_title',key: 'vw_contract_title', title: 'عنوان پروژه ' },
  { dataIndex: 'state',key: 'state', title: 'چرخه قرارداد' }, 
  { dataIndex: 'date',key: 'date', title: 'تاریخ', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
- //{ dataIndex: 'period_id',key: 'period_id', title: 'دوره' }, 
+ /*{ dataIndex: 'period_id',key: 'period_id', title: 'دوره' }, */
  { dataIndex: 'file_record',key: 'file_record', title: 'بارگذاری صورتجلسه',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  }, 
 // { dataIndex: 'signification_date',key: 'signification_date', title: 'تاریخ ابلاغ ', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' } },
  //{ dataIndex: 'description',key: 'description', title: 'توضیحات' },
@@ -18,9 +20,9 @@ export const columns = [
 // { dataIndex: 'status',key: 'status', title: 'وضعیت' }
    ];
 
-export const storeIndex = "contractCycle";
+export const storeIndex = "projectcycle";
 export const pageHeder = 'چرخه قرارداد';
 
-export const emptyItem = { contract_id : '' ,state_id : '' ,date : '' ,period_id : '' ,file_record : '' ,signification_date : '' ,description : ''};
+export const emptyItem = { contract_id : '' ,state_id : '' ,date : '' ,file_record : '' ,signification_date : '' ,description : ''};
 
 

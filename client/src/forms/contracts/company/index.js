@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem  } from '../../../api/index';
 import { message, Select } from 'antd';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
@@ -30,12 +30,24 @@ class Company extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw')  , getItem("company", 'PermissionStructure')]).then((response) => {
             let provinces = response[1].data.filter(a => a.groupid === 1).map(a => { return { key: a.id, label: a.title, value: a.id } });
             provinces.unshift({key:null,label:'-------',value:null});
             let certificateTypes = response[1].data.filter(a => a.groupid === 9).map(a => { return { key: a.id, label: a.title, value: a.id } })
             certificateTypes.unshift({key:null,label:'-------',value:null});
-            this.setState({ isFetching: false, rows: response[0].data, provinces: provinces, certificateTypes: certificateTypes 
+          
+          
+          
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[2].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[2].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[2].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[2].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
+
+            
+            this.setState({
+                canAdd, canEdit,canRead,
+                 isFetching: false, rows: response[0].data, provinces: provinces, certificateTypes: certificateTypes 
                 , obj: {...emptyItem},  showPanel: false,status: ''});
         }).catch((error) => console.log(error))
     }
@@ -134,10 +146,13 @@ class Company extends Component {
         this.setState({ obj: {...emptyItem}, status: '', showPanel: false }, () => { this.scrollToGridRef(); });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd} = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
                 <div className="app-main col-12" >
@@ -149,16 +164,16 @@ class Company extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>

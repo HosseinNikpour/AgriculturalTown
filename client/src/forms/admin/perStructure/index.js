@@ -36,10 +36,11 @@ class PermissionStructure extends Component {
             let rows = response[0].data;
            
             rows.forEach(e => {
-                e.item_creator = users.find(a => a.key === e.item_creator_id).label;
-                e.item_approver =e.item_approver_id.map(x => users.find(a => a.key === x).label).toString();
-                e.item_viewer =e.item_viewer_id.map(x => users.find(a => a.key === x).label).toString();
-                e.item_editor =e.item_editor_id.map(x => users.find(a => a.key === x).label).toString();
+                e.entity_name_fa=entities.find(a=>a.value===e.entity_name).label;
+                e.item_creator = e.item_creator_id?users.find(a => a.key === e.item_creator_id).label:undefined;
+                e.item_approver =e.item_approver?e.item_approver_id.map(x => users.find(a => a.key === x).label).toString():undefined;
+                e.item_viewer = e.item_viewer?e.item_viewer_id.map(x => users.find(a => a.key === x).label).toString():undefined;
+                e.item_editor = e.item_editor?e.item_editor_id.map(x => users.find(a => a.key === x).label).toString():undefined;
             });
            
             this.setState({ isFetching: false, rows, users ,
@@ -67,6 +68,7 @@ class PermissionStructure extends Component {
                 //todo : handel error handeling
             }).catch((error) => console.log(error));
         else {
+           delete obj.entity_name_fa;
             updateItem(obj, storeIndex).then((response) => {
                 if (response.data.type !== "Error") {
                     message.success(successMessage, successDuration);

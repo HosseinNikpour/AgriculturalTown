@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { saveItem, getAllItem, removeItem, updateItem } from '../../../api/index';
+import { saveItem, getAllItem, removeItem, updateItem, getItem  } from '../../../api/index';
 import { message, Select } from 'antd';
 import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
@@ -35,18 +35,28 @@ class PayInvoiceContractor extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('BaseInfo/vw')]).then((response) => {
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw')
+        , getAllItem('BaseInfo/vw')  , getItem("contractCycle", 'PermissionStructure')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
            // let periods = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let StatusContract = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
           
             let data = response[0].data;
+
+
+            let roleId = JSON.parse(localStorage.getItem('user')).role_id;
+            let canAdd = response[3].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
+            let canRead = response[3].data[0].item_viewer_id.indexOf(roleId) > -1 ||  response[3].data[0].item_approver_id.indexOf(roleId) > -1 ? true : false;
+
+
             data.forEach(e => {
                 e.date = e.date ? moment(e.date) : undefined;
                 e.signification_date = e.signification_date ? moment(e.signification_date) : undefined;
             });
 
             this.setState({
+                canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contracts,  StatusContract,
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
             });
@@ -189,10 +199,13 @@ class PayInvoiceContractor extends Component {
         this.setState({ obj: ob });
     }
     render() {
-        const { isFetching } = this.state;
+        const { isFetching ,canRead ,canEdit ,canAdd } = this.state;
         if (isFetching) {
             return (<Loading></Loading>)
         }
+        else if(!canRead && !canEdit && !canAdd ){
+            return (<div className='center'><p> شما به این صفحه دسترسی ندارید لطفا با مدیر سامانه تماس بگیرید</p></div> )
+          }
         else {
             return (
                 <div className="app-main col-12" >
@@ -204,16 +217,16 @@ class PayInvoiceContractor extends Component {
                                         <div className="col">
                                             {pageHeder}
                                         </div>
-                                        <div className='col-1  ml-auto'>
+                                        {this.state.canAdd && <div className='col-1  ml-auto'>
                                             <i className="fa fa-plus-circle add-button" onClick={this.newClickHandle}></i>
-                                        </div>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    <Grid columns={this.state.columns} rows={this.state.rows}
-                                        editClick={this.editClickHandle}
+                                <Grid columns={this.state.columns} rows={this.state.rows}
+                                        editClick={this.state.canEdit ? this.editClickHandle : undefined}
                                         displayClick={this.displayClickHandle}
-                                        deleteClick={this.deleteClickHandle}></Grid>
+                                        deleteClick={this.state.canEdit ? this.deleteClickHandle : undefined}></Grid>
                                 </div>
                             </div>
                         </div>

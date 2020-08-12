@@ -1,6 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
-export const columns = [
+export const columns = [ 
+  { dataIndex: 'id',key: 'id', title: 'شناسه ' },
   { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
   { dataIndex: 'contract',key: 'contract', title: ' شماره پیمان' },
   { dataIndex: 'vw_file_agreement',key: 'vw_file_agreement', title: ' قرارداد ' ,render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  },
@@ -31,6 +32,6 @@ export const columns = [
 export const storeIndex = "invoiceConsultant";
 export const pageHeder = 'صورت حساب مشاور';
 
-export const emptyItem = {contract_id : ''  ,prev_id : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,end_date : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
+export const emptyItem = {contract_id : ''  ,prev_id : '' ,letter_no_manager : '' ,letter_no_branch : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,end_date : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
 
 

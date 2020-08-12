@@ -3,6 +3,7 @@
 import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+  { dataIndex: 'id',key: 'id', title: 'شناسه ' },
    { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
    { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان  ' },
    { dataIndex: 'vw_file_agreement',key: 'vw_file_agreement', title: ' قرارداد ' ,render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''}  },
@@ -33,6 +34,6 @@ export const columns = [
 export const storeIndex = "InvoiceConsultantApprove";
 export const pageHeder = 'صورتحساب-تایید کارفرما';
 
-export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : '' ,approve_price : '' ,price : '' ,period_price : '' ,decsciption : '' ,};
+export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : '' ,approve_price : '' ,price : '' ,period_price : '' ,decsciption : '' ,letter_no_manager : '' ,letter_no_employer : '' ,};
 
 

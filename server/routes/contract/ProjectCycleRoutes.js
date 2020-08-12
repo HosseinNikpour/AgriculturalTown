@@ -4,10 +4,9 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "project_cycle";
 
-let baseQuery=`SELECT w.*,  p.title AS period,b.title AS state,c.contract_no AS contract
+let baseQuery=`SELECT w.*,  b.title AS state,c.contract_no AS contract
     ,co.title as vw_company ,c.title as vw_contract_title
-    FROM project_cycle w  LEFT JOIN period p ON w.period_id = p.id
-                          LEFT JOIN agreement c ON w.contract_id = c.id
+    FROM project_cycle w  LEFT JOIN agreement c ON w.contract_id = c.id
                           LEFT JOIN baseinfo b ON w.state_id = b.id  
                           left JOIN  Company as co ON c.company_id=co.id `;
 

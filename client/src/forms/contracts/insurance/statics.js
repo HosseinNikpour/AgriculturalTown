@@ -1,6 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+  { dataIndex: 'id',key: 'id', title: 'شناسه ' }, 
   { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
   //{ dataIndex: 'insurance_no',key: 'insurance_no', title: 'شماره بیمه نامه' },
   { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان' },
