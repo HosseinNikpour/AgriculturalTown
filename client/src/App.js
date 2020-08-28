@@ -7,8 +7,8 @@ import './assets/css/fontawesome.css';
 
 import './assets/css/custom.css';
 
-import logo from './assets/img/abg.png'
-import farm from './assets/img/arm.png'
+import logo from './assets/img/arm-final.png'
+import farm from './assets/img/right-pic.png'
 
 import SubMenu from './components/common/subMenu';
 //per 
@@ -60,6 +60,8 @@ import InvoiceConsultantPay from './forms/financial/invoiceConsultantPay/index'
 
 import Home from './components/home'
 import Test from './components/test'
+
+import ReportExcel from './reports/excel/index'
 
 class App extends Component {
   constructor(prop) {
@@ -167,8 +169,8 @@ class App extends Component {
           </div>
           <div className='row navagition'>
             <div className='col-3'>
-              <img src={logo} style={{ width: '15%',float:'right' , marginTop: '3%',paddingTop:'3%' }} />
-              <div className='logoName'> مهندسین مشاور آبگستران میهن</div>
+              <img src={logo} style={{ width: '81%',float:'right' , marginTop: '1%',paddingTop:'-3%' }} />
+              
 
             </div>
             <div className='col-8'>
@@ -268,7 +270,9 @@ class App extends Component {
               <PrivateRoute path="/tender" component={Tender} />
 
               <PrivateRoute path="/insurance" component={Insurance} />
-               <PrivateRoute path="/insuranceAppendix" component={InsuranceAppendix} />
+              <PrivateRoute path="/insuranceAppendix" component={InsuranceAppendix} />
+
+              <PrivateRoute path="/report-excel" component={ReportExcel} />
 
               <Route path="/test">
                 <Test />

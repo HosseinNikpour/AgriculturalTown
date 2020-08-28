@@ -4,11 +4,15 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "extension";
 
-let baseQuery=`SELECT e.*,c.contract_no AS contract,b.title AS no
-    ,co.title as vw_company ,c.title as vw_contract_title
-    FROM extension e LEFT JOIN contract c ON e.contract_id = c.id
-                     LEFT JOIN baseinfo b ON e.no_id = b.id
-                     left JOIN  Company as co ON c.company_id=co.id `;
+let baseQuery=`SELECT e.*,b.title AS no ,type_id
+                    ,case type_id when 1 then c.contract_no else a.contract_no end contract
+                    ,case type_id when 1 then co.title else co1.title end vw_company
+                    ,case type_id when 1 then c.title else a.title end vw_contract_title
+            FROM extension e LEFT JOIN contract c ON e.contract_id = c.id
+                    LEFT JOIN agreement a ON e.contract_id = a.id
+                    LEFT JOIN baseinfo b ON e.no_id = b.id
+                    left JOIN  Company as co ON c.company_id=co.id
+                    left JOIN  Company as co1 ON a.company_id=co1.id `;
 
 router.get(`/`, function (req, res) {
     let query = ` ${baseQuery} order by id desc  `;

@@ -48,5 +48,5 @@ router.use('/InvoiceContractorPay', require('./financial/InvoiceContractorPayRou
 router.use('/InvoiceConsultantPay', require('./financial/InvoiceConsultantPayRoutes'));
 
 router.use('/Tender', require('./tender/tenderRoutes'));
-
+router.use('/Report', require('./reports/ReportRoutes'));
 module.exports = router;

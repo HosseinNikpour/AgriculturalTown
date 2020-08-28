@@ -165,7 +165,7 @@ class Extension extends Component {
         let contractTitle = this.state.contractTitle;
 
         if (name === 'contract_id') {
-            let cont = this.state.contracts.find(a => a.key == this.state.obj.contract_id);
+            let cont = this.state.obj.type_id==1? this.state.contracts.find(a => a.key == this.state.obj.contract_id): this.state.agreements.find(a => a.key == this.state.obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
 
             let contDur = cont && cont.duration ? parseInt(cont.duration) : 0;

@@ -32,17 +32,43 @@
 .ant-table-thead tr th {
     background: #eddef157!important;
     font-size: 17px;
-    color: white!important;
+    color: #147524!important;
     line-height: 21px;
-    background: #4ba1ce!important;
+    background: #ebebeb!important;
     font-weight: bold!important;
 }
 
 
-.ant-table-tbody tr:nth-child(2n) td {
-    background-color: rgba(0, 0, 0, 0.05);
+
+
+.fa-file-contract:before {color: #24c154;}
+.fa-handshake:before {   color: #ef8400;}
+.fa-gavel:before {
+    color: #cc9b11;
+}
+.fa-file-signature:before {
+    color: #329ac1;
+}
+.fa-bell:before {
+    color: red;
 }
 
+.fa-chart-line:before {
+    color: #cc2956;
+}
+.fa-donate:before {
+    color: #31a202;}
+
+.ant-table-tbody tr:nth-child(2n) td {
+    background-color: #fbfbfb;
+
+}
+
+.ant-table-tbody tr td {
+  
+    background-color: #f6f6f6;
+
+}
 .card-body {
     font-size: 20px;
    
@@ -53,12 +79,12 @@
 }
 
 .ant-table {
+    color: rgb(0 0 0)!important;
     line-height: 0.5!important;
 }
 
 .add-button {
-    color: #c2c4cc;   /* #14ce4d; */
-   
+    color: #1c9a1a;
     font-size: 29px;
     line-height: 1px;
     position: absolute;
@@ -84,12 +110,12 @@
 }
 
 .card-header {
+    color: #9e0909;
+    font-size: 23px;
     padding: 4px 10px;
-    color: #ffffff;
-    font-size: 20px;
     font-weight: 600;
     font-style: italic;
-    background: #855297;
+    background: rgb(218,218,218);
 
 }
 .card {
@@ -117,7 +143,7 @@
 }
 td .ant-table-cell {line-height: 23px;}
 .activeMenu  {
-    color: #ab55e6!important;
+    color: #096dd9!important;
 }
 
 .activeSubMenu {
@@ -128,9 +154,9 @@ td .ant-table-cell {line-height: 23px;}
     font-family: iran_sansregular!important;
     /* font-size: 1.143rem; */
 }
-
+td  a {    color: #206cb3;}
 .navagition {
-    background: #eddef1;
+    background: rgb(224,228,244);
     font-family: 'iran_sansregular';
     height: auto;
 }
@@ -162,7 +188,7 @@ td .ant-table-cell {line-height: 23px;}
 
 .navagition ul li div {
     display: grid;
-    color: #653775;
+    color: #252525;
     margin: 0 auto;
     cursor: pointer;
 }
@@ -175,8 +201,8 @@ td .ant-table-cell {line-height: 23px;}
     font-family: BYekan;
     height: 40px;
     font-size: 11px;
-    background-color: #fdfdfd;
-    border-top: solid 2px #bdc1c31f;
+    background-color:rgb(238,245,249);
+    border-top: solid 2px  rgb(192,196,198);
     border-bottom: solid 2px #bdc1c31f;
 }
 
@@ -202,6 +228,7 @@ td .ant-table-cell {line-height: 23px;}
 }
 
 .subNavagition ul li a {
+    font-weight: 800;
     color: #4c4a4a;
 }
 
@@ -235,8 +262,8 @@ td .ant-table-cell {line-height: 23px;}
 }
 .main-ribon{ 
     position: absolute;
-    background: rgb(137,45,205);
-    background: linear-gradient(180deg, rgba(137,45,205,1) 0%, rgba(118,41,163,1) 35%, rgba(100,37,125,1) 100%);
+    background: rgb(64,64,64);
+   
     font-family: 'iran_sansregular';
     height: 31px;
     width: 100%;
@@ -248,7 +275,7 @@ td .ant-table-cell {line-height: 23px;}
     font-weight: 500;
 }
 .activeSubMenu a {
-       color: #536dfe!important;
+    color: #096dd9!important;
 }	
 	
 	.zoom{ transition: transform .4s; /* Animation */}
