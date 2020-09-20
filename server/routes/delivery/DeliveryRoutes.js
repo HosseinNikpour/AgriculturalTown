@@ -39,6 +39,8 @@ router.post('/', function (req, res) {
     let files = req.files;
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_free = files && files.file_free ? func.saveFile(files.file_free, name, 'file_free',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    data["file_free"] = file_free;
     data["file_record"] = file_record;
     data["file_signification"] = file_signification;
     // console.log(data);
@@ -60,6 +62,8 @@ router.put('/:id', function (req, res) {
    // console.log(data);
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_free = files && files.file_free ? func.saveFile(files.file_free, name, 'file_free', data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    data["file_free"] = data['file_free'] == false ? '**d**' : file_record;
     data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
 

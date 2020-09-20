@@ -40,12 +40,13 @@ class Town extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
-        getAllItem('town/vw')  , getItem("agreement", 'PermissionStructure')]).then((response) => {
+        getAllItem('town/vw')  , getItem("agreement", 'PermissionStructure'), getAllItem('tender')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
 
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let tenders = response[5].data.map(a => { return { key: a.id, label: a.tender_no, value: a.id,} });
             let data = response[0].data;
 
 
@@ -60,13 +61,20 @@ class Town extends Component {
             contractTypes.unshift({ key: null, label: '-------', value: null });
             companies.unshift({ key: null, label: '-------', value: null });
             operationType.unshift({ key: null, label: '-------', value: null });
-
+            tenders.unshift({ key: null, label: '-------', value: null });
             data.forEach(e => {
 
                 e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
                 e.announcement_date = e.announcement_date ? moment(e.announcement_date) : undefined;
             
                 e.end_date = e.end_date ? moment(e.end_date) : undefined;
+                e.record_letter_date = e.record_letter_date ? moment(e.record_letter_date) : undefined;
+                e.warranty_letter_date = e.warranty_letter_date ? moment(e.warranty_letter_date) : undefined;
+                e.land_delivery_date = e.land_delivery_date ? moment(e.land_delivery_date) : undefined;
+                
+                e.free2_letter_date = e.free2_letter_date ? moment(e.free2_letter_date) : undefined;
+                e.free1_letter_date = e.free1_letter_date ? moment(e.free1_letter_date) : undefined;
+
                 e.town = e.town_id.map(x => {
                     let z = towns.find(a => a.key === x);
 
@@ -80,7 +88,7 @@ class Town extends Component {
             this.setState({
                 canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contractTypes,
-                companies, towns, operationType,
+                companies, towns, operationType,tenders,
                 obj: { ...emptyItem }, showPanel: false, status: ''
             });
         }).catch((error) => console.log(error))
@@ -113,11 +121,20 @@ class Town extends Component {
             obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
             obj.announcement_date = obj.announcement_date ? obj.announcement_date.format() : '';
             obj['end_date'] = moment(obj.announcement_date).add(obj.duration, 'days').format()
+            obj.record_letter_date = obj.record_letter_date ? obj.record_letter_date.format() : '';
+            obj.warranty_letter_date = obj.warranty_letter_date ? obj.warranty_letter_date.format() : '';
+            obj.free1_letter_date = obj.free1_letter_date ? obj.free1_letter_date.format() : '';
+            obj.free2_letter_date = obj.free2_letter_date ? obj.free2_letter_date.format() : '';
+            obj.land_delivery_date = obj.land_delivery_date ? obj.land_delivery_date.format() : '';
+            
 
             var formData = new FormData();
 
             if (obj.f_file_announcement) formData.append("file_announcement", obj.f_file_announcement);
             if (obj.f_file_agreement) formData.append("file_agreement", obj.f_file_agreement);
+            if (obj.f_file_record) formData.append("file_record", obj.f_file_record);
+            if (obj.f_file_land_delivery) formData.append("file_land_delivery", obj.f_file_land_delivery);
+            
 
             formData.append("data", JSON.stringify(obj));
 
@@ -485,7 +502,165 @@ class Town extends Component {
                                             </div>
 
                                         </div>
+
+
+
+
                                         <div className="row">
+								   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free1_letter_date" className="">تاریخ نامه  آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                                    <DatePicker onChange={value => this.dateChange('free1_letter_date', value)}
+                                                        value={this.state.obj. free1_letter_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+								   
+								   
+								   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free1_letter_number" className="">شماره نامه آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                                    <input name="free1_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.free1_letter_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+													
+								    
+			                                 <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free1_price" className="">مبلغ آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("free1_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.free1_price}/>
+                                                </div>
+                                            </div> 
+											
+											 </div>
+											<div className="row">
+											<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_letter_date" className="">تاریخ نامه  آزاد سازی ضمانت انجام تعهدات</label>
+                                                    <DatePicker onChange={value => this.dateChange('warranty_letter_date', value)}
+                                                        value={this.state.obj. warranty_letter_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+								   
+								   
+					<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_letter_number" className="">شماره نامه  آزاد سازی ضمانت انجام تعهدات</label>
+                                                    <input name="warranty_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj. warranty_letter_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+													
+								    
+			                    <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_price" className="">مبلغ آزاد سازی ضمانت انجام تعهدات</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("warranty_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.warranty_price}/>
+                                                </div>
+                                            </div> 
+											
+					</div>
+											
+					<div className="row">
+					<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free2_letter_date" className="">تاریخ نامه آزاد سازی 50 درصد دوم حسن انجام کار</label>
+                                                    <DatePicker onChange={value => this.dateChange('free2_letter_date', value)}
+                                                        value={this.state.obj. free2_letter_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+								   
+								   
+					 <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free2_letter_number" className="">شماره نامه آزاد سازی 50 درصد دوم حسن انجام کار</label>
+                                                    <input name="free2_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.free2_letter_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+													
+								    
+			                                 <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free2_price" className="">مبلغ آزاد سازی 50 درصد دوم حسن انجام کار</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("free2_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.free2_price}/>
+                                                </div>
+                                            </div> 
+											 </div>
+											
+											
+											<div className="row">
+											<div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="record_letter_date" className=""> تاریخ نامه ابلاغ تصویب صورتجلسه طرح</label>
+                                                    <DatePicker onChange={value => this.dateChange('record_letter_date', value)}
+                                                        value={this.state.obj. record_letter_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+								   
+								   
+								   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="record_letter_number" className="">شماره نامه ابلاغ تصویب صورتجلسه تصویب طرح</label>
+                                                    <input name="record_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.record_letter_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="tender_id" className={this.state.errors.town_id ? "error-lable" : ''}>شماره مناقصه</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.tenders}
+                                                        className={this.state.errors.tender_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.tender_id} onSelect={(values) => this.selectChange("tender_id", values)} />
+                                                </div>
+                                            </div>
+													
+						      </div>
+
+                              <div className="row">
+                              <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="land_delivery_date" className="">تاریخ تحویل زمین</label>
+                                                    <DatePicker onChange={value => this.dateChange('land_delivery_date', value)}  {...datePickerDefaultProp}
+                                                        value={this.state.obj.land_delivery_date} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_letter_no" className="">شماره نامه ابلاغ قرارداد</label>
+                                                    <input name="signification_letter_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.signification_letter_no} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                           
+
+                                      <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_land_delivery" className="">صورتجلسه تحویل زمین</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_land_delivery" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_land_delivery && <div><a target="_blank" href={this.state.obj.file_land_delivery}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_land_delivery')}></i>}</div>}
+
+                                                </div>
+                                            </div>
+                                            </div>
+                                            
+                           <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_agreement" className="">موافقتنامه </label>
@@ -507,7 +682,16 @@ class Town extends Component {
 
                                                 </div>
                                             </div>
-
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_record" className="">بارگذاری صورتجلسه تصویب طرح</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_record && <div><a target="_blank" href={this.state.obj.file_record}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_record')}></i>}</div>}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-12">

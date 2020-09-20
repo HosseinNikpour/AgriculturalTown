@@ -30,7 +30,7 @@ export const columns = [
    ];
 
 export const storeIndex = "InvoiceContractorApprove";
-export const pageHeder = 'تایید صورت وضعیت-کارفرما';
+export const pageHeder = 'صورت وضعیت - تایید کارفرما';
 
 export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,letter_no_employer : '' ,letter_no_manager : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : ''  ,price : '' ,period_price : ''   ,decsciption : ''};
 

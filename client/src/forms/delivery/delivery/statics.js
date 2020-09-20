@@ -21,6 +21,8 @@ export const columns = [
 export const storeIndex = "delivery";
 export const pageHeder = 'تحویل قطعی';
 
-export const emptyItem = { contractor_date : undefined ,consultant_date : undefined ,branch_date : undefined ,manager_date : undefined ,commision_date : undefined ,file_record : '' ,file_signification : '' ,contract_id : ''  };
+export const emptyItem = { contractor_date : undefined ,consultant_date : undefined ,branch_date : undefined ,manager_date : undefined ,commision_date : undefined ,file_record : '' ,
+file_signification : '' ,contract_id : ''  ,file_free : '' ,free_letter_date : '' , free_letter_number : '' , free_price : '' ,
+signification_letter_date : '' ,signification_letter_no : '' };
 
 

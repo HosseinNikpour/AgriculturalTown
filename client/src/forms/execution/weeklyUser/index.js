@@ -44,8 +44,8 @@ class WeeklyUser extends Component {
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
            
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
-            let canAdd = response[4].data[0].item_creator_id === roleId || roleId > 3 ? true : false;
-            let canEdit = response[4].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 3 ? true : false;
+            let canAdd = response[4].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[4].data[0].item_editor_id.indexOf(roleId) > -1 || roleId ===11 ? true : false;
             this.setState({
                 canAdd, canEdit,
                 isFetching: false, rows: response[0].data, contracts, periods, tableData: [],

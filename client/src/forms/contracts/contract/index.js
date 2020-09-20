@@ -17,7 +17,7 @@ class Town extends Component {
 
         this.state = {
             columns: columns, rows: [], contractTypes: [],
-            companies: [], projects: [], users: [], Agreements: [], errors: {},
+            companies: [], projects: [], users: [], Agreements: [], tenders: [],  errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -42,13 +42,15 @@ class Town extends Component {
     fetchData() {
         // console.log('[' + Date.now() + '] ', ' before fetch');
         Promise.all([getAllItem(storeIndex), getAllItem('BaseInfo/vw'), getAllItem('company/vw'),
-        getAllItem('town/vw'), getAllItem('user'), getAllItem('Agreement/vw')  , getItem("contract", 'PermissionStructure')]).then((response) => {
+        getAllItem('town/vw'), getAllItem('user'),getAllItem('Agreement/vw')  ,
+        getItem("contract", 'PermissionStructure'), getAllItem('tender')]).then((response) => {
             let contractTypes = response[1].data.filter(a => a.groupid === 8).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let companies = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let towns = response[3].data.map(a => { return { key: a.id, label: a.title, value: a.id } });
             let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
             let Agreements = response[5].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let tenders = response[7].data.map(a => { return { key: a.id, label: a.tender_no, value: a.id,} });
             let data = response[0].data;
 
 
@@ -66,6 +68,7 @@ class Town extends Component {
             towns.unshift({ key: null, label: '-------', value: null });
             users.unshift({ key: null, label: '-------', value: null });
             Agreements.unshift({ key: null, label: '-------', value: null });
+            tenders.unshift({ key: null, label: '-------', value: null });
            // operationType.unshift({ key: null, label: '-------', value: null });
            
             ///console.log('[' + Date.now() + '] ', ' data loaded');
@@ -82,7 +85,7 @@ class Town extends Component {
             this.setState({
                 canAdd, canEdit,canRead,
                 isFetching: false, rows: data, contractTypes,
-                companies, towns, users, operationType, Agreements,
+                companies, towns, users, operationType, Agreements, tenders,
                 obj: { ...emptyItem }, showPanel: false, status: ''
             });
             console.log('[' + Date.now() + '] ', ' after set tate ');
@@ -521,20 +524,48 @@ class Town extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="study_agreement_id" className="">قرارداد طراح</label>
+                                                    <label htmlFor="study_agreement_id" className="">مشاور طراح</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Agreements}
                                                         value={this.state.obj.study_agreement_id} onSelect={(values) => this.selectChange("study_agreement_id", values)} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="monitoring_agreement_id" className="">قرارداد نظارت</label>
+                                                    <label htmlFor="monitoring_agreement_id" className="">مشاور نظارت</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.Agreements}
                                                         value={this.state.obj.monitoring_agreement_id} onSelect={(values) => this.selectChange("monitoring_agreement_id", values)} />
                                                 </div>
                                             </div>
-                                        </div>
+                                       
+
+                                        <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="tender_id" className={this.state.errors.town_id ? "error-lable" : ''}>شماره مناقصه</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.tenders}
+                                                        className={this.state.errors.tender_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.tender_id} onSelect={(values) => this.selectChange("tender_id", values)} />
+                                                </div>
+                                            </div>
+                                            </div>
+                                            
+                                            
                                         <div className='row'>
+                                        <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_duration" className="">مدت تضمین</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("warranty_duration",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.warranty_duration}/>
+                                                </div>
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_letter_no" className="">شماره نامه ابلاغ پیمان</label>
+                                                    <input name="signification_letter_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.signification_letter_no} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                           
                                             <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="description" className="">توضیحات</label>

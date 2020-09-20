@@ -95,6 +95,11 @@ class InvoiceConsultant extends Component {
             if (obj.f_file_invoice)
                 formData.append("file_invoice", obj.f_file_invoice);
 
+                if (obj.f_file_letter_manager)
+                formData.append("file_letter_manager", obj.f_file_letter_manager);
+
+               
+
             formData.append("data", JSON.stringify(obj));
 
             if (this.state.status === 'new')
@@ -347,7 +352,7 @@ class InvoiceConsultant extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="letter_no_branch" className="">شماره نامه مدیر شعبه/مشاور</label>
+                                                    <label htmlFor="letter_no_branch" className="">شماره نامه مشاور</label>
                                                     <input name="letter_no_branch" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.letter_no_branch} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -357,7 +362,7 @@ class InvoiceConsultant extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
 
-                                                    <label htmlFor="letter_date_branch" className="">تاریخ نامه مدیر شعبه/مشاور</label>
+                                                    <label htmlFor="letter_date_branch" className="">تاریخ نامه مشاور</label>
 
                                                     <DatePicker onChange={value => this.dateChange('letter_date_branch', value)}
                                                         value={this.state.obj.letter_date_branch}
@@ -393,7 +398,20 @@ class InvoiceConsultant extends Component {
                                                             onClick={() => this.deleteFile('file_invoice')}></i>}</div>}
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_letter_manager" className="">بارگذاری نامه مدیر طرح</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_letter_manager" className="form-control" onChange={this.fileChange} type='file'
+                                                    />}
+                                                    {this.state.obj.file_letter_manager && <div><a target="_blank" href={this.state.obj.file_letter_manager}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_letter_manager')}></i>}</div>}
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div className="row">
+                                            <div className="col-12">
                                                 <div className="form-group">
                                                     <label htmlFor="decsciption" className="">توضیحات</label>
                                                     <input name="decsciption" className="form-control" onChange={this.handleChange}

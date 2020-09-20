@@ -32,7 +32,7 @@ export const columns = [
    ];
 
 export const storeIndex = "InvoiceConsultantApprove";
-export const pageHeder = 'صورتحساب-تایید کارفرما';
+export const pageHeder = 'صورت حساب - تایید کارفرما';
 
 export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : '' ,approve_price : '' ,price : '' ,period_price : '' ,decsciption : '' ,letter_no_manager : '' ,letter_no_employer : '' ,};
 

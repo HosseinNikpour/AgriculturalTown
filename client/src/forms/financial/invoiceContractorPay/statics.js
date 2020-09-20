@@ -27,7 +27,7 @@ export const columns = [
    ];
 
 export const storeIndex = "invoiceContractorPay";
-export const pageHeder = 'پرداخت صورت وضعیت';
+export const pageHeder = 'صورت وضعیت - پرداخت';
 
 export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,no_id : ''  ,price : '' ,period_price : ''   ,decsciption : ''};
 

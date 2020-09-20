@@ -36,11 +36,14 @@ class ValueChange extends Component {
 
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('BaseInfo/vw')
-        , getItem("valuechange", 'PermissionStructure')]).then((response) => {
+        , getItem("valuechange", 'PermissionStructure'), getAllItem('agreement/vw')]).then((response) => {
             let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title, initial_amount: a.initial_amount } });
+            let agreements = response[4].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title, initial_amount: a.initial_amount } });
             let valueChange_no = response[2].data.filter(a => a.groupid === 30).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let yesNo = [{ key: 1, label: 'بلی', value: true }, { key: 2, label: 'خیر', value: false }]
             let data = response[0].data;
+            let types = [{ key: 1, label: "پیمان", value: 1 }, { key: 2, label: "قرارداد", value: 2 }]
+         
 
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
             let canAdd = response[3].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
@@ -53,7 +56,7 @@ class ValueChange extends Component {
 
             this.setState({
                 canAdd, canEdit,canRead,
-                isFetching: false, rows: data, contracts, valueChange_no, yesNo,
+                isFetching: false, rows: data, contracts, valueChange_no, yesNo, agreements, types,
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '', initialAmount: 0,
             });
         }).catch((error) => console.log(error))
@@ -72,6 +75,8 @@ class ValueChange extends Component {
         errors.contract_new_price = obj.contract_new_price ? false : true;
         errors.increase_price = obj.increase_price ? false : true;
         errors.decrease_price = obj.decrease_price ? false : true;
+        errors.type_id = obj.type_id ? false : true;
+
         if (Object.values(errors).filter(a => a).length > 0) {
             this.setState({ errors }, () => { this.scrollToFormRef(); });
             alert("لطفا موارد الزامی را وارد کنید");
@@ -140,11 +145,11 @@ class ValueChange extends Component {
         this.setState({ obj: ob });
     }
     selectChange(name, values) {
-        let { obj, contractTitle, contracts, initialAmount, rows, invioces } = this.state;
+        let { obj, contractTitle,  initialAmount } = this.state;
         obj[name] = values;
 
         if (name === 'contract_id') {
-            let cont = contracts.find(a => a.key === obj.contract_id);
+            let cont =  this.state.obj.type_id==1? this.state.contracts.find(a => a.key == obj.contract_id): this.state.agreements.find(a => a.key == obj.contract_id);
             contractTitle = cont && cont.title ? cont.title : '';
             initialAmount = cont && cont.initial_amount ? parseInt(cont.initial_amount) : 0;
 
@@ -152,13 +157,13 @@ class ValueChange extends Component {
         this.setState({ obj, contractTitle, initialAmount });
     }
     editClickHandle(item) {
-        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let cont = item.type_id==1? this.state.contracts.find(a => a.key == item.contract_id): this.state.agreements.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
         let initialAmount = cont && cont.initial_amount ? cont.initial_amount : 0;
         this.setState({ initialAmount, contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let cont = item.type_id==1? this.state.contracts.find(a => a.key == item.contract_id): this.state.agreements.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
         let initialAmount = cont && cont.initial_amount ? cont.initial_amount : 0;
         this.setState({ initialAmount, contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
@@ -235,17 +240,27 @@ class ValueChange extends Component {
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
-                                            <div className="col-4">
+                                        <div className="col-3">
+                                                <div className="form-group">
+                                                    <label htmlFor="type_id" className={this.state.errors.type_id ? "error-lable" : ''}>نوع تغییر مقادیر</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.types}
+                                                        className={this.state.errors.type_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.type_id} onSelect={(values) => this.selectChange("type_id", values)} />
+                                                </div>
+                                            </div>
+
+                                            <div className="col-3">
                                                 <div className="form-group">
                                                     <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
-                                                        className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
+                                                       options={this.state.obj.type_id === 1 ? this.state.contracts : this.state.agreements}
+                                                       className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-8">
+                                            <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label htmlFor="project_id" className="">نام پیمان/قرارداد</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
@@ -253,7 +268,7 @@ class ValueChange extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">مبلغ اولیه پیمان</label>
+                                                    <label htmlFor="project_id" className="">مبلغ اولیه پیمان/قرارداد</label>
                                                     <label className="form-control">{this.state.initialAmount ? this.state.initialAmount.toLocaleString() : 0}</label>
                                                 </div>
                                             </div>
@@ -306,7 +321,7 @@ class ValueChange extends Component {
                                         <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="contract_new_price_calc" className="">مبلغ پیمان با احتساب تغییر مقادیر(محاسباتی)</label>
+                                                    <label htmlFor="contract_new_price_calc" className="">مبلغ با احتساب تغییر مقادیر(محاسباتی)</label>
                                                     <label className="form-control">{(parseInt(this.state.initialAmount) - parseInt(this.state.obj.decrease_price) + parseInt(this.state.obj.new_work) + parseInt(this.state.obj.increase_price)).toLocaleString()}</label>
                                                 </div>
                                             </div>
@@ -348,21 +363,41 @@ class ValueChange extends Component {
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="col-3">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="has_license" className="">مجوز جمع جبری دارد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has_license} onSelect={(values) => this.selectChange("has_license", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-3">
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="has25" className="">ابلاغ 25 درصد دارد</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.yesNo}
                                                         value={this.state.obj.has25} onSelect={(values) => this.selectChange("has25", values)} />
                                                 </div>
                                             </div>
-                                            <div className="col-3">
+
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="letter_number_signification" className="">شماره نامه ابلاغ تغییر مقادیر</label>
+                                                    <input name="letter_number_signification" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.letter_number_signification} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+							
+                                           
+                                            </div>
+                                            <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="letter_number_25percent" className="">شماره نامه ابلاغ ۲۵ درصد</label>
+                                                    <input name="letter_number_25percent" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.letter_number_25percent } disabled={this.state.status === 'display'} />
+                                                </div>
+                                            
+                                                </div>
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_signification" className="">نامه ابلاغ تغییر مقادیر</label>
                                                     {this.state.status !== 'display' && <input name="f_file_signification" className="form-control" onChange={this.fileChange} type='file'
@@ -372,8 +407,9 @@ class ValueChange extends Component {
                                                             onClick={() => this.deleteFile('file_signification')}></i>}</div>}
 
                                                 </div>
-                                            </div>
-                                            <div className="col-3">
+                                                </div>
+                                               
+                                            <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_25percent" className="">نامه ابلاغ  25 درصد</label>
                                                     {this.state.status !== 'display' && <input name="f_file_25percent" className="form-control" onChange={this.fileChange} type='file'
@@ -384,6 +420,7 @@ class ValueChange extends Component {
 
                                                 </div>
                                             </div>
+                                            
                                         </div>
                                         <div className="row">
                                             <div className="col-12">

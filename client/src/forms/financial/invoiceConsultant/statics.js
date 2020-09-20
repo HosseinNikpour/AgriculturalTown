@@ -30,7 +30,7 @@ export const columns = [
    ];
 
 export const storeIndex = "invoiceConsultant";
-export const pageHeder = 'صورت حساب مشاور';
+export const pageHeder = 'صورت حساب - مدیر طرح';
 
 export const emptyItem = {contract_id : ''  ,prev_id : '' ,letter_no_manager : '' ,letter_no_branch : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,end_date : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
 

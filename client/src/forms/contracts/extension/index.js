@@ -98,6 +98,15 @@ class Extension extends Component {
             if (obj.f_file_late)
                 formData.append("file_late", obj.f_file_late);
 
+       if (obj.f_file_plan_pdf)
+                formData.append("file_plan_pdf", obj.f_file_plan_pdf);
+
+        if (obj.f_file_plan_msp)
+                formData.append("file_plan_msp", obj.f_file_plan_msp);         
+
+
+
+
             formData.append("data", JSON.stringify(obj));
 
             if (this.state.status === 'new')
@@ -169,19 +178,20 @@ class Extension extends Component {
             contractTitle = cont && cont.title ? cont.title : '';
 
             let contDur = cont && cont.duration ? parseInt(cont.duration) : 0;
-            let pervDurs = this.state.rows.filter(a => a.contract_id == this.state.obj.contract_id),
+            let pervDurs = this.state.rows.filter(a => a.contract_id == this.state.obj.contract_id && a.type_id==this.state.obj.type_id),
                 sumPrevDurs = pervDurs.reduce(function (acc, obj) { return acc + parseInt(obj.duration); }, 0);
             ob.total_duration = contDur + sumPrevDurs;
         }
         this.setState({ obj: ob, contractTitle });
     }
     editClickHandle(item) {
-        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let cont = item.type_id==1? this.state.contracts.find(a => a.key == item.contract_id): this.state.agreements.find(a => a.key == item.contract_id);
+        
         let contractTitle = cont && cont.title ? cont.title : '';
         this.setState({ contractTitle, obj: item, status: 'edit', showPanel: true }, () => { this.scrollToFormRef(); });
     }
     displayClickHandle(item) {
-        let cont = this.state.contracts.find(a => a.key == item.contract_id);
+        let cont =item.type_id==1? this.state.contracts.find(a => a.key == item.contract_id): this.state.agreements.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
         this.setState({ contractTitle, obj: item, status: 'display', showPanel: true }, () => { this.scrollToFormRef() });
     }
@@ -271,7 +281,7 @@ class Extension extends Component {
                                             </div>
                                             <div className="col-6">
                                                 <div className="form-group">
-                                                    <label htmlFor="project_id" className="">نام پیمان</label>
+                                                    <label htmlFor="project_id" className="">نام پیمان/قرارداد</label>
                                                     <label className="form-control">{this.state.contractTitle}</label>
                                                 </div>
                                             </div>
@@ -366,7 +376,30 @@ class Extension extends Component {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="row">
+                                     <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_plan_pdf" className="">بارگذاری فایل پی دی اف برنامه زمانبندی</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_plan_pdf" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    {this.state.obj.file_plan_pdf && <div><a target="_blank" href={this.state.obj.file_plan_pdf}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_plan_pdf')}></i>}</div>}
+                                                </div>
+                                            </div>
+											
+											
+											
+                                     <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_plan_msp" className="">بارگذاری فایل msp برنامه زمانبندی</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_plan_msp" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    {this.state.obj.file_plan_msp && <div><a target="_blank" href={this.state.obj.file_plan_msp}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_plan_msp')}></i>}</div>}
+                                                </div>
+                                            </div>
 
+                                         </div>
 
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}

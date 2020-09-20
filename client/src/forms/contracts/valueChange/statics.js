@@ -1,6 +1,7 @@
 ﻿import moment from 'moment-jalaali';
 import React, { Component } from 'react';
 export const columns = [
+  //  { dataIndex: 'type_id',key: 'type_id', title: 'نوع سند' },
 { dataIndex: 'contract',key: 'contract', title: 'شماره پیمان/قرارداد' },
 { dataIndex: 'vw_company',key: 'vw_company', title: 'نام شرکت ' },
 { dataIndex: 'vw_contract_title',key: 'vw_contract_title', title: 'عنوان پروژه ' },
@@ -32,6 +33,6 @@ export const storeIndex = "valueChange";
 export const pageHeder = 'تغییر مقادیر';
 
 export const emptyItem = { 
-contract_id : '' ,no_id : '' ,increase_price : '' ,decrease_price : '' ,new_work : '' ,change_price : '' ,contract_new_price_calc : '' ,contract_new_price : '' ,increase_price_percent : '' ,decrease_price_percent : '' ,new_work_percent : '' ,change_price_percent : '' ,has_license : '' ,has25 : '' ,file_signification : '' ,file_25percent : '' ,description : ''};
+contract_id : '' ,no_id : '' ,increase_price : '' ,decrease_price : '' ,new_work : '' ,change_price : '' ,contract_new_price_calc : '' ,contract_new_price : '' ,increase_price_percent : '' ,decrease_price_percent : '' ,new_work_percent : '' ,change_price_percent : '' ,has_license : '' ,has25 : '' ,file_signification : '' ,file_25percent : '' ,description : '',letter_number_25percent:''};
 
 

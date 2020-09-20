@@ -35,8 +35,8 @@ router.get(`/:id`, function (req, res) {
 router.post('/', function (req, res) {
     let rows = req.body.rows;
     console.log(req.body);
-    let query = `INSERT INTO public.${name}(creator_id, create_date, current_user_id, status, contract_id, period_id)
-        VALUES (${req.body.creator_id},'${req.body.create_date}',${req.body.current_user_id},'${req.body.status}',${req.body.contract_id},${req.body.period_id}) RETURNING id`;
+    let query = `INSERT INTO public.${name}(creator_id, create_date, current_user_id, status, contract_id, period_id, manager_actions, done_operations, difficulties)
+        VALUES (${req.body.creator_id},'${req.body.create_date}',${req.body.current_user_id},'${req.body.status}',${req.body.contract_id},${req.body.period_id},'${req.body.manager_actions}','${req.body.done_operations}','${req.body.difficulties}') RETURNING id`;
         console.log(query)
         pool.query(query).then((results) => {
         let parent_id = results.rows[0].id;
@@ -75,7 +75,10 @@ router.put('/:id', function (req, res) {
         SET  editor_id=${req.body.editor_id},
              edit_date='${req.body.edit_date}' ,
              status='${req.body.status}',
-             current_user_id=${req.body.current_user_id}
+             current_user_id=${req.body.current_user_id},
+             manager_actions='${req.body.manager_actions}',
+             done_operations='${req.body.done_operations}', 
+             difficulties='${req.body.difficulties}'
         where id =${parent_id}`;
      //   console.log('master', query);
         pool.query(query).then((results) => {

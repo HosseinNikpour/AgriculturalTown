@@ -19,8 +19,10 @@ router.get(`/`, function (req, res) {
                 const row = ws.addRow(Object.values(d));
             }
             let filePath=`Docs/tempReport/${req.query.reportId}-${new Date().getTime()}.xlsx`
-            workbook.xlsx.writeFile(filePath);
-            return res.send(filePath);
+            workbook.xlsx.writeFile(filePath).then((a)=>{
+                return res.send(filePath.substring(5));
+            });
+           
         })
     })
         .catch((err) => {

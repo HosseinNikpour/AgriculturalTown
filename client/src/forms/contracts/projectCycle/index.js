@@ -266,7 +266,7 @@ class PayInvoiceContractor extends Component {
 								   
 							            <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ</label>
+                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ (تعلیق-خاتمه -فسخ)</label>
                                                     <DatePicker onChange={value => this.dateChange('signification_date', value)}
                                                         value={this.state.obj.signification_date}
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />

@@ -11,11 +11,15 @@ const ReportExcels = (props) => {
         { title: 'تغییر مقادیر', value: 'valueChange' },
         { title: 'مناقصه', value: 'tender' },
         { title: 'گزارش صورت وضعیت ها', value: 'invoiceContractor' },
-        { title: 'گزارش صورت وضعیت ها', value: 'invoiceConsultant' },  
+        { title: 'گزارش صورت حساب', value: 'invoiceConsultant' },  
         { title: 'پیش بینی اعتبار', value: 'creditPredict' },
         { title: 'گزارش هفتگی', value: 'weeklyOperation' }, 
-        { title: 'گزارش کارگاه', value: 'weekly_Weather' },
+        //{ title: 'گزارش کارگاه', value: 'weekly_Weather' },
         { title: 'پیشرفت مطالعات', value: 'studyOperation' },
+        { title: 'بیمه', value: 'insurance' },
+       { title: 'چرخه عمر پیمان', value: 'contractCycle' },
+       { title: 'چرخه عمر قرارداد', value: 'projectCycle' },
+
         
     ]
     
@@ -40,9 +44,9 @@ const ReportExcels = (props) => {
 
     }
     return (
-        <div >
+        <div className="rpt-parent">
             {reports.map((a, i) =>
-                <div key={i} onClick={() => clickReport(i)}>{a.title}</div>
+                <div className="rpt-item" key={i} onClick={() => clickReport(i)}>{a.title}</div>
             )}
            
 

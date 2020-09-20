@@ -165,6 +165,8 @@ class InvoiceConsultantApprove extends Component {
                 .sort((a, b) => (a.invoice_no > b.invoice_no) ? 1 : ((b.invoice_no > a.invoice_no) ? -1 : 0))[0];
             obj.prev_approve_id = prevInvo ? prevInvo.no : 0;
             obj.prev_approve_price = prevInvo ? prevInvo.manager_price : 0;
+            obj.letter_no_manager= prevInvo ? prevInvo.letter_no_manager : 0;
+            /*obj.letter_date_manager= prevInvo ? prevInvo.letter_date_manager : 0;*/
 
         }
         else if (name === 'no_id') {

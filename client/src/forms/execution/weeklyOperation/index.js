@@ -40,15 +40,17 @@ class WeeklyOperation extends Component {
     fetchData() {
         Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('period'),
         getItem("weeklyOperation", 'PermissionStructure')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
+            let contracts = response[1].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });//,manager_actions:a.manager_actions, done_operations:a.done_operations, difficulties:a.difficulties} });
             let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
-            let canAdd = response[3].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
-            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 11 ? true : false;
+            let canAdd = response[3].data[0].item_creator_id === roleId || roleId === 11 ? true : false;
+            let canEdit = response[3].data[0].item_editor_id.indexOf(roleId) > -1 || roleId === 11 ? true : false;
             this.setState({
                 canAdd, canEdit,
-                isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
+                isFetching: false, rows: response[0].data, contracts, periods, manager_actions: "", done_operations: "", difficulties: "", tableData: [],
+                showTable: false,
                 status: '', showPanel: false, contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
+
             });
         }).catch((error) => console.log(error))
     }
@@ -88,7 +90,7 @@ class WeeklyOperation extends Component {
         this.fetchData();
     }
     async saveBtnClick() {
-        const { contract_id, period_id, parent_id } = this.state;
+        const { contract_id, period_id, parent_id, manager_actions, done_operations, difficulties } = this.state;
 
         let tbl = this.state.tableData;
 
@@ -115,7 +117,7 @@ class WeeklyOperation extends Component {
             sort: a.sort
         }))
 
-        let obj = { contract_id, period_id, rows }
+        let obj = { contract_id, period_id, rows, manager_actions, done_operations, difficulties }
         let xx = await findNextStep('weeklyOperation', contract_id, 'a');
         obj.current_user_id = xx;
         obj.status = xx === -1 ? status.approved : status.wait;
@@ -161,15 +163,30 @@ class WeeklyOperation extends Component {
     }
 
     handleChange(e, i) {
-        let tableData = this.state.tableData;
-        tableData[i][e.target.name] = e.target.value;
-        this.setState({ tableData });
+        if (!isNaN(i)) {
+            let tableData = this.state.tableData;
+            tableData[i][e.target.name] = e.target.value;
+            this.setState({ tableData });
+        } else {
+            switch (e.target.name) {
+                case 'difficulties':
+                    this.setState({ difficulties: e.target.value });
+                    break;
+                case 'manager_actions':
+                    this.setState({ manager_actions: e.target.value });
+                    break;
+                case 'done_operations':
+                    this.setState({ done_operations: e.target.value });
+                    break;
+            }
+        }
     }
     selectChange(name, values) {
-        let contractTitle = this.state.contractTitle;
+        let {contractTitle} = this.state;
         if (name === 'contract_id') {
             let cont = this.state.contracts.find(a => a.key == values);
             contractTitle = cont && cont.title ? cont.title : '';
+      
 
             let pervItems = this.state.rows.filter(a => a.contract_id === values);
             if (pervItems[0]) {
@@ -181,7 +198,7 @@ class WeeklyOperation extends Component {
                     this.setState({ contractTitle, contract_id: values, period_id, prev_parent_id });
                 }
                 else
-                    this.setState({ contract_id: values, contractTitle });
+                    this.setState({ contract_id: values, contractTitle});
             }
             else
                 this.setState({ contract_id: values, contractTitle });
@@ -191,7 +208,11 @@ class WeeklyOperation extends Component {
     editClickHandle(item) {
         this.setState({
             period_id: item.period_id, contract_id: item.contract_id,
-            parent_id: item.id, status: 'edit', showPanel: true
+            parent_id: item.id, status: 'edit', showPanel: true,
+            manager_actions :item.manager_actions ,
+            done_operations :item.done_operations ,
+            difficulties :item.difficulties ,
+            contractTitle:item.contract
         }, () => {
             this.fetchDetailData();
             this.scrollToFormRef();
@@ -206,6 +227,10 @@ class WeeklyOperation extends Component {
             obj: item, status, showPanel: true,
             contract_id: item.contract_id, period_id: item.period_id,
             parent_id: item.id,
+            manager_actions :item.manager_actions ,
+            done_operations :item.done_operations ,
+            difficulties :item.difficulties,
+            contractTitle:item.contract 
         }, () => {
             this.scrollToFormRef();
             this.fetchDetailData();
@@ -295,6 +320,9 @@ class WeeklyOperation extends Component {
                                                     value={this.state.period_id} onSelect={(values) => this.setState({ period_id: values })} />}
                                             </div>
                                         </div>
+
+
+
                                         {this.state.status === 'new' && <div className="col-1">
                                             <div className="form-group">
                                                 <button className='btn btn-primary' onClick={this.fetchDetailData}>مشاهده</button>
@@ -309,6 +337,35 @@ class WeeklyOperation extends Component {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="manager_actions" className="">اقدامات مدیر طرح </label>
+                                                <input name="manager_actions" className="form-control" onChange={this.handleChange}
+                                                    value={this.state.manager_actions} disabled={this.state.status === 'display'} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="done_operations" className="">عملیات انجام شده</label>
+                                                <input name="done_operations" className="form-control" onChange={this.handleChange}
+                                                    value={this.state.done_operations} disabled={this.state.status === 'display'} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-12">
+                                            <div className="form-group">
+                                                <label htmlFor="difficulties" className="">مشکلات و تنگناها</label>
+                                                <input name="difficulties" className="form-control" onChange={this.handleChange}
+                                                    value={this.state.difficulties} disabled={this.state.status === 'display'} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                     <hr />
                                     <div className={this.state.showTable ? 'row' : 'hidden'}>
                                         <div className='col'>
@@ -323,6 +380,7 @@ class WeeklyOperation extends Component {
                                                         <th>تجمعی تا در دوره قبل</th>
                                                         <th>مقدار دوره</th>
                                                         <th>مقدار تجمعی</th>
+
 
                                                     </tr>
                                                 </thead>

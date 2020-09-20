@@ -42,6 +42,8 @@ router.post('/', function (req, res) {
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',  data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects',  data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_free = files && files.file_free ? func.saveFile(files.file_free, name, 'file_free',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    data["file_free"] = file_free;
     data["file_elimination_defects"] = file_elimination_defects;
     data["file_defect"] = file_defect;
     data["file_record"] = file_record;
@@ -67,6 +69,8 @@ router.put('/:id', function (req, res) {
     let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
     let file_elimination_defects = files && files.file_elimination_defects ? func.saveFile(files.file_elimination_defects, name, 'file_elimination_defects',data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    let file_free = files && files.file_free ? func.saveFile(files.file_free, name, 'file_free', data.contract_id+"_"+moment(data.commision_date).format('jYYYYjMMjDD')) : '';
+    data["file_free"] = data['file_free'] == false ? '**d**' : file_record;
     data["file_elimination_defects"] = data['file_elimination_defects'] == false ? '**d**' : file_elimination_defects;
     data["file_defect"] = data['file_defect'] == false ? '**d**' : file_defect;
     data["file_record"] = data['file_record'] == false ? '**d**' : file_record;

@@ -38,7 +38,11 @@ export const emptyItem = {
  initial_amount : '' ,client_initial_amount : '' ,coefficient : '' ,file_agreement : '' ,
  file_announcement : '' ,study_surface : '' ,study_surface_final : '' ,mapping_surface : '' ,
  mapping_surface_final : '' ,project_manager_name : '' ,project_manager_contacts : '' ,fax : '' ,
- email : '' ,operation_type_id : [] ,description : '' ,
+ email : '' ,operation_type_id : [] ,description : '' ,free1_letter_date  : '', free1_letter_number: '', free1_price: '', warranty_letter_date: ''
+ , warranty_letter_number: '', warranty_price: '', free2_letter_date : '', free2_letter_number: ''
+ , free2_price: '', tender_id: '', record_letter_date:'', record_letter_number: ''
+ , file_land_delivery: '', land_delivery_date: '', signification_letter_no: ''
+
 }
 
 

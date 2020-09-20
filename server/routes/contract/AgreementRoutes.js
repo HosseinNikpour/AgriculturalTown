@@ -83,7 +83,12 @@ router.post('/', function (req, res) {
     //  console.log(files.file_agreement);
     let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.contract_no) : '';
     let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.contract_no) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract_no) : '';
  
+    let file_land_delivery = files && files.file_land_delivery ? func.saveFile(files.file_land_delivery, name, 'file_land_delivery', data.contract_no) : '';
+ 
+    data["file_land_delivery"] = file_land_delivery;
+    data["file_record"] = file_record;
     data["file_agreement"] = file_agreement;
     data["file_announcement"] = file_announcement;
   
@@ -104,7 +109,11 @@ router.put('/:id', function (req, res) {
     //  console.log(files.file_agreement);
     let file_agreement = files && files.file_agreement ? func.saveFile(files.file_agreement, name, 'file_agreement', data.contract_no) : '';
     let file_announcement = files && files.file_announcement ? func.saveFile(files.file_announcement, name, 'file_announcement', data.contract_no) : '';
+    let file_record = files && files.file_record ? func.saveFile(files.file_record, name, 'file_record', data.contract_no) : '';
+    let file_land_delivery = files && files.file_land_delivery ? func.saveFile(files.file_land_delivery, name, 'file_land_delivery', data.contract_no) : '';
    
+    data["file_land_delivery"] = data['file_land_delivery'] == false ? '**d**' : file_land_delivery;
+    data["file_record"] = data['file_record'] == false ? '**d**' : file_record;
     data["file_agreement"] = data['file_agreement'] == false ? '**d**' : file_agreement;
     data["file_announcement"] = data['file_announcement'] == false ? '**d**' : file_announcement;
   

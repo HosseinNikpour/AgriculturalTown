@@ -145,7 +145,7 @@ class App extends Component {
             <div className=" main-ribon"> سامانه مدیریت پروژه شرکت شهرک های کشاورزی  </div>
             <div className="col-1 ml-auto" >
 
-              <i className={this.state.currentUser.role_id && this.state.currentUser.role_id >3 ? "fas fa-tools" : 'hidden'}
+              <i className={this.state.currentUser.role_id && this.state.currentUser.role_id ==11 ? "fas fa-tools" : 'hidden'}
                 style={{ margin: '8px', cursor: 'pointer', color: '#bdbdbd' }} onClick={this.settingClick}></i>
 
               <div className={this.state.showSettingMenu ? "dropdown-menu show" : "dropdown-menu"} ref={this.setWrapperRef}>

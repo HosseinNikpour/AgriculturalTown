@@ -59,7 +59,7 @@ class SubMenu extends Component {
                     <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/weeklyUser" > گزارش هفتگی نیروی انسانی</Link></li>
                     <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/weeklyMachine" > گزارش هفتگی ماشین آلات</Link></li>
                     <li className={this.menuClassNames(6)} onClick={() => this.menuHandleClick(6)}> <Link to="/studyWbs" > ساختار شکست مطالعات</Link></li>
-                    <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/studyOperation" > پیشرفت مطالعات</Link></li>
+                    <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/studyOperation" > پیشرفت مطالعات</Link></li> 
                 </ul>)
             case 3:
                 return (<ul>
@@ -68,12 +68,12 @@ class SubMenu extends Component {
                 </ul>)
             case 4:
                 return (<ul>
-                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/invoiceContractor" >صورت وضعیت پیمانکاران</Link></li>
-                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/invoiceConsultant" >صورتحساب مشاورین</Link></li>
-                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/invoiceContractorApprove" >تایید صورت وضعیت-کارفرما</Link></li>
-                    <li className={this.menuClassNames(6)} onClick={() => this.menuHandleClick(6)}> <Link to="/invoiceContractorPay" >پرداخت صورت وضعیت</Link></li>
-                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/invoiceConsultantApprove" >تایید صورت حساب-کارفرما</Link></li>
-                    <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/invoiceConsultantPay" >پرداخت صورتحساب</Link></li>
+                    <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/invoiceContractor" >صورت وضعیت - مدیر طرح</Link></li>
+                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/invoiceContractorApprove" >صورت وضعیت - تایید کارفرما</Link></li>
+                    <li className={this.menuClassNames(6)} onClick={() => this.menuHandleClick(6)}> <Link to="/invoiceContractorPay" >  صورت وضعیت - پرداخت</Link></li>
+                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/invoiceConsultant" > صورت حساب - مدیر طرح</Link></li>
+                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/invoiceConsultantApprove" >صورت حساب - تایید کارفرما</Link></li>
+                    <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/invoiceConsultantPay" >صورت حساب - پرداخت </Link></li>
                     <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/creditPredict" >پیش بینی اعتبار</Link></li>
                 </ul>)
             case 5:

@@ -43,7 +43,10 @@ router.post('/', function (req, res) {
    
     let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late',data.contract_id+"_"+data.no_id) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification',data.contract_id+"_"+data.no_id) : '';
-    
+    let file_plan_pdf = files && files.file_plan_pdf ? func.saveFile(files.file_plan_pdf, name, 'file_plan_pdf',data.contract_id+"_"+data.no_id) : '';
+    let file_plan_msp = files && files.file_plan_msp ? func.saveFile(files.file_plan_msp, name, 'file_plan_msp',data.contract_id+"_"+data.no_id) : '';
+    data["file_plan_pdf"] = file_plan_pdf;
+    data["file_plan_msp"] = file_plan_msp;
     data["file_late"] = file_late;
     data["file_signification"] = file_signification;
     // console.log(data);
@@ -64,10 +67,12 @@ router.put('/:id', function (req, res) {
     let files = req.files;
     let file_late = files && files.file_late ? func.saveFile(files.file_late, name, 'file_late', data.contract_id+"_"+data.no_id) : '';
     let file_signification = files && files.file_signification ? func.saveFile(files.file_signification, name, 'file_signification', data.contract_id+"_"+data.no_id) : '';
-    
+    let file_plan_pdf = files && files.file_plan_pdf ? func.saveFile(files.file_plan_pdf, name, 'file_plan_pdf',data.contract_id+"_"+data.no_id) : '';
+    let file_plan_msp = files && files.file_plan_msp ? func.saveFile(files.file_plan_msp, name, 'file_plan_msp',data.contract_id+"_"+data.no_id) : '';
     data["file_late"] = data['file_late'] == false ? '**d**' : file_late;
     data["file_signification"] = data['file_signification'] == false ? '**d**' : file_signification;
-
+    data["file_plan_pdf"] = data['file_plan_pdf'] == false ? '**d**' : file_plan_pdf;
+    data["file_plan_msp"] = data['file_plan_msp'] == false ? '**d**' : file_plan_msp;
     let query = func.queryGen(name, 'update', data);
     pool.query(query)
         .then((results) => {

@@ -16,7 +16,10 @@ export const columns = [
    { dataIndex: 'allow_late',key: 'allow_late', title: 'مدت تاخیرات مجاز' }, 
    { dataIndex: 'file_signification',key: 'file_signification', title: 'سند ابلاغ تمدید',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} }, 
     //{ dataIndex: 'file_late',key: 'file_late', title: 'سند لایحه تاخیرات',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
-   // { dataIndex: 'creator_id',key: 'creator_id', title: 'ایجاد کننده' }, 
+   //{ dataIndex: 'file_plan_pdf',key: 'file_plan_pdf', title: 'بارگذاری فایل پی دی اف برنامه زمانبندی',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
+   //{ dataIndex: 'file_plan_msp',key: 'file_plan_msp', title: 'بارگذاری فایل msp برنامه زمانبندی',render :function(text){return text?<a target="_blank" href={text}>مشاهده </a>:''} },
+   
+    // { dataIndex: 'creator_id',key: 'creator_id', title: 'ایجاد کننده' }, 
    // { dataIndex: 'editor_id',key: 'editor_id', title: 'ویرایش کننده' }, 
    // { dataIndex: 'edit_date',key: 'edit_date', title: 'تاریخ ویرایش' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD') :''}},
    // { dataIndex: 'create_date',key: 'create_date', title: 'تاریخ ایجاد' , render: function (text) { return text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD') :''}},
@@ -29,4 +32,5 @@ export const columns = [
 export const storeIndex = "extension";
 export const pageHeder = 'تمدید';
 
-export const emptyItem = { contract_id : ''  ,no_id : '' ,letter_no : '' ,letter_date : '' ,total_duration : '' ,duration : '' ,end_date : '' ,end_date_calc : '',allow_late : '' ,file_signification : '' ,file_late : ''  };
+export const emptyItem = { contract_id : ''  ,no_id : '' ,letter_no : '' ,letter_date : '' ,total_duration : '' ,duration : '' ,end_date : '' ,end_date_calc : '',allow_late : '' ,file_signification : '' ,file_late : '' 
+,file_plan_msp : '' ,file_plan_pdf : '' };

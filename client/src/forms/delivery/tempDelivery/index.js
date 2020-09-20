@@ -5,8 +5,9 @@ import moment from 'moment-jalaali';
 import DatePicker from 'react-datepicker2';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
+import NumberFormat from 'react-number-format';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
-import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp } from '../../../components/statics'
+import { successDuration, successMessage, errorMessage,errorMessageDuplicate, errorDuration, selectDefaultProp, datePickerDefaultProp,numberDefaultProp } from '../../../components/statics'
 
 class Town extends Component {
     constructor(props) {
@@ -27,6 +28,7 @@ class Town extends Component {
         this.deleteClickHandle = this.deleteClickHandle.bind(this);
         this.displayClickHandle = this.displayClickHandle.bind(this);
         this.saveBtnClick = this.saveBtnClick.bind(this);
+        this.numberChange = this.numberChange.bind(this);
         this.cancelBtnClick = this.cancelBtnClick.bind(this);
         this.deleteFile = this.deleteFile.bind(this);
     }
@@ -55,6 +57,10 @@ class Town extends Component {
                 e.commision_date = e.commision_date ? moment(e.commision_date) : undefined;
                 e.remove_defect_date = e.remove_defect_date ? moment(e.remove_defect_date) :  undefined;
                 e.elimination_defects_date = e.elimination_defects_date ? moment(e.elimination_defects_date) :  undefined;
+                e. warranty_letter_date = e. warranty_letter_date ? moment(e. warranty_letter_date) : undefined;
+                e.free_letter_date = e.free_letter_date ? moment(e. free_letter_date) : undefined;
+                e.signification_letter_date = e.signification_letter_date ? moment(e. signification_letter_date) : undefined;
+                
             });
 
             this.setState({
@@ -90,11 +96,17 @@ class Town extends Component {
             obj.commision_date = obj.commision_date ? obj.commision_date.format() : '';
             obj.remove_defect_date = obj.remove_defect_date ? obj.remove_defect_date.format() : '';
             obj.elimination_defects_date = obj.elimination_defects_date ? obj.elimination_defects_date.format() : '';
-
+            obj.free_letter_date = obj.free_letter_date ? obj.free_letter_date.format() : '';
+            obj.warranty_letter_date = obj.warranty_letter_date ? obj.warranty_letter_date.format() : '';
+            obj. signification_letter_date = obj. signification_letter_date ? obj. signification_letter_date.format() : '';
+           
+            
             var formData = new FormData();
 
             if (obj.f_file_defect) formData.append("file_defect", obj.f_file_defect);
             if (obj.f_file_record) formData.append("file_record", obj.f_file_record);
+            if (obj.f_file_free) formData.append("file_free", obj.f_file_record);
+            
             if (obj.f_file_elimination_defects) formData.append("file_elimination_defects", obj.f_file_elimination_defects);
             if (obj.f_file_signification) formData.append("file_signification", obj.f_file_signification);
 
@@ -171,6 +183,15 @@ class Town extends Component {
         }
         this.setState({ obj, contractTitle, hide_remove_defect_date });
     }
+
+    numberChange(name, values) {
+        const {formattedValue, value} = values;
+        let ob = this.state.obj;
+        ob[name] = value;
+        this.setState({ obj: ob });
+    }
+
+
     editClickHandle(item) {
         let cont = this.state.contracts.find(a => a.key == item.contract_id);
         let contractTitle = cont && cont.title ? cont.title : '';
@@ -336,7 +357,81 @@ class Town extends Component {
                                                         disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
                                                 </div>
                                                </div>
+                                           
+											 
+                                             <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free_letter_date" className="">تاریخ نامه آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                                    <DatePicker onChange={value => this.dateChange('free_letter_date', value)}
+                                                        value={this.state.obj. free_letter_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div className="row">
                                             <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free_letter_number" className="">شماره نامه آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                                    <input name="free_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.free_letter_number} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+						
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="free_price" className="">مبلغ آزاد سازی 50 درصد اول حسن انجام کار</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("free_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.free_price}/>
+                                                </div>
+                                            </div> 
+											
+												 <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_letter_date" className="">تاریخ نامه  آزاد سازی ضمانت انجام تعهدات</label>
+                                                    <DatePicker onChange={value => this.dateChange('warranty_letter_date', value)}
+                                                        value={this.state.obj. warranty_letter_date}
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+											</div> 
+											 <div className="row">
+											
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_letter_number" className="">شماره نامه  آزاد سازی ضمانت انجام تعهدات</label>
+                                                    <input name="warranty_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.warranty_letter_number } disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+
+											  <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_price" className="">مبلغ آزاد سازی ضمانت انجام تعهدات</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("warranty_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.warranty_price}/>
+                                                </div>
+                                            </div> 
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_letter_date" className="">تاریخ نامه ابلاغ</label>
+                                                    <DatePicker onChange={value => this.dateChange('signification_letter_date', value)}  {...datePickerDefaultProp}
+                                                        value={this.state.obj.signification_letter_date} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div className="row">
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_letter_no" className="">شماره نامه ابلاغ</label>
+                                                    <input name="signification_letter_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.signification_letter_no} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+                                           <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_record" className="">سند صورتجلسه</label>
                                                     {this.state.status !== 'display' && <input name="f_file_record" className="form-control" onChange={this.fileChange} type='file'
@@ -346,9 +441,8 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_record')}></i>}</div>}
                                                 </div>
                                             </div>
-											 </div>
-											  <div className="row">
-                                                   <div className="col-4">
+											
+                                         <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_defect" className="">لیست نواقص</label>
                                                     {this.state.status !== 'display' && <input name="f_file_defect" className="form-control" onChange={this.fileChange} type='file'
@@ -358,6 +452,9 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_defect')}></i>}</div>}
                                                 </div>
                                             </div>
+                                            </div> 
+
+                                            <div className="row">
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_signification" className="">سند ابلاغ صورتجلسه</label>
@@ -368,7 +465,7 @@ class Town extends Component {
                                                             onClick={() => this.deleteFile('file_signification')}></i>}</div>}
                                                 </div>
                                             </div>
-											   <div className="col-4">
+                                            <div className="col-4">
 												<div className="form-group">
                                                     <label htmlFor="f_file_elimination_defects" className="">صورت جلسه رفع نقص</label>
                                                     {this.state.status !== 'display' && <input name="f_file_elimination_defects" className="form-control" onChange={this.fileChange} type='file'
@@ -377,8 +474,19 @@ class Town extends Component {
                                                         {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
                                                             onClick={() => this.deleteFile('file_elimination_defects')}></i>}</div>}
                                                 </div>
-                                        </div>
+                                        </div>  
+										 
+										  <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="f_file_free" className="">بارگذاری نامه آزادسازی به واحد مالی</label>
+                                                    {this.state.status !== 'display' && <input name="f_file_free" className="form-control" onChange={this.fileChange} type='file' />}
+                                                    {this.state.obj.file_free && <div><a target="_blank" href={this.state.obj.file_free}>مشاهده فایل</a>
+                                                        {this.state.status === 'edit' && <i className="far fa-trash-alt" style={{ marginRight: '8px' }}
+                                                            onClick={() => this.deleteFile('file_free')}></i>}</div>}
+                                                </div>
+                                            </div>
 										 </div>
+									
 
                                         {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}
                                         <input type="button" className="btn btn-outline-primary" style={{ margin: "10px" }} value="بستن" onClick={this.cancelBtnClick} />

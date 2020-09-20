@@ -29,8 +29,9 @@ export const columns = [
    ];
 
 export const storeIndex = "invoiceContractor";
-export const pageHeder = 'صورت وضعیت پیمانکار';
+export const pageHeder = 'صورت وضعیت - مدیر طرح';
 
-export const emptyItem = { contract_id : ''  ,prev_id : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,letter_no_branch: '' ,letter_no_manager: '' ,end_date : '' ,contractor_price : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' ,file_invoice : '' ,decsciption : '' ,};
+export const emptyItem = { contract_id : ''  ,prev_id : '' ,prev_price : '' ,no_id : '' ,start_date : '' ,letter_no_branch: '' ,letter_no_manager: '' ,end_date : '' ,contractor_price : '' ,consultant_price : '' ,manager_price : '' ,period_price : '' 
+,file_invoice : '' ,decsciption : '' ,consultant_letter_date : '' ,contractor_letter_date : '' ,file_letter_manager : '' ,};
 
 

@@ -28,7 +28,7 @@ export const columns = [
    ];
 
 export const storeIndex = "invoiceConsultantPay";
-export const pageHeder = 'پرداخت صورتحساب';
+export const pageHeder = 'صورت حساب - پرداخت ';
 
 export const emptyItem = { contract_id : '' ,prev_approve_id : '' ,prev_id : '' ,prev_approve_price : '' ,prev_price : '' ,
 no_id : '' ,price : '' ,period_price : '' ,pay_date : '' ,type_id : '' ,letter_no_approve: '' , decsciption : '' ,};

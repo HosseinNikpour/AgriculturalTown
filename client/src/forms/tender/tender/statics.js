@@ -19,6 +19,7 @@ export const columns = [
 { dataIndex: 'call_method',key: 'call_method', title: 'فراخوان' },
 //{ dataIndex: 'recommender_count',key: 'recommender_count', title: 'تعداد پیشنهاد دهنده' },
 { dataIndex: 'tender_no',key: 'tender_no', title: 'شماره مناقصه' },
+{ dataIndex: 'tenindicator_noder_no',key: 'indicator_no', title: 'اندیکاتور' },
 //{ dataIndex: 'invite_no',key: 'invite_no', title: 'شماره دعوتنامه' },
 //{ dataIndex: 'invite_date',key: 'invite_date', title: 'تاریخ دعوتنامه', render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' }  },
 //{ dataIndex: 'init_amount',key: 'init_amount', title: 'مبلغ پایه برآورد', render: function (text) { return  text?parseInt(text).toLocaleString():0 } },
@@ -43,7 +44,9 @@ export const pageHeder = 'مناقصات';
 export const emptyItem = { 
 title : '' ,town_id : ''
 ,group_id : '' ,type_id : '' ,service_type_id : '' ,operation_type_id : '',modifier_type_id : '' ,invite_method_id : '',call_method_id : '',recommender_count : '' ,tender_no : '' ,invite_no : '' ,invite_date : '' ,init_amount : '' ,first_winner_name : '' ,second_winner_name : '' ,first_winner_amount : '' ,second_winner_amount : '' ,file_invite : '' ,
-commission_date : '' ,commission_result_id : '' ,file_record : '' ,description : '' 
+commission_date : '' ,commission_result_id : '' ,file_record : '' ,description : '' ,
+call_number : '' ,min_grade : '' ,warranty_price : '' ,signification_date : ''  ,send_document_letter_number : '' , send_document_date: '' 
+,contract_price : ''  ,credit_type_id : ''  ,winner_letter_no : ''  ,winner_letter_date : '' ,indicator_no : ''   
 };
 
 

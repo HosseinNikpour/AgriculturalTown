@@ -39,6 +39,9 @@ router.post('/', function (req, res) {
     let file_invoice = files && files.file_invoice ? func.saveFile(files.file_invoice, name, 'file_invoice',data.contract_id+"_"+data.no_id) : '';
     data["file_invoice"] = file_invoice;
 
+    let file_letter_manager = files && files.file_letter_manager ? func.saveFile(files.file_letter_manager, name, 'file_letter_manager',data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_manager"] = file_letter_manager;
+
     let query = func.queryGen(name, 'insert', data);
     console.log(query)
     pool.query(query)
@@ -54,6 +57,10 @@ router.put('/:id', function (req, res) {
     let files = req.files;
     let file_invoice = files && files.file_invoice ? func.saveFile(files.file_invoice, name, 'file_invoice',data.contract_id+"_"+data.no_id) : '';
     data["file_invoice"] =data['file_invoice'] == false ? '**d**' : file_invoice;
+
+    let file_letter_manager = files && files.file_letter_manager ? func.saveFile(files.file_letter_manager, name, 'file_letter_manager',data.contract_id+"_"+data.no_id) : '';
+    data["file_letter_manager"] =data['file_letter_manager'] == false ? '**d**' : file_letter_manager;
+	
    
     let query = func.queryGen(name, 'update', data);
     pool.query(query)

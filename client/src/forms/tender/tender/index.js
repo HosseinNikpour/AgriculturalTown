@@ -13,11 +13,11 @@ import { successDuration, successMessage, errorMessage,errorMessageDuplicate, er
 class Tender extends Component {
     constructor(props) {
         super(props);
-        this.formRef = React.createRef();
+        this.formRef = React.createRef();                   
 
         this.state = {
             columns: columns, rows: [], contracts: [], town: [], group: [], Typetender: [], ServiceType: [],
-            operation_type: [], DocumentType: [], ModifierType: [], CommissionResult: [], call_method: [], invite_method: [], errors: {},
+            operation_type: [], DocumentType: [], ModifierType: [], CommissionResult: [], call_method: [], credit_type: [],invite_method: [], errors: {},
             isFetching: true, obj: { ...emptyItem }, showPanel: false, status: '',
         }
 
@@ -52,9 +52,10 @@ class Tender extends Component {
             let CommissionResult = response[2].data.filter(a => a.groupid === 29).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let call_method = response[2].data.filter(a => a.groupid === 35).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let invite_method = response[2].data.filter(a => a.groupid === 36).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let credit_type = response[2].data.filter(a => a.groupid === 16).map(a => { return { key: a.id, label: a.title, value: a.id } });
             let data = response[0].data;
 
-
+            
 
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
             let canAdd = response[4].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
@@ -72,6 +73,8 @@ class Tender extends Component {
             CommissionResult.unshift({ key: null, label: '-------', value: null });
             call_method.unshift({ key: null, label: '-------', value: null });
             invite_method.unshift({ key: null, label: '-------', value: null });
+            credit_type.unshift({ key: null, label: '-------', value: null });
+            
           
 
             data.forEach(e => {
@@ -82,12 +85,17 @@ class Tender extends Component {
                 // e.open_packets_date = e.open_packets_date ? moment(e.open_packets_date) : undefined;
                 // e.say_to_winner_date = e.say_to_winner_date ? moment(e.say_to_winner_date) : undefined;
                 //  e.contract_date = e.contract_date ? moment(e.contract_date) : undefined;
+                e.send_document_date = e.send_document_date ? moment(e.send_document_date) : undefined;
+                e.signification_date = e.signification_date ? moment(e.signification_date) : undefined;
+                e.winner_letter_date = e.winner_letter_date ? moment(e.winner_letter_date) : undefined; 
                 e.invite_date = e.invite_date ? moment(e.invite_date) : undefined;
+
+
             });
 
             this.setState({
                 canAdd, canEdit,canRead,
-                isFetching: false, rows: data, contracts, town, group, Typetender, ServiceType, DocumentType, operation_type, ModifierType, CommissionResult, call_method, invite_method,
+                isFetching: false, rows: data, contracts, town, group, Typetender, ServiceType, DocumentType, operation_type, ModifierType, CommissionResult, call_method, invite_method,credit_type,
                 obj: { ...emptyItem }, showPanel: false, status: '', contractTitle: '',
             });
         }).catch((error) => console.log(error))
@@ -120,7 +128,10 @@ class Tender extends Component {
             // obj.say_to_winner_date = obj.say_to_winner_date ? obj.say_to_winner_date.format() : '';
             // obj.contract_date = obj.contract_date ? obj.contract_date.format() : '';
             obj.invite_date = obj.invite_date ? obj.invite_date.format() : '';
-
+            obj.send_document_date = obj.send_document_date ? obj.send_document_date.format() : '';
+            obj.signification_date = obj.signification_date ? obj.signification_date.format() : '';
+            obj.winner_letter_date = obj.winner_letter_date ? obj.winner_letter_date.format() : '';
+            
             var formData = new FormData();
 
 
@@ -303,7 +314,8 @@ class Tender extends Component {
                                                     <label htmlFor="town_id" className={this.state.errors.town_id ? "error-lable" : ''}>شهرک</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.town}
                                                         className={this.state.errors.town_id ? "form-control error-control" : 'form-control'}
-                                                        value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)} />
+                                                        value={this.state.obj.town_id} onSelect={(values) => this.selectChange("town_id", values)}
+                                                        />
                                                 </div>
                                             </div>
                                         </div>
@@ -379,7 +391,7 @@ class Tender extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="call_method_id" className={this.state.errors.call_method_id ? "error-lable" : ''}>فراخوان</label>
+                                                    <label htmlFor="call_method_id" className={this.state.errors.call_method_id ? "error-lable" : ''}>مرحله فراخوان</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.call_method}
                                                         className={this.state.errors.call_method_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.call_method_id} onSelect={(values) => this.selectChange("call_method_id", values)} />
@@ -396,14 +408,14 @@ class Tender extends Component {
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="tender_no" className="">شماره دعوتنامه</label>
+                                                    <label htmlFor="tender_no" className="">شماره مناقصه</label>
                                                     <input name="tender_no" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.tender_no} disabled={this.state.status === 'display'} />
                                                 </div>
                                             </div>
                                             <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="invite_no" className="">شماره مناقصه</label>
+                                                    <label htmlFor="invite_no" className="">شماره دعوتنامه </label>
                                                     <input name="invite_no" className="form-control" onChange={this.handleChange}
                                                         value={this.state.obj.invite_no} disabled={this.state.status === 'display'} />
                                                 </div>
@@ -413,7 +425,7 @@ class Tender extends Component {
                                             <div className="col-4">
                                                 <div className="form-group">
 
-                                                    <label htmlFor="invite_date" className="">تاریخ دعوتنامه</label>
+                                                    <label htmlFor="invite_date" className="">تاریخ دعوتنامه جلسه بازگشایی</label>
 
                                                     <DatePicker onChange={value => this.dateChange('invite_date', value)}
                                                         value={this.state.obj.invite_date}
@@ -470,8 +482,111 @@ class Tender extends Component {
 
 
                                         </div>
-
                                         <div className="row">
+								   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="send_document_date" className=""> تاریخ اسال اسناد به کارفرما</label>
+                                                    <DatePicker onChange={value => this.dateChange('send_document_date', value)}
+                                                        value={this.state.obj. send_document_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>
+										
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="send_document_letter_number" className=""> شماره نامه ارسال اسناد به کارفرما</label>
+                                                    <input name="send_document_letter_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.send_document_letter_number } disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+								   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="signification_date" className="">تاریخ ابلاغ قرارداد</label>
+                                                    <DatePicker onChange={value => this.dateChange('signification_date', value)}
+                                                        value={this.state.obj. signification_date }
+                                                        disabled={this.state.status === 'display'} {...datePickerDefaultProp} />
+                                                </div>
+                                            </div>	
+
+                                  </div>
+                     <div className="row">								  
+                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="warranty_price" className="">مبلغ تضمین</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("warranty_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.warranty_price}/>
+                                                </div>
+                                            </div> 
+						            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="min_grade" className="">حداقل رتبه و رشته مورد نیاز</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("min_grade",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.min_grade}/>
+                                                </div>
+                                            </div> 	
+					                   <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="call_number" className=""> شماره فراخوان</label>
+                                                    <input name="call_number" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.call_number } disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+											</div>
+                                            <div className="row">
+
+                                            <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="contract_price" className="">مبلغ قرارداد</label>
+                                            
+                                                               <NumberFormat  onValueChange={(values) =>this.numberChange("contract_price",values)} 
+                                                       {...numberDefaultProp} disabled={this.state.status === 'display'}  value={this.state.obj.contract_price}/>
+                                                </div>
+                                            </div> 
+
+
+
+                                     <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="credit_type_id" className={this.state.errors.invite_method_id ? "error-lable" : ''}>نوع اعتبار</label>
+                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.credit_type}
+                                                        className={this.state.errors.credit_type_id ? "form-control error-control" : 'form-control'}
+                                                        value={this.state.obj.credit_type_id} onSelect={(values) => this.selectChange("credit_type_id", values)} />
+                                                </div>
+                                            </div>   
+
+
+
+                                           <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="winner_letter_no" className="">شماره نامه ابلاغ برنده</label>
+                                                    <input name="winner_letter_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.winner_letter_no} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+
+
+
+                                            </div>
+                                        <div className="row">
+
+                                            
+                                           <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="indicator_no" className="">اندیکاتور</label>
+                                                    <input name="indicator_no" className="form-control" onChange={this.handleChange}
+                                                        value={this.state.obj.indicator_no} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>
+                                        <div className="col-4">
+                                                <div className="form-group">
+                                                    <label htmlFor="winner_letter_date" className="">تاریخ نامه ابلاغ برنده</label>
+                                                    <DatePicker onChange={value => this.dateChange('winner_letter_date', value)}  {...datePickerDefaultProp}
+                                                        value={this.state.obj.winner_letter_date} disabled={this.state.status === 'display'} />
+                                                </div>
+                                            </div>   
+
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="f_file_invite" className="">بارگذاری دعوتنامه</label>

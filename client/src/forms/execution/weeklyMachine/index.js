@@ -44,8 +44,8 @@ class WeeklyMachine extends Component {
             let machineTypes = response[3].data.filter(a => a.groupid === 22).map(a => { return { key: a.id, label: a.title, value: a.id } });
 
             let roleId = JSON.parse(localStorage.getItem('user')).role_id;
-            let canAdd = response[4].data[0].item_creator_id === roleId || roleId > 3 ? true : false;
-            let canEdit = response[4].data[0].item_editor_id.indexOf(roleId) > -1 || roleId > 3 ? true : false;
+            let canAdd = response[4].data[0].item_creator_id === roleId || roleId ===11 ? true : false;
+            let canEdit = response[4].data[0].item_editor_id.indexOf(roleId) > -1 || roleId ===11 ? true : false;
             this.setState({
                 canAdd, canEdit,
                 isFetching: false, rows: response[0].data, contracts, periods, tableData: [],
