@@ -1,5 +1,5 @@
 const queries = [
-    { key: 'company', query:`SELECT full_title,meli_code,economic_code , registration_number,b4.title as province,town.title as town,contract.contract_no as contract_no,b2.title as registration_province,
+    { key: 'company', query:`SELECT full_title,meli_code,economic_code , registration_number,b4.title as province1,town.title as town,contract.contract_no as contract_no,b2.title as registration_province,
                b1.title as province, company.city,company.address ,b3.title as certificate_type_id, rating1,rating2,postalcode ,tell, company.fax, company.email
            FROM company LEFT JOIN baseinfo b1 ON company.province_id = b1.id
            LEFT JOIN baseinfo b2 ON company.registration_province_id = b2.id
@@ -25,7 +25,7 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
             `},
 
 
-+
+
 
 
    { key: 'contract', query:` 
@@ -49,7 +49,7 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
   (select  g2j(commision_date+ 1) from Delivery  where contract_Id=con.id order by  Delivery.id desc limit 1) as D_commision_date,
   con.duration,
   (select count(id) from extension  where contract_Id=con.id ) as count_no , 
-  (select total_duration from extension  where contract_Id=con.id order by no_id desc limit 1) as ex_total_duration ,
+  (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration))  as  ex_total_duration ,
   (select allow_late from extension  where contract_Id=con.id order by no_id desc limit 1) as ex_allow_late ,
 
   con.initial_amount as initial_amount ,con.client_initial_amount as client_initial_amount,
@@ -127,10 +127,10 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
       Ag.file_announcement,
       g2j(Ag.announcement_date+ 1) as Ag_announcement_date ,
       g2j(Ag.end_date+ 1) as Ag_end_date,
-      g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=Ag.id order by end_date desc limit 1) , Ag.end_date)) as  aa,
+      g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=Ag.id order by end_date desc limit 1) , Ag.end_date)) as  DateEndextension,
       Ag.duration,
       (select count(id) from extension  where contract_Id=Ag.id ) as count_no , 
-      (select total_duration from extension  where contract_Id=Ag.id order by no_id desc limit 1) as ex_total_duration ,
+      (coalesce (Ag.duration +(select sUM(duration) from extension  where contract_Id=Ag.id GROUP BY  contract_Id ) ,Ag.duration))  as  ex_total_duration ,
       Ag.initial_amount,
       Ag.client_initial_amount,
       /*(select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) as contract_new_price ,*/
@@ -164,16 +164,10 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
        (select  g2j(commission_date+ 1) from tender where Ag.tender_id=tender.id order by tender.id desc limit 1) as commission_date, 
        (select  g2j(commission_date) from tender where Ag.tender_id=tender.id order by tender.id desc limit 1) ::date -  Ag.announcement_date::date as CommissionTOAnnouncement,
        
-       g2j(Ag.announcement_date+ 1) as Ag_announcement_date_2 ,
-       g2j(Ag.land_delivery_date)::date - (select (Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-               where contract_Id=Ag.id order by weekly_Operation.id desc limit 1)::date as land_deliveryToDate,
-      
-     (select g2j(Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-               where contract_Id=Ag.id order by weekly_Operation.id desc limit 1) as start_date_Operation ,
-    
-    
-      (select g2j(Period.end_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-               where contract_Id=Ag.id order by weekly_Operation.id desc limit 1) as end_date_Operation , 
+     
+       Ag.land_delivery_date ::date - (coalesce((select report_date from Study_Operation where contract_Id=Ag.id order by Study_Operation.id ASc limit 1) ,current_date))::date as land_deliveryToDate,
+	(select g2j(report_date) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id ASc limit 1) as start_date_Operation ,
+	(select g2j(report_date) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id Desc limit 1) as end_date_Operation ,
        
        '******' as date4,
        
@@ -210,13 +204,19 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
      b3.title as province,
     town.title as town,
     con.contract_no,con.title,con.initial_amount,b2.title as no_id,vc.increase_price,
-    vc.decrease_price,new_work,change_price,contract_new_price,
+    vc.decrease_price,new_work,
+    new_work +(increase_price - decrease_price) as change_price,
+	   vc.contract_new_price,
   
-    (100*vc.increase_price/con.initial_amount) as increase_price_percent,
-    (100*vc.decrease_price/con.initial_amount) as decrease_price_percent,
-    (round(100*vc.new_work/con.initial_amount) ::numeric, 2) as new_work_percent,
-    (100*vc.change_price/con.initial_amount) as change_price_percent,
-    has_license,has25,vc.letter_number_signification, vc.letter_number_25percent
+   
+    round((100*vc.increase_price/con.initial_amount)::numeric,2) as increase_price_percent,
+    round((100*vc.decrease_price/con.initial_amount)::numeric,2) as decrease_price_percent,
+    round((100*vc.new_work/con.initial_amount) ::numeric,2) as new_work_percent,
+    round((100*(new_work +(increase_price - decrease_price))/con.initial_amount) ::numeric,2) as change_price_percent,
+    case has_license  when  TRUE  then   'بله' when  FALSE   then   'خیر'  end  as has_license,
+    case has25  when  TRUE  then   'بله' when  FALSE   then   'خیر'  end  as has25,
+    
+    vc.letter_number_signification, vc.letter_number_25percent
     
     
                     From value_Change as vc 
@@ -232,8 +232,8 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
  { key: 'tender', query:`
  select  ROW_NUMBER () OVER (ORDER BY tn.id),tn.title,
  b8.title as province,
+ town.city,
  town.title as town,
-town.city,
 b1.title as group_id , b2.title as type_id, b3.title as service_type,
 (select STRING_AGG(title, ', ') from baseinfo where  id= ANY (ARRAY[tn.operation_type_id])) as operation_type,
 b4.title as modifier_type,
@@ -245,14 +245,14 @@ call_number,g2j(invite_date+ 1) as invite_date ,
 init_amount,first_winner_name,first_winner_amount,second_winner_name,
 second_winner_amount,
 min_grade,warranty_price,
-tn.description,
+
 g2j(contract.announcement_date+ 1) as announcement_date,
 contract.contract_no as contract_no,
 co.title as compuny ,
 tn.send_document_letter_number,
 tn.indicator_no,
-g2j(tn.send_document_date+ 1)
-
+g2j(tn.send_document_date+ 1),
+tn.description
 
 From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
                    LEFT JOIN baseinfo b1 ON  tn.group_id = b1.id
@@ -275,75 +275,107 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
 
 
 
-            { key: 'invoiceContractor', query:`
-            
+            { key: 'invoiceContractor', query:`        
             select
-b9.title as province,
- town.title as town ,
-con.title,con.contract_no,b2.title as contract_type, co.title as company,con.initial_amount,
-(select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) as contract_new_price ,
- 
-(select  b6.title from value_Change LEFT JOIN baseinfo b6 ON value_Change.no_id= b6.id  
-    where contract_Id=con.id order by value_Change.id desc limit 1) as no_valueChange,
-    (select  b5.title from Invoice_Contractor LEFT JOIN baseinfo b5 ON Invoice_Contractor.no_id= b5.id  
-      where contract_Id=con.id order by Invoice_Contractor.id desc limit 1) as no_id,
-(select  g2j(start_date+ 1) from invoice_contractor  where contract_Id=con.id order by no_id  desc limit 1) as inv_start_date  , 
-(select  g2j(end_date+ 1) from invoice_contractor  where contract_Id=con.id order by no_id  desc limit 1) as inv_end_date ,
-(select manager_price  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as inv_manager_price ,
-(select period_price  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as inv_period_price ,
-(select price  from invoice_contractor_approve  where contract_Id=con.id order by no_id desc limit 1) as inv_app_price ,
-(select period_price  from invoice_contractor_approve  where contract_Id=con.id order by no_id desc limit 1) as inv_app_period_price ,
-(select price  from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_price ,
-(select period_price  from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_period_price ,
-(select g2j(letter_date_branch+ 1)  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as inv_letter_date_branch ,
-(select g2j(letter_date_manager+ 1)  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as inv_letter_date_manager ,
-(select g2j(letter_date_employer+ 1)  from invoice_contractor_approve  where contract_Id=con.id order by no_id desc limit 1) as inv_app_letter_date_employer  ,
-(select g2j(letter_date_secretariat+ 1)  from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_letter_date_secretariat  ,
-(select g2j(pay_date+ 1)  from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_pay_date ,
-(select letter_no_branch  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as inv_letter_no_branch ,
-(select letter_no_manager  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1) as letter_no_manager ,
-(select letter_no_employer  from invoice_contractor_approve  where contract_Id=con.id order by no_id desc limit 1) as inv_app_letter_no_employer ,
-(select b4.title  from invoice_contractor_pay LEFT JOIN baseinfo b4 ON invoice_contractor_pay.type_id = b4.id  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_type_id ,
-(select g2j(credit_date+ 1) from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1) as inv_pay_credit_date 
+            b9.title as province,
+             town.title as town ,
+            con.title,con.contract_no,b2.title as contract_type, co.title as company,con.initial_amount,
+            (coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount)) as contract_new_price,
+             
+            (select  b6.title from value_Change LEFT JOIN baseinfo b6 ON value_Change.no_id= b6.id  
+                where contract_Id=con.id order by value_Change.id desc limit 1) as no_valueChange,
+              
+             b5.title as no_id,
+             g2j(inv.start_date+ 1)	as inv_start_date  ,  
+             g2j(inv.end_date+ 1)	as inv_end_date ,  
+             inv.manager_price as inv_manager_price ,
+            inv.period_price as inv_period_price ,
+            (select price  from invoice_contractor_approve  where contract_Id=con.id 
+                           and  invoice_contractor_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_price ,
+            (select period_price  from invoice_contractor_approve  where contract_Id=con.id
+			               and  invoice_contractor_approve.prev_approve_id=b5.title   order by no_id desc limit 1) as inv_app_period_price ,
+						   
+             (select price  from invoice_contractor_pay  where contract_Id=con.id  and 
+			 	  invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1)
+				         order by no_id desc limit 1)as inv_pay_price ,
+						 
+						 
+			(select period_price  from invoice_contractor_pay  where contract_Id=con.id  and 
+			 	  invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1)
+				         order by no_id desc limit 1)as inv_pay_period_price,			 
+		
+            
+			
+			
+			g2j(inv.letter_date_branch+ 1) as inv_letter_date_branch ,
+            g2j(inv.letter_date_manager+ 1) as inv_letter_date_manager ,
+            
+            (select g2j(letter_date_employer+ 1)  from invoice_contractor_approve  where contract_Id=con.id 
+			               and  invoice_contractor_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_letter_date_employer  ,
+           
+		   
+		   
+		   (select  g2j(letter_date_secretariat+ 1)  from invoice_contractor_pay  where contract_Id=con.id  and 
+			 	  invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_letter_date_secretariat  ,
+		   
+		   (select  g2j(pay_date+ 1)  from invoice_contractor_pay  where contract_Id=con.id  and 
+			 	  invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_pay_date ,
+		   
+		
+			 inv.letter_no_branch  as inv_letter_no_branch ,
+             inv.letter_no_manager  as letter_no_manager ,
+            (select letter_no_employer  from invoice_contractor_approve  where contract_Id=con.id
+                           and  invoice_contractor_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_letter_no_employer ,
+            
+		    
+	     (select b4.title  from invoice_contractor_pay LEFT JOIN baseinfo b4 ON invoice_contractor_pay.type_id = b4.id  where contract_Id=con.id  and 
+		          invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1) 
+					       order by no_id desc limit 1) as inv_pay_type_id ,
+          
+		 (select  g2j(credit_date+ 1)  from invoice_contractor_pay  where contract_Id=con.id  and 
+			 	  invoice_contractor_pay.prev_approve_id=
+				     (select  b8.title from invoice_contractor_pay LEFT JOIN baseinfo b8 ON invoice_contractor_pay.no_id= b8.id where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_credit_date,
+		      
+            
+            
+			
+			(select round(sum(((x.done-x.value_change)*wieght/100))::numeric, 2)as pishraft
+            from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
+              ,(select round(sum(d.current_done)::numeric, 2) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
+            where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
+            from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
+            where c.id=con.id
+            group by c.title)  as  pishraft_phisical ,  
+            
+            (select round( ROUND(( inv.manager_price)::numeric, 2)/
+            ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount))::numeric, 2)*100::numeric, 2))
+              as pishraft_percent,
 
 
-,(select round(sum(((x.done-x.value_change)*wieght/100))::numeric, 2)as pishraft
-from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
-  ,(select round(sum(d.current_done)::numeric, 2) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
-where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
-from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
-where c.id=con.id
-group by c.title)  as  pishraft_phisical ,  
-
-(select round( ROUND((select manager_price  from invoice_contractor  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-  as pishraft_percent,
-  
-
-(select round( ROUND((select manager_price  from invoice_contractor_approve  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select  contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-  as pishraft_percent_approve,
-  
-(select round( ROUND((select manager_price  from invoice_contractor_pay  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-  as pishraft_percent_pay
-
-
-  
-From  invoice_contractor as inv
-       LEFT JOIN contract  as con ON inv.contract_id =con.id
-	   LEFT JOIN baseinfo b2 ON con.contract_type_id = b2.id 
-       LEFT JOIN company as co  ON con.company_id =co.id
-	   	  LEFT JOIN town  ON con.town_id =town.id
-		  LEFT JOIN baseinfo b9 ON town.province_id = b9.id
-
-                   
-
-  WHERE no_id= 
-	(SELECT ( select max(no_id) from invoice_contractor  AS Myinvoice_contractor1 where contract_Id=con.id)
-		FROM invoice_contractor AS Myinvoice_contractor2 WHERE Myinvoice_contractor2.contract_id = Myinvoice_contractor2.contract_id 
-	     order by no_id desc limit 1)
-		 ;`},
+            (select round( ROUND((select prev_price  from invoice_contractor_approve  LEFT JOIN baseinfo b10 ON invoice_contractor_approve.no_id= b10.id  where contract_Id=con.id and  b10.title=b5.title)::numeric, 2)/
+               ROUND((select  contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
+             as pishraft_percent_approve,
+              
+            (select round( ROUND((select manager_price  from invoice_contractor_pay LEFT JOIN baseinfo b9 ON invoice_contractor_pay.no_id= b9.id where contract_Id=con.id  and  b9.title=b5.title)::numeric, 2)/
+            ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount))::numeric, 2)*100::numeric, 2))
+              as pishraft_percent_pay
+            
+              
+            From  invoice_contractor as inv
+                   LEFT JOIN contract  as con ON inv.contract_id =con.id
+                 LEFT JOIN baseinfo b2 ON con.contract_type_id = b2.id 
+                   LEFT JOIN company as co  ON con.company_id =co.id
+                 LEFT JOIN town  ON con.town_id =town.id
+                LEFT JOIN baseinfo b9 ON town.province_id = b9.id
+                LEFT JOIN baseinfo b5 ON inv.no_id= b5.id  `},
 																
 
 
@@ -359,38 +391,66 @@ From  invoice_contractor as inv
 
             
 
-     { key: 'invoiceConsultant', query:` --select g2j(now())  
+     { key: 'invoiceConsultant', query:`
+        
      select
      b9.title as province,
      town.title as town ,
      Ag.title,Ag.contract_no,b2.title as contract_type, co.title as company,Ag.initial_amount,
-     (select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) as contract_new_price ,
+	(coalesce((select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) ,  Ag.initial_amount)) as contract_new_price,
      (select  b6.title from value_Change LEFT JOIN baseinfo b6 ON value_Change.no_id= b6.id  
          where contract_Id=ag.id order by value_Change.id desc limit 1) as no_valueChange,
   
-     (select  b5.title from invoice_consultant LEFT JOIN baseinfo b5 ON invoice_consultant.no_id= b5.id  
-  where contract_Id=Ag.id order by invoice_consultant.id desc limit 1) as no_id,
-     (select  g2j(start_date+ 1) from invoice_consultant  where contract_Id=Ag.id order by no_id  desc limit 1) as inv_start_date  , 
-     (select  g2j(end_date+ 1) from invoice_consultant  where contract_Id=Ag.id order by no_id  desc limit 1) as inv_end_date ,
-     (select manager_price  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as inv_manager_price ,
-     (select period_price  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as inv_period_price ,
-     (select price  from invoice_consultant_approve  where contract_Id=Ag.id order by no_id desc limit 1) as inv_app_price ,
-     (select period_price  from invoice_consultant_approve  where contract_Id=Ag.id order by no_id desc limit 1) as inv_app_period_price ,
-     (select price  from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_price ,
-     (select period_price  from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_period_price ,
-     (select g2j(letter_date_branch+ 1)  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as inv_letter_date_branch ,
-     (select g2j(letter_date_manager+ 1)  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as inv_letter_date_manager ,
-     (select g2j(letter_date_employer+ 1)  from invoice_consultant_approve  where contract_Id=Ag.id order by no_id desc limit 1) as inv_app_letter_date_employer  ,
-     (select g2j(letter_date_secretariat+ 1)  from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_letter_date_secretariat  ,
-     (select g2j(pay_date+ 1)  from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_pay_date ,
-     (select letter_no_branch  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as inv_letter_no_branch ,
-     (select letter_no_manager  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1) as letter_no_manager ,
-     (select letter_no_employer  from invoice_consultant_approve  where contract_Id=Ag.id order by no_id desc limit 1) as inv_app_letter_no_employer ,
-     (select b4.title  from invoice_consultant_pay LEFT JOIN baseinfo b4 ON invoice_consultant_pay.type_id = b4.id  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_type_id ,
-     (select g2j(credit_date+ 1) from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1) as inv_pay_credit_date 
-    
-  
-  ,(select round(sum(((x.done-x.value_change)*wieght/100))::numeric, 2)as pishraft
+ 
+       b5.title as no_id,
+	     g2j(inv.start_date+ 1)	as inv_start_date  ,  
+       g2j(inv.end_date+ 1)	as inv_end_date ,  
+       inv.manager_price as inv_manager_price ,
+       inv.period_price as inv_period_price ,
+
+	  (select price  from invoice_consultant_approve  where contract_Id=Ag.id 
+                           and  invoice_consultant_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_price ,
+       (select period_price  from invoice_consultant_approve  where contract_Id=Ag.id
+			               and  invoice_consultant_approve.prev_approve_id=b5.title   order by no_id desc limit 1) as inv_app_period_price ,
+			   
+       (select price  from invoice_consultant_pay  where contract_Id=Ag.id  and 
+			 	  invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1)
+				         order by no_id desc limit 1)as inv_pay_price ,
+	  (select period_price  from invoice_consultant_pay  where contract_Id=Ag.id  and 
+			 	  invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1)
+				         order by no_id desc limit 1)as inv_pay_period_price,	
+						 
+	  g2j(inv.letter_date_branch+ 1) as inv_letter_date_branch ,
+      g2j(inv.letter_date_manager+ 1) as inv_letter_date_manager , 
+	 (select g2j(letter_date_employer+ 1)  from invoice_consultant_approve  where contract_Id=Ag.id 
+			               and  invoice_consultant_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_letter_date_employer  , 
+	(select  g2j(letter_date_secretariat+ 1)  from invoice_consultant_pay  where contract_Id=Ag.id  and 
+			 	  invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_letter_date_secretariat , 
+   (select  g2j(pay_date+ 1)  from invoice_consultant_pay  where contract_Id=Ag.id  and 
+			 	  invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_pay_date , 
+	 
+  inv.letter_no_branch  as inv_letter_no_branch ,
+  inv.letter_no_manager  as letter_no_manager ,
+  (select letter_no_employer  from invoice_consultant_approve  where contract_Id=Ag.id
+                     and  invoice_consultant_approve.prev_approve_id=b5.title  order by no_id desc limit 1) as inv_app_letter_no_employer , 
+ (select b4.title  from invoice_consultant_pay LEFT JOIN baseinfo b4 ON invoice_consultant_pay.type_id = b4.id  where contract_Id=Ag.id  and 
+		          invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1) 
+					       order by no_id desc limit 1) as inv_pay_type_id ,
+						   
+ (select  g2j(credit_date+ 1)  from invoice_consultant_pay  where contract_Id=Ag.id  and 
+			 	  invoice_consultant_pay.prev_approve_id=
+				     (select  b8.title from invoice_consultant_pay LEFT JOIN baseinfo b8 ON invoice_consultant_pay.no_id= b8.id where contract_Id=Ag.id order by invoice_consultant_pay.id desc limit 1)
+				         order by no_id desc limit 1) as inv_pay_credit_date,
+ 
+ 
+ (select round(sum(((x.done-x.value_change)*wieght/100))::numeric, 2)as pishraft
 from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
 
   ,(select round(sum(d.current_done)::numeric, 2) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
@@ -399,18 +459,18 @@ from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 
 where c.id=Ag.id
 group by c.title)  as  pishraft_phisical ,  
 
-(select round( ROUND((select manager_price  from invoice_consultant  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-as pishraft_percent,
+(select round( ROUND(( inv.manager_price)::numeric, 2)/
+ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) ,  Ag.initial_amount))::numeric, 2)*100::numeric, 2))
+  as pishraft_percent,
+  
 
-
-(select round( ROUND((select manager_price  from invoice_consultant_approve  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select  contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-as pishraft_percent_approve,
-
-(select round( ROUND((select manager_price  from invoice_consultant_pay  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)/
-ROUND((select  contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
-as pishraft_percent_pay
+(select round( ROUND((select prev_price  from invoice_consultant_approve LEFT JOIN baseinfo b10 ON invoice_consultant_approve.no_id= b10.id  where contract_Id=Ag.id and  b10.title=b5.title)::numeric, 2)/
+ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) ,  Ag.initial_amount))::numeric, 2)*100::numeric, 2))
+  as pishraft_percent_approve,
+  
+(select round( ROUND((select manager_price  from invoice_consultant_pay LEFT JOIN baseinfo b9 ON invoice_consultant_pay.no_id= b9.id where contract_Id=Ag.id  and  b9.title=b5.title)::numeric, 2)/
+ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=Ag.id order by no_id desc limit 1) ,  Ag.initial_amount))::numeric, 2)*100::numeric, 2))
+  as pishraft_percent_pay
 
 
   
@@ -420,15 +480,7 @@ as pishraft_percent_pay
             LEFT JOIN company as co  ON Ag.company_id =co.id
             left join town  on town.id=ANY (Ag.town_id)
             LEFT JOIN baseinfo b9 ON town.province_id = b9.id
-      
-      
-      
-      WHERE no_id= 
-(SELECT ( select max(no_id) from invoice_consultant  AS Myinvoice_consultant1 where contract_Id=Ag.id)
-  FROM invoice_consultant AS Myinvoice_consultant2 WHERE Myinvoice_consultant2.contract_id = Myinvoice_consultant2.contract_id 
-     order by no_id desc limit 1)
-   ;  
-       `},
+          LEFT JOIN baseinfo b5 ON inv.no_id= b5.id  `},
 
 
 
@@ -442,47 +494,59 @@ as pishraft_percent_pay
 
 
 
-       { key: 'creditPredict', query:` --select g2j(now())   
-       select 
+       { key: 'creditPredict', query:`  select 
        ROW_NUMBER () OVER (ORDER BY cp.id),
-       con.contract_no,con.title,g2j(start_date+ 1) as startDate,g2j(cp.end_date+ 1) as endDate,con.initial_amount,
-       (select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) as contract_new_price,
-       (select change_price_percent from value_Change  where contract_Id=con.id order by no_id desc limit 1) as change_price_percent ,
-       cp.invoice_paid_price,cp.invoice_paid_period,g2j(invoice_paid_date+ 1) as invoice_paid_date ,cp.invoice_approved_price,cp.invoice_approved_period,
+       con.contract_no,
+	   con.title,
+	   g2j(start_date+ 1) as startDate,
+	   g2j(cp.end_date+ 1) as endDate,
+	   con.initial_amount,
+        Vc.contract_new_price,
+	   round((100*(Vc.new_work +(Vc.increase_price - Vc.decrease_price))/con.initial_amount) ::numeric,2) as change_price_percent, 
+       cp.invoice_paid_price,
+	   cp.invoice_paid_period,
+	   g2j(invoice_paid_date+ 1) as invoice_paid_date ,
+	   cp.invoice_approved_price,
+	   cp.invoice_approved_period,
        g2j(invoice_approved_date+ 1) as invoice_approved_date ,
-       cp.start_date::date - cp.end_date ::date as TimePast, 
+       cp.start_date::date - cp.invoice_approved_date ::date as TimePast, 
       cp.price_until_now,
-      invoice_approved_date::date - cp.end_date ::date as TimeBettweenStartEnd,
+      cp.end_date ::date - invoice_approved_date::date as TimeBettweenStartEnd,
 	   cp.price_until_end,
-       con.client_initial_amount,
-       round(       
-        ROUND((con.initial_amount)::numeric, 2)
+    
+	   cp.price_until_now+cp.price_until_end+cp.invoice_approved_price as estimation_initial_amount,
+	   
+        round(     
+       ROUND((cp.price_until_now+cp.price_until_end+(select price from invoice_contractor_pay where contract_Id=con.id order by invoice_contractor_pay.id desc limit 1))::numeric, 2)
             /
-        ROUND((con.client_initial_amount)::numeric, 2)
+      ROUND((con.initial_amount)::numeric, 2)
                *100::numeric, 2) as PerecentIncDec
+			   
+			   
        
 
 
         From  credit_Predict as cp
-              LEFT JOIN contract  as con ON cp.contract_id =con.id`},
+              LEFT JOIN contract  as con ON cp.contract_id =con.id
+			    LEFT JOIN value_Change  as Vc ON cp.contract_id =Vc.contract_id`},
           
               
 
 
               
-       { key: 'weeklyOperation', query:` --select g2j(now())   
-       select 
+       { key: 'weeklyOperation', query:`  select 
        ROW_NUMBER () OVER (ORDER BY wo.id),
-       (select town.title from contract as con  LEFT JOIN town  ON con.town_id =town.id   where contract_Id=con.id order by town_id desc limit 1) as town ,
-       con.title,
+       (select town.title from contract as con  LEFT JOIN town  ON con.town_id =town.id   where wo.contract_Id=con.id order by town_id desc limit 1) as town ,
+       con.title as Contract,
        con.contract_no,
        co.title as company,
-       (select operation.title from wbs   LEFT JOIN operation ON  wbs.operation_id= operation.id   where contract_Id=con.id order by wbs.id desc limit 1) as operation ,
-       (select b2.title from wbs   LEFT JOIN baseinfo b2 ON  wbs.unit_id= b2.id   where contract_Id=con.id order by wbs.id desc limit 1) as unit ,
-       (select price from wbs where contract_Id=con.id order by wbs.id desc limit 1) as price,
-       (select wieght from wbs where contract_Id=con.id order by wbs.id desc limit 1) as wieght, 
-       (select value_change  from wbs   LEFT JOIN weekly_operation_detail ON   wo.id =weekly_operation_detail.parent_id  where contract_Id=con.id order by wbs.id desc limit 1) as TotalAmount,
-	    (select cumulative_done  from wbs   LEFT JOIN weekly_operation_detail ON   wo.id =weekly_operation_detail.parent_id  where contract_Id=con.id order by wbs.id desc limit 1) as cumulative_done ,
+	   operation.title as operation_title,
+	   b2.title as unit ,
+	   wbs.price,
+	   wbs.wieght,
+	   wbs.value_change as TotalAmount ,
+      (select cumulative_done  from wbs   LEFT JOIN weekly_operation_detail ON   wo.id =weekly_operation_detail.parent_id  where contract_Id=con.id order by wbs.id desc limit 1) as cumulative_done ,
+   
 	   
        (select  b3.title from contract_cycle LEFT JOIN baseinfo b3 ON contract_cycle.state_id= b3.id  where contract_Id=con.id order by contract_cycle.id desc limit 1) as state_id ,
        period.title  as period
@@ -492,14 +556,17 @@ as pishraft_percent_pay
        
           From  weekly_operation  as wo
           LEFT JOIN contract  as con ON  wo.contract_id =con.id
-         /* LEFT JOIN weekly_operation_detail ON  wo.id =weekly_operation_detail.parent_id*/
+		  LEFT JOIN wbs  ON wo.contract_Id=wbs.contract_id
+		  LEFT JOIN operation  ON wbs.operation_id= operation.id
           LEFT JOIN period  ON  wo.period_id =period.id
-          LEFT JOIN company as co  ON con.company_id =co.id`},
+          LEFT JOIN company as co  ON con.company_id =co.id
+		  LEFT JOIN baseinfo b2 ON  wbs.unit_id= b2.id
+`},
      
               
             
 
-      { key: ' weekly_Weather', query:` --select g2j(now())   
+      { key: ' weekly_Weather', query:`   
       
       select 
       ROW_NUMBER () OVER (ORDER BY weekly_Weather.id),
@@ -538,7 +605,7 @@ as pishraft_percent_pay
 
 
 
-            { key: 'studyOperation', query:` --select g2j(now())   
+            { key: 'studyOperation', query:` 
             
              select 
             ROW_NUMBER () OVER (ORDER BY so.id),
@@ -623,6 +690,7 @@ as pishraft_percent_pay
 
       
 
+         
              { key: 'contractCycle', query:` 
              select
                ROW_NUMBER () OVER (ORDER BY cc.id),
@@ -632,18 +700,19 @@ as pishraft_percent_pay
                  con.contract_no,
                co.title as company,
                  con.duration,
-            (select  total_duration  from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_total_duration,
+			 coalesce((select  total_duration  from extension  where contract_Id=con.id order by no_id  desc limit 1) ,con.duration) as ex_total_duration,	 
+            
              con.warranty_duration,
              (select  g2j(commission_date+ 1)  from tender  where tender.Id=con.tender_id order by tender.id  desc limit 1) as tender_commission_date , 
-             (select  commission_date  from tender  where tender.Id=con.tender_id  order by tender.id  desc limit 1)::date- con.announcement_date ::date
-                      as CommissionToAnnouncement,
+             (select  commission_date  from tender  where tender.Id=con.tender_id  order by tender.id  desc limit 1)::date- (coalesce (con.announcement_date ,current_date)) ::date
+             as CommissionToAnnouncement,	
              g2j(con.announcement_date+ 1) as announcement_date  ,
-             con.announcement_date ::date - con.land_delivery_date::date as AnnouncementToland_delivery,
+             con.land_delivery_date::date - (coalesce (con.announcement_date ,current_date)) ::date as AnnouncementToland_delivery,
              g2j(con.land_delivery_date+ 1),
                
      
-          g2j(con.land_delivery_date)::date - (select g2j(Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-                where contract_Id=con.id order by weekly_Operation.id ASC limit 1)::date as land_deliveryToDate,
+           (select (Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
+                where contract_Id=con.id order by weekly_Operation.id ASC limit 1)::date -(con.land_delivery_date)::date as land_deliveryToDate,
                  (select g2j(Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
                 where contract_Id=con.id order by weekly_Operation.id ASC limit 1) as start_date_Operation ,
       
@@ -661,11 +730,12 @@ as pishraft_percent_pay
                 group by c.title)  as  pishraft_phisical ,
  
                 '*****' as RE,
-                 (select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_end_date , 
+                
+				 (coalesce  ((select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1)  ,g2j(con.end_date+1)))  as ex_end_date,				 
                  '*****' as CE,
                 (select  g2j(commision_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.id  desc limit 1) as td_commision_date ,
                 
-                (select  with_defect  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.id  desc limit 1) as td_with_defect ,
+                (select case  with_defect  when  TRUE  then   'بله' when  FALSE   then   'خیر'  end  as td_with_defect    from temp_Delivery  where contract_Id=con.id order by temp_Delivery.id  desc limit 1),
                 (select  g2j(remove_defect_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.id  desc limit 1) as td_remove_defect_date ,
                 (select  g2j(elimination_defects_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.id  desc limit 1) as td_elimination_defects_date ,
  
@@ -683,8 +753,8 @@ as pishraft_percent_pay
                             LEFT JOIN contract  as con ON cc.contract_id =con.id
                             LEFT JOIN town  ON con.town_id =town.id
                              LEFT JOIN company as co  ON con.company_id =co.id
-                             LEFT JOIN baseinfo b3 ON town.province_id = b3.id
-            `},
+                             LEFT JOIN baseinfo b3 ON town.province_id = b3.id`},
+ 
  
                                 
             { key: 'projectCycle', query:`

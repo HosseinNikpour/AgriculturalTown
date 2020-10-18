@@ -10,7 +10,9 @@ var jwt = require('jsonwebtoken');
 
 router.get(`/vw`, function (req, res) {
     let query = `SELECT c.id,c.title,duration,initial_amount,contract_no,co.title as company,co.certificate_type_id as company_type_id
-    FROM  Contract as c left JOIN  Company as co ON c.company_id=co.id `;
+    ,t.title as town ,land_delivery_date as start_date, end_date--, contract_date
+   FROM  Contract as c left JOIN  Company as co ON c.company_id=co.id
+                       left join town as t on t.id=c.town_id `;
 
     pool.query(query)
         .then((results) => {

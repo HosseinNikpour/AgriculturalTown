@@ -45,6 +45,7 @@ import Delivery from './forms/delivery/delivery/index'
 import TempDelivery from './forms/delivery/tempDelivery/index'
 
 import WeeklyOperation from './forms/execution/weeklyOperation/index'
+import WeeklyOperationPlan from './forms/execution/weeklyOperationPlan/index'
 import WeeklyWeather from './forms/execution/weeklyWeather/index'
 import WeeklyUser from './forms/execution/weeklyUser/index'
 import WeeklyMachine from './forms/execution/weeklyMachine/index'
@@ -62,6 +63,15 @@ import Home from './components/home'
 import Test from './components/test'
 
 import ReportExcel from './reports/excel/index'
+import ReportWeb from './reports/web/index'
+import Web_Invoice_Contractor from './reports/web/Web_Invoice_Contractor'
+import Web_invoice_consultant from './reports/web/Web_invoice_consultant'
+import Web_insurance from './reports/web/Web_insurance'
+import Web_contractCycle from './reports/web/Web_contractCycle'
+import Web_tender from './reports/web/Web_tender'
+import Web_contract from './reports/web/Web_contract'
+import Web_Document from './reports/web/Web_Document'
+
 
 class App extends Component {
   constructor(prop) {
@@ -259,6 +269,7 @@ class App extends Component {
               <PrivateRoute path="/invoiceConsultant" component={InvoiceConsultant} />
               <PrivateRoute path="/creditPredict" component={CreditPredict} />
               <PrivateRoute path="/weeklyOperation" component={WeeklyOperation} />
+              <PrivateRoute path="/weeklyOperationPlan" component={WeeklyOperationPlan} />
               <PrivateRoute path="/weeklyWeather" component={WeeklyWeather} />
               <PrivateRoute path="/weeklyMachine" component={WeeklyMachine} />
               <PrivateRoute path="/weeklyUser" component={WeeklyUser} />
@@ -273,7 +284,14 @@ class App extends Component {
               <PrivateRoute path="/insuranceAppendix" component={InsuranceAppendix} />
 
               <PrivateRoute path="/report-excel" component={ReportExcel} />
-
+              <PrivateRoute path="/report-Web" component={ReportWeb} />
+              <PrivateRoute path="/Web_Invoice_Contractor" component={Web_Invoice_Contractor} />
+              <PrivateRoute path="/Web_invoice_consultant" component={Web_invoice_consultant} />
+              <PrivateRoute path="/Web_insurance" component={Web_insurance} />
+              <PrivateRoute path="/Web_contractCycle" component={Web_contractCycle} />
+              <PrivateRoute path="/Web_tender" component={Web_tender} />
+              <PrivateRoute path="/Web_contract" component={Web_contract} />
+              <PrivateRoute path="/Web_Document" component={Web_Document} />
               <Route path="/test">
                 <Test />
               </Route>

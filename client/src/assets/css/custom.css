@@ -1,3 +1,10 @@
+.marginTop35{
+    margin-top: 36px;
+}
+#hnDiv>div{
+    display: inline-block!important;
+    width: 150px;
+}
 .rpt-item{
     display: inline-block;
     border:solid #329ac1 2px;

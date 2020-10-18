@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import { getPrevItems, getAllItem, removeItem, saveItem, updateItem, getItem } from '../../../api/index';
 import { message, Select } from 'antd';
+import moment from 'moment-jalaali';
 import Grid from '../../../components/common/grid3';
 import Loading from '../../../components/common/loading';
 import { columns, storeIndex, pageHeder, emptyItem } from './statics'
 import { successDuration, successMessage, errorMessage, errorDuration, selectDefaultProp } from '../../../components/statics'
 
 
-class WeeklyOperation extends Component {
+class WeeklyOperationPlan extends Component {
     constructor(props) {
         super(props);
         this.formRef = React.createRef();
 
         this.state = {
-            columns: columns, rows: [], periods: [], contracts: [],
+            columns: columns, rows: [], periods: [], contracts: [], errors: {}, obj: { ...emptyItem },
             //contract_id: 0, period_id: 0, parent_id: 0, prev_parent_id: 0, prev_period_id: 0,
             tableData: [], isFetching: true, showPanel: false, status: '',
         }
@@ -33,48 +34,54 @@ class WeeklyOperation extends Component {
     scrollToGridRef = () => window.scrollTo({ top: 0, behavior: 'smooth', })
 
     fetchData() {
-        Promise.all([getAllItem(storeIndex), getAllItem('contract'), getAllItem('period')]).then((response) => {
-            let contracts = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, project: a.project } });
-            let periods = response[2].data.map(a => { return { key: a.id, label: a.title, value: a.id, end_date: a.end_date, start_date: a.start_date } });
+        Promise.all([getAllItem(storeIndex), getAllItem('contract/vw'), getAllItem('baseInfo/vw'), getAllItem('extension/vw'), getAllItem('period')]).then((response) => {
+            let contracts = response[1].data.map(a => {
+                return {
+                    key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title,
+                    end_date: a.end_date ? moment(a.end_date) : undefined, start_date: a.start_date ? moment(a.start_date) : undefined
+                }
+            });
+            let plans = response[2].data.filter(a => a.groupid === 37).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            let extensions = response[3].data.map(a => { return { id: a.id,type_id:a.type_id, end_date: a.end_date ? moment(a.end_date) : undefined, contract_id: a.contract_id } });
+            let periods = response[4].data.map(a => { return { id: a.id, end_date: a.end_date ? moment(a.end_date) : undefined, start_date: a.start_date ? moment(a.start_date) : undefined, title: a.title } });
+
             this.setState({
-                isFetching: false, rows: response[0].data, contracts, periods, tableData: [], showTable: false,
-                status: '', showPanel: false, contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
+                isFetching: false, rows: response[0].data, contracts, extensions, plans, periods, tableData: [], showTable: false,
+                status: '', showPanel: false,
+                // contract_id: "", period_id: "", parent_id: "", prev_parent_id: "", prev_period_id: "",
             });
         }).catch((error) => console.log(error))
     }
     fetchDetailData() {
-        let { contract_id, parent_id, prev_parent_id,period_id } = this.state;
-        parent_id = parent_id ? parent_id : 0;
-        prev_parent_id = prev_parent_id ? prev_parent_id : 0;
+        let { periods, contractStartDate, contractEndDate, contractEndDate2, parent_id } = this.state;
+        let tableData = [];
+        if (parent_id) {
+            getItem(parent_id,storeIndex+'Detail').then(res=>{
+                res.data.forEach(e => {
+                    let p=periods.find(a=>a.id===e.period_id);
+                    tableData.push({ id: e.id, title: p.title, startDate: p.start_date.format('jYYYY/jMM/jDD'), 
+                    endDate: p.end_date.format('jYYYY/jMM/jDD'),cumulative_done:e.cumulative_done })
 
+                });
+                this.setState({ tableData, showTable: true, isFetching: false });
+            }).catch((error) => console.log(error))
+        }
+        else {
+            contractEndDate = contractEndDate2 ? contractEndDate2 : contractEndDate;
+            let first = periods.find(a => a.start_date.isSameOrBefore(contractStartDate, 'day') && a.end_date.isAfter(contractStartDate, 'day'));
+            let last = periods.find(a => a.start_date.isSameOrBefore(contractEndDate, 'day') && a.end_date.isAfter(contractEndDate, 'day'));
 
-       
-        Promise.all([getItem(contract_id, 'wbs'),
-                     getItem(parent_id, 'WeeklyOperationDetail'), 
-                     getPrevItems("WeeklyOperationDetail",contract_id,period_id)
-        ]).then((response) => {
-            let wbs = response[0].data;
-            let curr = response[1].data;
-            let prev = response[2].data;
-            let tableData = [];
-            wbs.forEach(e => {
-                let p = prev.find(a => a.operation == e.operation && a.unit == e.unit);
-                let c = curr.find(a => a.operation == e.operation && a.unit == e.unit);
-                let oo = {
-                    cumulative_plan: 0,//p ? p.prev_plan : 0,//:
-                    cumulative_done: p ? p.prev_done : 0,//:
-                    current_plan: c ? c.current_plan : 0,
-                    current_done: c ? c.current_done : 0,
+            periods.forEach(e => {
+                if (e.id >= first.id && e.id <= last.id) {
+                    tableData.push({ id: e.id, title: e.title, startDate: e.start_date.format('jYYYY/jMM/jDD'), endDate: e.end_date.format('jYYYY/jMM/jDD') })
                 }
-                //  oo.sum_plan = oo.cumulative_plan + oo.current_plan;
-                // oo.sum_done = oo.cumulative_done + oo.current_done;
-                //change this
-                oo.plan = 0;
-                tableData.push({ ...oo, operation: e.operation, unit: e.unit, totalWork: e.value_change, sort: e.sort })
             });
-            // ;
             this.setState({ tableData, showTable: true, isFetching: false });
-        }).catch((error) => console.log(error))
+        }
+       
+
+
+
     }
     componentDidMount() {
         this.fetchData();
@@ -82,20 +89,15 @@ class WeeklyOperation extends Component {
     saveBtnClick() {
 
         let tbl = this.state.tableData;
-        const { contract_id, period_id, parent_id } = this.state;
+        const { contract_id, plan_id, parent_id } = this.state;
 
-        let rows = tbl.map(a => ({
-            operation: a.operation,
-            unit: a.unit,
-            total_work: a.totalWork,
-            cumulative_plan: a.cumulative_plan,
+        let rows = tbl.map((a, i) => ({
+            period_id: a.id,
             cumulative_done: a.cumulative_done,
-            current_plan: a.current_plan,
-            current_done: parseInt(a.current_done),
-            sort: a.sort
+            sort: i
         }))
 
-        let obj = { contract_id, period_id, rows }
+        let obj = { contract_id, plan_id, rows }
         console.log(obj)
         if (this.state.status === 'new') {
             saveItem(obj, storeIndex).then((response) => {
@@ -130,30 +132,35 @@ class WeeklyOperation extends Component {
         this.setState({ tableData });
     }
     selectChange(name, values) {
+
         if (name === 'contract_id') {
-            let pervItems = this.state.rows.filter(a => a.contract_id === values);
-            if (pervItems[0]) {
-               let prevPeriod = this.state.periods.find(a => a.key === pervItems[0].period_id);
-                let periods = this.state.periods.filter(a => a.end_date > prevPeriod.end_date)
-                let period_id = periods[0].key;
-                let prev_parent_id = pervItems[0].id;
-                this.setState({ contract_id: values, period_id, prev_parent_id });
-            }
-            else
-                this.setState({ contract_id: values });
+            let { contractTitle, contractStartDate, contractEndDate, contractEndDate2, contracts, extensions } = this.state;
+
+            let cont = contracts.find(a => a.key === values);
+            contractTitle = cont && cont.title ? cont.title : '';
+            contractStartDate = cont && cont.start_date ? cont.start_date : '';
+            contractEndDate = cont && cont.end_date ? cont.end_date : '';
+            let ext = extensions.filter(a => a.contract_id === values && a.type_id == 1);
+            contractEndDate2 = ext[0] && ext[0].end_date ? ext[0].end_date : '';
+            this.setState({ contract_id: values, contractTitle, contractStartDate, contractEndDate, contractEndDate2 });
         }
+        else if (name === 'plan_id')
+            this.setState({ plan_id: values });
 
     }
     editClickHandle(item) {
-        //let items = this.state.rows.find(a => a.contract_id === item.contract_id);
-        // let prevPeriod = this.state.periods.find(a => a.key < item.period_id);
-        // let prev_parent_id = 0;
-        // if (prevPeriod) {
-        //     let prevItem = items.find(a => a.period_id === prevPeriod.key);
-        //     prev_parent_id = prevItem.id;
-        // }
+        let { contracts, extensions } = this.state;
+
+        let cont = contracts.find(a => a.key === item.contract_id);
+        let contractTitle = cont && cont.title ? cont.title : '';
+        let contractStartDate = cont && cont.start_date ? cont.start_date : '';
+        let contractEndDate = cont && cont.end_date ? cont.end_date : '';
+        let ext = extensions.filter(a => a.contract_id === item.contract_id && a.type_id == 1);
+        let contractEndDate2 = ext[0] && ext[0].end_date ? ext[0].end_date : '';
+
         this.setState({
-            period_id: item.period_id, contract_id: item.contract_id,
+            plan_id: item.plan_id, contract_id: item.contract_id,
+            contractTitle, contractStartDate, contractEndDate, contractEndDate2,
             parent_id: item.id, status: 'edit', showPanel: true
         }, () => {
             this.fetchDetailData();
@@ -161,10 +168,19 @@ class WeeklyOperation extends Component {
         });
     }
     displayClickHandle(item) {
-        console.log(item);
+        let { contracts, extensions } = this.state;
+
+        let cont = contracts.find(a => a.key === item.contract_id);
+        let contractTitle = cont && cont.title ? cont.title : '';
+        let contractStartDate = cont && cont.start_date ? cont.start_date : '';
+        let contractEndDate = cont && cont.end_date ? cont.end_date : '';
+        let ext = extensions.filter(a => a.contract_id === item.contract_id && a.type_id == 1);
+        let contractEndDate2 = ext[0] && ext[0].end_date ? ext[0].end_date : '';
+      
         this.setState({
             obj: item, status: 'display', showPanel: true,
-            contract_id: item.contract_id, period_id: item.period_id,
+            contract_id: item.contract_id, plan_id: item.plan_id,
+            contractTitle, contractStartDate, contractEndDate, contractEndDate2,
             parent_id: item.id,
         }, () => {
             this.scrollToFormRef();
@@ -187,7 +203,8 @@ class WeeklyOperation extends Component {
         }).catch((error) => console.log(error))
     }
     newClickHandle() {
-        this.setState({ status: 'new', showPanel: true
+        this.setState({
+            status: 'new', showPanel: true
         }, () => { this.scrollToFormRef(); });
     }
     cancelBtnClick() {
@@ -235,27 +252,56 @@ class WeeklyOperation extends Component {
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
-                                        <div className="col-6">
+                                        <div className="col-4">
                                             <div className="form-group">
-                                                <label htmlFor="contract_id" className=""> پیمان</label>
-                                                {this.state.contract_id && <label className="form-control">{this.state.contracts.find(a => a.key === this.state.contract_id).label}</label>}
-                                                {!this.state.contract_id &&
-                                                    <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
-                                                        value={this.state.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />}
+                                                <label htmlFor="contract_id" className={this.state.errors.contract_id ? "error-lable" : ''}>شماره پیمان</label>
+                                                <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.contracts}
+                                                    className={this.state.errors.contract_id ? "form-control error-control" : 'form-control'}
+                                                    value={this.state.contract_id} onSelect={(values) => this.selectChange("contract_id", values)} />
                                             </div>
                                         </div>
 
-                                        <div className="col-5">
+                                        <div className="col-8">
                                             <div className="form-group">
-                                                <label htmlFor="period_id" className="">دوره</label>
-                                                {this.state.period_id && <label className="form-control">{this.state.periods.find(a => a.key === this.state.period_id).label}</label>}
-                                                {!this.state.period_id && <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.periods}
-                                                    value={this.state.period_id} onSelect={(values) => this.setState({ period_id: values })} />}
+                                                <label htmlFor="project_id" className="">نام پیمان</label>
+                                                <label className="form-control">{this.state.contractTitle}</label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">تاریخ شروع پیمان</label>
+                                                <label className="form-control">{this.state.contractStartDate ? this.state.contractStartDate.format('jYYYY/jMM/jDD') : ''}</label>
+                                            </div>
+                                        </div>
+
+                                        <div className="col-4">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">تاریخ پایان پیمان</label>
+                                                <label className="form-control">{this.state.contractEndDate ? this.state.contractEndDate.format('jYYYY/jMM/jDD') : ''}</label>
+                                            </div>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="form-group">
+                                                <label htmlFor="project_id" className="">تاریخ پایان با احتساب تمدید</label>
+                                                <label className="form-control">{this.state.contractEndDate2 ? this.state.contractEndDate2.format('jYYYY/jMM/jDD') : ''}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <div className="form-group">
+                                                <label htmlFor="plan_id" className={this.state.errors.plan_id ? "error-lable" : ''}>شماره برنامه زمانبندی</label>
+                                                <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.plans}
+                                                    className={this.state.errors.plan_id ? "form-control error-control" : 'form-control'}
+                                                    value={this.state.plan_id} onSelect={(values) => this.selectChange("plan_id", values)} />
                                             </div>
                                         </div>
                                         {this.state.status === 'new' && <div className="col-1">
                                             <div className="form-group">
-                                                <button className='btn btn-primary' onClick={this.fetchDetailData}>مشاهده</button>
+                                                <button className='btn btn-primary marginTop35' onClick={this.fetchDetailData}>مشاهده</button>
                                             </div>
                                         </div>}
                                     </div>
@@ -264,40 +310,27 @@ class WeeklyOperation extends Component {
                                         <div className='col'>
                                             <table className='table table-striped table-bordered'>
                                                 <thead>
-                                                    <tr>
-                                                        <th colSpan={4}></th>
-                                                        <th colSpan={2}>تجمعی تا در دوره قبل</th>
-                                                        <th colSpan={2}>مقدار دوره</th>
-                                                        <th colSpan={2}>مقدار تجمعی</th>
-                                                    </tr>
+
                                                     <tr>
                                                         <th>ردیف</th>
-                                                        <th>شرح فعالیت</th>
-                                                        <th>واحد</th>
-                                                        <th>مقدار کل</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-                                                        <th>پیش بینی</th>
-                                                        <th>عملکرد</th>
-
+                                                        <th>عنوان دوره</th>
+                                                        <th>تاریخ شروع</th>
+                                                        <th>تاریخ پایان</th>
+                                                        <th>درصد انجام</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {this.state.tableData.map((item, i) => {
                                                         return <tr key={i}>
                                                             <td><label className='tableSpan'>{i + 1}</label></td>
-                                                            <td><label className='tableSpan'>{item.operation}</label></td>
-                                                            <td><label className='tableSpan'>{item.unit}</label></td>
-                                                            <td><label className='tableSpan'>{item.totalWork}</label></td>
-                                                            <td><label className='tableSpan'>{item.cumulative_plan}</label></td>
-                                                            <td><label className='tableSpan'>{item.cumulative_done}</label></td>
-                                                            <td><label className='tableSpan'>{item.current_plan}</label></td>
-                                                            <td><input name="current_done" className="form-control" onChange={(e) => this.handleChange(e, i)}
-                                                                value={item.current_done} type='number' disabled={this.state.status === 'display'} /></td>
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_plan) + parseInt(item.current_plan)}</label></td>
-                                                            <td><label className='tableSpan'>{parseInt(item.cumulative_done) + parseInt(item.current_done)}</label></td>
+                                                            <td><label className='tableSpan'>{item.title}</label></td>
+                                                            <td><label className='tableSpan'>{item.startDate}</label></td>
+                                                            <td><label className='tableSpan'>{item.endDate}</label></td>
+
+                                                            <td><input name="cumulative_done" className="form-control"
+                                                                onChange={(e) => this.handleChange(e, i)} value={item.cumulative_done}
+                                                                type='number' disabled={this.state.status === 'display'} /></td>
+
                                                         </tr>
                                                     })}
 
@@ -317,4 +350,4 @@ class WeeklyOperation extends Component {
     }
 
 }
-export default WeeklyOperation;
+export default WeeklyOperationPlan;

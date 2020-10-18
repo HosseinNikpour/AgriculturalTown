@@ -60,6 +60,7 @@ class SubMenu extends Component {
                     <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/weeklyMachine" > گزارش هفتگی ماشین آلات</Link></li>
                     <li className={this.menuClassNames(6)} onClick={() => this.menuHandleClick(6)}> <Link to="/studyWbs" > ساختار شکست مطالعات</Link></li>
                     <li className={this.menuClassNames(7)} onClick={() => this.menuHandleClick(7)}> <Link to="/studyOperation" > پیشرفت مطالعات</Link></li> 
+                    <li className={this.menuClassNames(8)} onClick={() => this.menuHandleClick(8)}> <Link to="/weeklyOperationPlan" > برنامه زمانبندی عملیات اجرایی </Link></li>
                 </ul>)
             case 3:
                 return (<ul>
@@ -84,7 +85,7 @@ class SubMenu extends Component {
             case 6:
                 return (<ul>
                     <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/report-excel" >گزارشات اکسلی</Link></li>
-                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/report-chart" >گزارشات نموداری</Link></li>
+                    <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/report-web" >گزارشات آنلاین</Link></li>
                     <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/report-table" >گزارشات جدولی</Link></li>
                     <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/report-dashboard" >داشبرد پیمان</Link></li>
                 </ul>)

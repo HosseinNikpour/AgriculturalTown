@@ -2,11 +2,11 @@
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه' }, 
     { dataIndex: 'contract',key: 'contract', title: 'پیمان' }, 
-    { dataIndex: 'period',key: 'period', title: 'دوره' }, 
+    { dataIndex: 'plan',key: 'plan', title: 'شماره برنامه' }, 
    
 ];
-export const storeIndex = "weeklyOperation";
-export const pageHeder = 'گزارش هفتگی عملیات اجرایی';
+export const storeIndex = "weeklyOperationPlan";
+export const pageHeder = 'برنامه زمانبندی عملیات اجرایی';
 
 export const emptyItem = {
     operation_id : '', contract_id : '' ,unit_id : '' ,value : '' ,value_change : '' ,value_diff : '' ,price : '' ,price_change : '' ,price_diff : '' ,wieght : '' ,sort:'' 

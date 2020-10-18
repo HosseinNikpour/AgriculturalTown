@@ -29,6 +29,8 @@ router.use('/TempDelivery', require('./delivery/TempDeliveryRoutes'));
 router.use('/WBS', require('./execution/WBSRoutes'));
 router.use('/WeeklyOperation', require('./execution/WeeklyOperationRoutes'));
 router.use('/WeeklyOperationDetail', require('./execution/WeeklyOperationDetailRoutes'));
+router.use('/WeeklyOperationPlan', require('./execution/WeeklyOperationPlanRoutes'));
+router.use('/WeeklyOperationPlanDetail', require('./execution/WeeklyOperationPlanDetailRoutes'));
 router.use('/WeeklyWeather', require('./execution/WeeklyWeatherRoutes'));
 router.use('/WeeklyWeatherDetail', require('./execution/WeeklyWeatherDetailRoutes'));
 router.use('/WeeklyUser', require('./execution/WeeklyUserRoutes'));

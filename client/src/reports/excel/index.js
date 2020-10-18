@@ -28,10 +28,10 @@ const ReportExcels = (props) => {
 
     const clickReport = (i) => {
         
-        getAllItem("Report", { reportId: reports[i].value }).then((response) => {
+        getAllItem("Report/excels", { reportId: reports[i].value }).then((response) => {
             let data = response.data;
 
-            console.log(data);
+          //  console.log(data);
        
             const link = document.createElement('a');
             link.href = data;

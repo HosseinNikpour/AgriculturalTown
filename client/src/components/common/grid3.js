@@ -97,9 +97,11 @@ const Grid = (props) => {
       جستجو : <input className='form-control' onChange={e => onSearch(e.target.value)}
         style={{ width: '200px', display: 'inline', marginBottom: '20px' }} />
 
+{props.description &&<lable className='form-control' 
+        style={{ fontSize: 'larger',textAlign: 'center',width: '40%',float: 'left',backgroundColor: '#91f59d' }}>{props.description}</lable> }
 
       <Table dataSource={rows} columns={columns} rowKey="id"
-        scroll={{ y: 350 }} bordered pagination={false} />
+        scroll={{ y: 350 ,x:800}} bordered pagination={false} />
     </div>
   )
 }

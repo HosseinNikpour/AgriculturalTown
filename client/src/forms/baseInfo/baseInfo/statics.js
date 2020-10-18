@@ -49,5 +49,6 @@ export const types = [{ value: 1, label: 'استان ها' },
 { value: 34, label: 'شماره بیمه نامه' },
 { value: 35, label: 'فراخوان' },
 { value: 36, label: 'روش دعوت' },
+{ value: 37, label: 'شماره برنامه' },
 ]
 export const emptyItem = { title: '', sort: '' };
