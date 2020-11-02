@@ -19,7 +19,7 @@ class ReportWeb1 extends Component {
 
     fetchData() {
         let columns = [
-            {dataIndex: 'town',key: 'town', title: 'نام شهرک ',width:'120px' }, 
+            { dataIndex: 'town',key: 'town', title: 'نام شهرک ',width:'120px' }, 
             {dataIndex: 'title',key: 'title', title: 'عنوان پیمان' ,width:'300px' }, 
             {dataIndex: 'contract_no',key: 'contract_no', title: 'شماره پیمان' ,width:'120px' }, 
             {dataIndex: 'company',key: 'company', title: 'شرکت' ,width:'200px' }, 
@@ -32,7 +32,14 @@ class ReportWeb1 extends Component {
             {dataIndex: 'insapp_start_date',key: 'insapp_start_date', title: 'تاریخ شروع الحاقیه' ,width:'120px'}, 
             {dataIndex: 'insapp_end_date',key: 'insapp_end_date', title: 'تاریخ پایان الحاقیه' ,width:'120px' }, 
             {dataIndex: 'date_expire',key: 'date_expire', title: 'تاریخ انقضا بیمه' ,width:'120px' }, 
-            {dataIndex: 'time_to_expire',key: 'time_to_expire', title: 'مدت زمان باقی مانده تا انقضا بیمه' ,width:'120px' }, 
+            {dataIndex: 'time_to_expire',key: 'time_to_expire', title: 'مدت زمان باقی مانده تا انقضا بیمه' ,width:'120px' ,render(text, record) {
+                return {
+                  props: {
+                    style: { background: parseInt(text) >0 ? "green":parseInt(text) <0 ?"red":'white' }
+                  },
+                  children: <div>{text}</div>
+                };
+              }}, 
             ];
       
         let f = this.state.selectedCycle != -100 ? `where (select  state_id  from  contract_cycle  where contract_Id=con.id order by date desc limit 1)=${this.state.selectedCycle}` : '';
@@ -80,7 +87,7 @@ class ReportWeb1 extends Component {
                                         </select>
                                         <input type="button" value="اعمال فیلتر" style={{marginRight: '13px',height: '35px'}} onClick={()=>{this.setState({ isFetching: true }); this.fetchData();}} />
                                     </div>
-                                <Grid columns={this.state.columns} rows={this.state.rows}>
+                                <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال می باشد">
                                        </Grid>
                                 </div>
                             </div>

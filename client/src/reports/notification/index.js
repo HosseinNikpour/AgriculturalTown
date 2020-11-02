@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { getAllItem } from '../../api/index'
 
+import { Link } from "react-router-dom";
 
-const ReportNotification = (props) => {
-    const [data, setData] = useState({});
-
-    Promise.all([getAllItem("")]).then(response=>{
-    setData({data1:response[0].data});
-    })
+const notify = (props) => {
+    const reports = [
+        { title: 'صورت وضعیت', value: 'notif_invoice' },
+        { title: 'بیمه', value: 'notif_insurance'},
+        { title: 'تحویل زمین', value: 'notif_zamin' },
+        { title: 'تمدید', value: 'notif_extension' },
+        { title: 'پیشرفت فیزیکی', value: 'notif_pishraft' },
+     
+    ]
+    
+   
+   
     return (
         <div className="rpt-parent">
-            <div className="badge-item">
-                <h2>صورت وضعیت اختلاف تاییدمدیریت طرح تادفتر فنی</h2>
-                <hr></hr>
-                <ul>
-                    {data.data1.map((a, i) =>
-                        <li> a.title <span class="badge">a.number</span></li>
-                    )}
-                </ul>
-            </div>
+            {reports.map((a, i) =>
+              <Link to={a.value} ><div className="rpt-item" key={i} >{a.title}</div></Link> 
+            )}
+           
+
         </div>
     )
 }
-export default ReportNotification;
+export default notify;

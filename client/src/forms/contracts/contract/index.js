@@ -387,13 +387,12 @@ class Town extends Component {
                                                         className={this.state.errors.duration ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.duration} disabled={this.state.status === 'display'} />
                                                 </div>
-
                                             </div>
 
                                             <div className="col-4">
                                                 <div className="form-group">
                                                     <label htmlFor="end_date" className="">تاریخ اولیه اتمام </label>
-                                                    <label className="form-control">{this.state.obj.announcement_date && this.state.obj.duration ? moment(this.state.obj.announcement_date).add(this.state.obj.duration, 'days').format('jYYYY/jMM/jDD') : ''}</label>
+                                                    <label className="form-control">{this.state.obj.land_delivery_date && this.state.obj.duration ? moment(this.state.obj.land_delivery_date).add(this.state.obj.duration, 'days').format('jYYYY/jMM/jDD') : ''}</label>
                                                     {/* <DatePicker onChange={value => this.dateChange('end_date', value)}  {...datePickerDefaultProp}
                                                         value={this.state.obj.end_date} disabled={this.state.status === 'display'} /> */}
                                                 </div>

@@ -68,8 +68,8 @@ class WeeklyOperationPlan extends Component {
         }
         else {
             contractEndDate = contractEndDate2 ? contractEndDate2 : contractEndDate;
-            let first = periods.find(a => a.start_date.isSameOrBefore(contractStartDate, 'day') && a.end_date.isAfter(contractStartDate, 'day'));
-            let last = periods.find(a => a.start_date.isSameOrBefore(contractEndDate, 'day') && a.end_date.isAfter(contractEndDate, 'day'));
+            let first = periods.find(a => a.start_date.isSameOrBefore(contractStartDate, 'day') && a.end_date.isSameOrAfter(contractStartDate, 'day'));
+            let last = periods.find(a => a.start_date.isSameOrBefore(contractEndDate, 'day') && a.end_date.isSameOrAfter(contractEndDate, 'day'));
 
             periods.forEach(e => {
                 if (e.id >= first.id && e.id <= last.id) {

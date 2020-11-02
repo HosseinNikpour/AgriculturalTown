@@ -86,9 +86,17 @@ class SubMenu extends Component {
                 return (<ul>
                     <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/report-excel" >گزارشات اکسلی</Link></li>
                     <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/report-web" >گزارشات آنلاین</Link></li>
-                    <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/report-table" >گزارشات جدولی</Link></li>
+                    {/* <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/report-table" >گزارشات جدولی</Link></li> */}
                     <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/report-dashboard" >داشبرد پیمان</Link></li>
                 </ul>)
+                 case 7:
+                    return (<ul>
+                        <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/notif_invoice" >صورت وضعیت</Link></li>
+                        <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/notif_insurance" >بیمه</Link></li>
+                        <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/notif_zamin" >تحویل زمین</Link></li>                        
+                        <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/notif_extension" >تمدید</Link></li>
+                        <li className={this.menuClassNames(5)} onClick={() => this.menuHandleClick(5)}> <Link to="/notif_pishraft" >پیشرفت فیزیکی</Link></li>
+                    </ul>)
             default:
                 return (<div></div>)
         }

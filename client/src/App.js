@@ -71,6 +71,15 @@ import Web_contractCycle from './reports/web/Web_contractCycle'
 import Web_tender from './reports/web/Web_tender'
 import Web_contract from './reports/web/Web_contract'
 import Web_Document from './reports/web/Web_Document'
+import Dashboard_Execute from './reports/dashboard/index'
+import Web_delivery from './reports/web/delivery'
+//import notification from './reports/notification/index'
+import notif_invoice from './reports/notification/notif_invoice'
+import notif_insurance from './reports/notification/notif_insurance'
+import notif_zamin from './reports/notification/notif_zamin'
+import notif_extension from './reports/notification/notif_extension'
+import notif_pishraft from './reports/notification/notif_pishraft'
+
 
 
 class App extends Component {
@@ -292,13 +301,24 @@ class App extends Component {
               <PrivateRoute path="/Web_tender" component={Web_tender} />
               <PrivateRoute path="/Web_contract" component={Web_contract} />
               <PrivateRoute path="/Web_Document" component={Web_Document} />
+              <PrivateRoute path="/report-dashboard" component={Dashboard_Execute} />
+              {/* <PrivateRoute path="/Web_delivery" component={Web_delivery} /> */}
+
+              {/* <PrivateRoute path="/notification" component={notification} /> */}
+              <PrivateRoute path="/notif_invoice" component={notif_invoice} />
+              <PrivateRoute path="/notif_pishraft" component={notif_pishraft} />
+              <PrivateRoute path="/notif_extension" component={notif_extension} />
+              <PrivateRoute path="/notif_zamin" component={notif_zamin} />
+              <PrivateRoute path="/notif_insurance" component={notif_insurance} />
+              
+
               <Route path="/test">
                 <Test />
               </Route>
               <Route path="/login">
                 <Login />
               </Route>
-              <PrivateRoute path="/" component={Home} onLogin={this.onLogin} />
+              <PrivateRoute path="/" component={Web_delivery} onLogin={this.onLogin} />
               {/* <Route path="/">
                 <Home />
               </Route> */}

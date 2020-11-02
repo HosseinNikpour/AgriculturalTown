@@ -87,7 +87,7 @@ class ReportWeb1 extends Component {
                                         </select>
                                         <input type="button" value="اعمال فیلتر" style={{marginRight: '13px',height: '35px'}} onClick={()=>{this.setState({ isFetching: true }); this.fetchData();}} />
                                     </div>
-                                    <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال میباشد">
+                                    <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال می باشد">
                                     </Grid>
                                 </div>
                             </div>

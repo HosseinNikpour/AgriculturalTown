@@ -4,6 +4,7 @@ const router = express.Router();
 const func = require('../../functions/index');
 const reports = require('./statics');
 const reportWeb = require('./staticsWeb');
+const reportDash = require('./staticsDash');
 const ExcelJS = require('exceljs');
 
 router.get(`/excels`, function (req, res) {
@@ -36,16 +37,6 @@ router.get(`/webs`, function (req, res) {
     if (req.query.reportFilter)
         query += req.query.reportFilter;
 
-    // if(req.query.reportParmas)
-    // {
-    //     let f=rpt.filter;
-    //     req.query.reportParmas.forEach(a=>{
-    //         let x=JSON.parse(a);
-    //        f= f.replace(x[0],x[1]);
-    //     })
-
-    //     query+=f;
-    // }
     console.log(query);
     pool.query(query).then((results) => {
         return res.send(results.rows);
@@ -54,4 +45,21 @@ router.get(`/webs`, function (req, res) {
     });
 });
 
+router.get(`/dash`, function (req, res) {
+    let rpt = reportDash.queries.find(a => a.key === req.query.reportId);
+    let query = rpt.query;
+    for (var propName in req.query) {
+        if (req.query.hasOwnProperty(propName)&&propName.startsWith('p_')) {
+         //   console.log(propName.substr(2),req.query[propName]);
+          //  query=query.replace('/cid/g',req.query[propName]);
+          query=query. split(`*${propName.substr(2)}*`).join(req.query[propName])
+        }
+    }
+  // console.log(query);
+    pool.query(query).then((results) => {
+        return res.send(results.rows);
+    }).catch((err) => {
+        return res.send({ type: "Error", message: err.message })
+    });
+});
 module.exports = router;

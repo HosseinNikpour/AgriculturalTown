@@ -26,10 +26,10 @@ class ReportWeb1 extends Component {
             { dataIndex: 'company',key: 'company', title: 'نام پیمانکار' ,width:'120px'},
             { dataIndex: 'initial_amount',key: 'initial_amount', title: 'مبلع اولیه پیمان' ,width:'120px', render: function (text) { return   text?parseInt(text).toLocaleString():0}},
             { dataIndex: 'contract_new_price',key: 'contract_new_price', title: 'مبلغ پیمان (با احتساب تغییر مقادیر)',width:'120px', render: function (text) { return   text?parseInt(text).toLocaleString():0 }  },
-            { dataIndex: 'changeprecent',key: 'changeprecent', title: 'درصد تغیرات پیمان',width:'120px'}, 
+            { dataIndex: 'changeprecent',key: 'changeprecent', title: 'درصد تغییرات پیمان',width:'120px'}, 
             { dataIndex: 'max_invoice',key: 'max_invoice', title: 'شماره آخرین صورت وضعیت (تایید مدیر طرح)' ,width:'120px'},
             { dataIndex: 'end_date',key: 'end_date', title: 'تاریخ پایان کارکرد ' ,width:'120px'},
-            { dataIndex: 'manager_price',key: 'manager_price', title: 'مبلغ تایید مدیر طرح ',width:'200px'},
+            { dataIndex: 'manager_price',key: 'manager_price', title: 'مبلغ تایید مدیر طرح ',width:'200px', render: function (text) { return   text?parseInt(text).toLocaleString():0 }  },
             { dataIndex: 'letter_date_manager',key: 'letter_date_manager', title: 'تایخ نامه مدیر طرح' ,width:'120px'},
             { dataIndex: 'pishraft_phisical',key: 'pishraft_phisical', title: 'پیشرفت فیزیکی عملکرد' ,width:'150px'},
             { dataIndex: 'pishraft_mali',key: 'pishraft_mali', title: 'پیشرفت مالی تایید شده مدیر طرح' ,width:'120px'},
@@ -69,7 +69,7 @@ class ReportWeb1 extends Component {
                                 <div className="card-header">
                                     <div className="row">
                                         <div className="col">
-                                        خلاصه گزارش مالی
+                                        گزارش مالی پیمان
                                         </div>
                                        
                                     </div>
@@ -86,7 +86,7 @@ class ReportWeb1 extends Component {
                                         </select>
                                         <input type="button" value="اعمال فیلتر" style={{marginRight: '13px',height: '35px'}} onClick={()=>{this.setState({ isFetching: true }); this.fetchData();}} />
                                     </div>
-                                <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال میباشد">
+                                <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال می باشد">
                                        </Grid>
                                 </div>
                             </div>

@@ -23,7 +23,7 @@ let baseQuery=`select t.*,b1.title AS province,b2.title AS activity_type
 
 
 router.get(`/vw`, function (req, res) {
-    let query = `SELECT id,title FROM town`;
+    let query = `SELECT id,title,province_id FROM town`;
 
     pool.query(query)
         .then((results) => {

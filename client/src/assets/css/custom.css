@@ -5,6 +5,42 @@
     display: inline-block!important;
     width: 150px;
 }
+.highcharts-xaxis-labels{
+    direction: rtl;
+}
+.ant-select-item-option-content{
+    direction: rtl;
+}
+.dashMain thead{
+    background-color: #dee2f3;
+    color: #147524!important;
+    font-weight: 800;
+    text-align: center;
+    font-size: 24px;
+}
+.dashMain h3{
+    background-color: #dadada;
+    color: #9e0909;
+}
+.rptCol{
+    border: solid 1px #2294ce;
+    border-radius: 5px;
+    padding: 0px;
+    margin-right: 10px;
+}
+.rptCol>label{
+    background-color: #dee2f3;
+    width: 100%;
+    border-top-right-radius: 5px;
+    padding-right: 20px;
+    border-top-left-radius: 5px;
+    margin-bottom: 0px;
+}
+.rptCol>span{
+    border-top-right-radius: 0px;
+    font-size: 22px;
+    border-top-left-radius: 0px;
+}
 .rpt-item{
     display: inline-block;
     border:solid #329ac1 2px;

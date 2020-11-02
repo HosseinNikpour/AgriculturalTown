@@ -27,10 +27,17 @@ class ReportWeb1 extends Component {
             {dataIndex: 'duration',key: 'duration', title: 'مدت پیمان(روز)',width:'120px' }, 
             {dataIndex: 'ex_total_duration',key: 'ex_total_duration', title: 'جمع مدت قرارداد و تمدید ',width:'120px' }, 
             {dataIndex: 'announcement_date',key: 'announcement_date', title: 'تاریخ ابلاغ قرارداد',width:'120px' }, 
-            {dataIndex: 'announcement_to_land_delivery',key: 'announcement_to_land_delivery', title: 'مدت زمان از تاریخ ابلاغ تا صورتجسله تحویل زمین',width:'120px' }, 
+            {dataIndex: 'announcement_to_land_delivery',key: 'announcement_to_land_delivery', title: 'مدت زمان از تاریخ ابلاغ تا صورتجسله تحویل زمین',width:'120px' ,render(text, record) {
+                return {
+                  props: {
+                    style: { background: parseInt(text) >7 ? "red":'green' }
+                  },
+                  children: <div>{text}</div>
+                };
+              }}, 
             {dataIndex: 'land_delivery',key: 'land_delivery', title: 'تاریخ تحویل زمین',width:'120px' }, 
             {dataIndex: 'pishraft_phisical',key: 'pishraft_phisical', title: 'پیشرفت فیزیکی (تاکنون)',width:'120px' }, 
-            {dataIndex: 're',key: 're', title: 'مدت  زمان باقی تا تاریخ پایان پیمان با احتساب تمدید',width:'120px' },  
+            {dataIndex: 're',key: 're', title: 'مدت زمان باقی مانده تا پایان قرارداد',width:'120px' },  
             {dataIndex: 'ex_end_date',key: 'ex_end_date', title: 'تاریخ پایان با احتساب مدت تمدید شده',width:'120px' }, 
             {dataIndex: 'rh',key: 'rh', title: 'مدت زمان سپری شده برای تشکیل کمیسیون تحویل موقت از تاریخ پایان قرارداد',width:'120px' }, 
             {dataIndex: 'td_commision_date',key: 'td_commision_date', title: 'تاریخ صورتجلسه تحویل موقت',width:'120px' }, 
@@ -83,7 +90,7 @@ class ReportWeb1 extends Component {
                                         </select>
                                         <input type="button" value="اعمال فیلتر" style={{marginRight: '13px',height: '35px'}} onClick={()=>{this.setState({ isFetching: true }); this.fetchData();}} />
                                     </div>
-                                <Grid columns={this.state.columns} rows={this.state.rows} description="مبالغ به میلیون ریال میباشد">
+                                <Grid columns={this.state.columns} rows={this.state.rows} /*description="مبالغ به میلیون ریال می باشد"*/>
                                        </Grid>
                                 </div>
                             </div>
