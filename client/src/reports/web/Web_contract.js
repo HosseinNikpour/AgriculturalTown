@@ -32,11 +32,13 @@ class ReportWeb1 extends Component {
             { dataIndex: 'ex_end_date', key: 'ex_end_date', title: 'تاریخ پایان پیمان', width: '120px' },
             { dataIndex: 'pishraft_phisical', key: 'pishraft_phisical', title: 'پیشرفت فیزیکی ', width: '120px' },
             { dataIndex: 'pishraft_mali', key: 'pishraft_mali', title: 'پیشرفت مالی ', width: '120px' },
-            { dataIndex: 'monitoring_agreement', key: 'monitoring_agreement', title: 'شرکت ناظر', width: '200px' },
-            { dataIndex: 'ag_contract_no', key: 'ag_contract_no', title: 'شماره قرارداد', width: '120px' },
-            { dataIndex: 'ag_contract_date', key: 'ag_contract_date', title: 'تاریخ قرارداد', width: '120px' },
+            { dataIndex: 'company_monitoring_agreement', key: 'company_monitoring_agreement', title: 'شرکت ناظر', width: '200px' },
+            { dataIndex: 'contract_no_monitoring_agreement', key: 'contract_no_monitoring_agreement', title: 'شماره قرارداد ناظر ', width: '120px' },
+            { dataIndex: 'ag_contract_date_monitoring_agreement', key: 'ag_contract_date_monitoring_agreement', title: 'تاریخ قرارداد ناظر ', width: '120px' },
             { dataIndex: 'agex_end_date', key: 'agex_end_date', title: 'تاریخ پایان قرارداد', width: '120px' },
-            { dataIndex: 'study_agreement_id', key: 'study_agreement_id', title: 'شرکت طراح', width: '120px' },
+            { dataIndex: 'company_study_agreement', key: 'company_study_agreement', title: 'شرکت طراح', width: '120px' },
+            { dataIndex: 'contract_no_study_agreement', key: 'contract_no_study_agreement', title: 'شماره قرارداد طراح', width: '120px' },
+			{ dataIndex: 'contract_date_study_agreement', key: 'contract_date_study_agreement', title: 'تاریخ قرارداد طراح', width: '120px' },
 
         ];
         let f = this.state.selectedCycle != -100 ? `where (select  state_id  from  contract_cycle  where contract_Id=con.id order by date desc limit 1)=${this.state.selectedCycle}` : '';
@@ -44,7 +46,7 @@ class ReportWeb1 extends Component {
         // Promise.all([getAllItem("Report/Webs", { reportId: 'Web_contract',reportParmas:[par] }),
         Promise.all([getAllItem("Report/Webs", { reportId: 'Web_contract', reportFilter: f }),
         getAllItem('BaseInfo/vw')]).then((response) => {
-            let data = response[0].data;
+            let data = response[0].data.map((a,i)=>({...a,id:i}));
             let cycles = response[1].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
             cycles.push({ key: -100, label: 'همه موارد', value: -100 })
             this.setState({

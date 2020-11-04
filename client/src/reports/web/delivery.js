@@ -25,7 +25,7 @@ class ReportDelivery extends Component {
                     type: 'column'
                 },
                 title: {
-                    text: ''
+                    text: 'نمودار تعداد پیمانها به تفکیک سال'
                 },
                 xAxis: {
                     categories: []
@@ -50,34 +50,35 @@ class ReportDelivery extends Component {
                     }
                 },
                 series: [{
-                    name: 'پیمان',
-                    // color: 'rgba(165,170,217,1)',
+                    name: 'تعداد پیمان',
+                    color: 'orange',
+                   // borderColor:'#ffffff',
                     data: [],
                     pointPadding: 0.35,
                     pointPlacement: 0
                 }, {
                     name: 'تحویل موقت شده',
-                    //   color: 'rgba(126,86,134,.9)',
+                    color: '#c3ecc3',
                     data: [],
                     pointPadding: 0.35,
                     pointPlacement: 0
 
                 }, {
                     name: 'تحویل قطعی شده',
-                    //   color: 'rgba(165,100,200,1)',
+                    color: '#087f08',
                     data: [],
                     pointPadding: 0.35,
                     pointPlacement: 0
                 }, {
                     name: 'خاتمه یافته',
-                    //  color: 'rgba(126,186,111,.9)',
+                    color: 'blue',
                     data: [],
                     pointPadding: 0.35,
                     pointPlacement: 0
 
                 }, {
                     name: 'فسخ شده',
-                    //  color: 'rgba(126,186,111,.9)',
+                  color: 'red',
                     data: [],
                     pointPadding: 0.35,
                     pointPlacement: 0
@@ -91,7 +92,7 @@ class ReportDelivery extends Component {
 
     fetchData() {
         let f = this.state.selectedProvince != -100 ? ` and province_id =${this.state.selectedProvince}` : '';
-        f += this.state.selectedTown != -100 ? ` and province_id =${this.state.selectedTown}` : '';
+        f += this.state.selectedTown != -100 ? ` and town_id =${this.state.selectedTown}` : '';
 
         getAllItem("Report/Dash", { reportId: 'delivery', p_where: f }).then((response) => {
             let data = response.data;
@@ -103,38 +104,49 @@ class ReportDelivery extends Component {
 
             let tblHead = c.map(a => a.year);
             let tblData = [];
-            let cc = ['پیمان'], tt = ['تحویل موقت شده'], dd = ['تحویل قطعی شده'], nn = ['خاتمه یافته'], ll = ['فسخ شده'];
+            let cc = [], tt = [], dd = [], nn = [], ll = [];
+            //let cc = ['تعداد پیمان'], tt = ['تحویل موقت شده'], dd = ['تحویل قطعی شده'], nn = ['خاتمه یافته'], ll = ['فسخ شده'];
             for (let i = 0; i < c.length; i++) {
-                cc[i + 1] = c.find(a => a.year == tblHead[i]) ? c.find(a => a.year == tblHead[i]).count : 0;
-                tt[i + 1] = t.find(a => a.year == tblHead[i]) ? t.find(a => a.year == tblHead[i]).count : 0;
-                dd[i + 1] = d.find(a => a.year == tblHead[i]) ? d.find(a => a.year == tblHead[i]).count : 0;
-                nn[i + 1] = n.find(a => a.year == tblHead[i]) ? n.find(a => a.year == tblHead[i]).count : 0;
-                ll[i + 1] = l.find(a => a.year == tblHead[i]) ? l.find(a => a.year == tblHead[i]).count : 0;
+
+                cc[i] = c.find(a => a.year == tblHead[i]) ? c.find(a => a.year == tblHead[i]).count : 0;
+                tt[i] = t.find(a => a.year == tblHead[i]) ? t.find(a => a.year == tblHead[i]).count : 0;
+                dd[i] = d.find(a => a.year == tblHead[i]) ? d.find(a => a.year == tblHead[i]).count : 0;
+                nn[i] = n.find(a => a.year == tblHead[i]) ? n.find(a => a.year == tblHead[i]).count : 0;
+                ll[i] = l.find(a => a.year == tblHead[i]) ? l.find(a => a.year == tblHead[i]).count : 0;
             }
+         
+
+            let chartOptions = this.state.chartOptions;
+   
+            chartOptions.xAxis.categories = c.map(a => a.year);//.splice(1)
+            chartOptions.series[0].data = JSON.parse(JSON.stringify(cc)).map(a => parseInt(a));
+            chartOptions.series[1].data = JSON.parse(JSON.stringify(tt)).map(a => parseInt(a));
+            chartOptions.series[2].data = JSON.parse(JSON.stringify(dd)).map(a => parseInt(a));
+            chartOptions.series[3].data = JSON.parse(JSON.stringify(nn)).map(a => parseInt(a));
+            chartOptions.series[4].data = JSON.parse(JSON.stringify(ll)).map(a => parseInt(a));
+
+            cc.push(cc.reduce((a, b) => parseInt(a) +  parseInt(b), 0));
+            tt.push(tt.reduce((a, b) => parseInt(a)  + parseInt(b), 0));
+            dd.push(dd.reduce((a, b) => parseInt(a)  + parseInt(b), 0));
+            nn.push(nn.reduce((a, b) => parseInt(a)  + parseInt(b), 0));
+            ll.push(ll.reduce((a, b) => parseInt(a)  + parseInt(b), 0));
+
+            tblHead.push('جمع');
+            cc.unshift('تعداد پیمان');
+            tt.unshift('تحویل موقت شده');
+            dd.unshift('تحویل قطعی شده');
+            nn.unshift('خاتمه یافته');
+            ll.unshift('فسخ شده');
             tblData.push(cc);
             tblData.push(tt);
             tblData.push(dd);
             tblData.push(nn);
             tblData.push(ll);
             tblHead.unshift('');
-
-            let chartOptions = this.state.chartOptions;
-            // chartOptions.series[0].data = []
-            // chartOptions.series[1].data = [];
-            // chartOptions.series[2].data = [];
-            // chartOptions.series[3].data = [];
-            // chartOptions.series[4].data = [];
-            chartOptions.xAxis.categories = c.map(a => a.year);
-            chartOptions.series[0].data = JSON.parse(JSON.stringify(cc)).splice(1).map(a=>parseInt(a));
-            chartOptions.series[1].data = JSON.parse(JSON.stringify(tt)).splice(1).map(a=>parseInt(a));
-            chartOptions.series[2].data = JSON.parse(JSON.stringify(dd)).splice(1).map(a=>parseInt(a));
-            chartOptions.series[3].data = JSON.parse(JSON.stringify(nn)).splice(1).map(a=>parseInt(a));
-            chartOptions.series[4].data = JSON.parse(JSON.stringify(ll)).splice(1).map(a=>parseInt(a));
-
             
-           
+
             this.setState({
-                isFetching: false, rows: data, tblHead, tblData,chartOptions
+                isFetching: false, rows: data, tblHead, tblData, chartOptions
             });
         }).catch((error) => console.log(error))
     }
@@ -172,7 +184,7 @@ class ReportDelivery extends Component {
                                 <div className="card-header">
                                     <div className="row">
                                         <div className="col">
-                                            خلاصه وضعیت پیمان ها به تفکیک سال
+                                         
                                         </div>
 
                                     </div>
@@ -190,24 +202,29 @@ class ReportDelivery extends Component {
                                         <input type="button" value="اعمال فیلتر" style={{ marginRight: '13px', height: '35px' }} onClick={() => { this.setState({ isFetching: true }); this.fetchData(); }} />
                                     </div>
                                     <hr style={{ width: '2px' }}></hr>
-                                    <div>
+                                    <div style={{ border: 'solid 1px  #9e0909' }}>
                                         <HighchartsReact highcharts={Highcharts} options={this.state.chartOptions} />
                                     </div>
+                                    <br></br>
+                                    <hr style={{ width: '2px' }}></hr>
+                                   <center> <h4>جدول وضعیت پیمانها</h4></center>
+                                    <div style={{ border: 'solid 1px  #9e0909',direction: 'ltr',textAlign: 'center',fontSize: '24px' }}>
+                                        <table className="table table-striped table-bordered">
+                                            <thead>
+                                                <tr style={{backgroundColor:'#40a9ff',fontWeight:"bold",fontSize:'26px'}}>
 
-                                    <table className="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
+                                                    {this.state.tblHead.map(a => <td>{a}</td>)}
+                                                 
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.tblData.map((a, j) => <tr key={j}>
+                                                    {this.state.tblHead.map((b, i) => <td>{a[i]}</td>)}
+                                                </tr>)}
+                                            </tbody>
+                                        </table>
 
-                                                {this.state.tblHead.map(a => <td>{a}</td>)}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {this.state.tblData.map((a, j) => <tr key={j}>
-                                                {this.state.tblHead.map((b, i) => <td>{a[i]}</td>)}
-                                            </tr>)}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    </div> </div>
                             </div>
                         </div>
                     </div>

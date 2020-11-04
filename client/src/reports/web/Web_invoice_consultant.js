@@ -51,7 +51,7 @@ class ReportWeb1 extends Component {
 
             ];
         getAllItem("Report/Webs", { reportId: 'Web_invoice_consultant' }).then((response) => {
-            let data = response.data;
+            let data = response.data.map((a,i)=>({...a,id:i}));
            
             this.setState({ isFetching: false, rows: data, columns,
             });

@@ -100,7 +100,7 @@ class DashboardExecute extends Component {
             let periods = this.state.periods;
 
             for (let i = 1; i < exec.length; i++) {
-                exec[i].done = parseInt(exec[i].done) + parseInt(exec[i - 1].done)
+                exec[i].done = parseFloat(exec[i].done) + parseFloat(exec[i - 1].done)
             }
 
 
@@ -252,7 +252,7 @@ class DashboardExecute extends Component {
                                                 <span className='form-control'>{this.state.info.company}</span>
                                             </div>
                                             <div className='col rptCol'>
-                                                <label >ناریخ تحویل زمین</label>
+                                                <label >تاریخ تحویل زمین</label>
                                                 <span className='form-control'>{this.state.info.con_land_delivery_date}</span>
                                             </div>
                                             <div className='col rptCol'>

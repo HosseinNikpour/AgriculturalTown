@@ -194,11 +194,12 @@ class App extends Component {
             </div>
             <div className='col-8'>
               <ul>
-                <li >
+                <li style={{width: '7%'}}>
+                <Link to="/" >
                   <div className={this.menuClassNames(0)} onMouseEnter={() => this.topMenuHandleHover(0)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(0)}>
                     <i className="fa fa-home" ></i>
                     خانه
-                  </div>
+                   </div>  </Link>
                 </li>
                 <li >
                   <div className={this.menuClassNames(1)} onMouseEnter={() => this.topMenuHandleHover(1)} onMouseLeave={this.topMenuHandleBlur} onClick={() => this.topMenuHandleClick(1)}>

@@ -28,7 +28,7 @@ class notif_extension extends Component {
 
         ];
       getAllItem("Report/dash", { reportId: 'notif_extension'}).then((response) => {
-            let data = response.data;
+            let data = response.data.map((a,i)=>({...a,id:i}));;
             this.setState({
                 isFetching: false, rows: data, columns,
             });

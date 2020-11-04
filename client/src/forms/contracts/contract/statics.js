@@ -39,7 +39,7 @@ export const emptyItem = {
   colleague1_id: '', colleague2_id: '', contract_type_id: '', contract_date: undefined, announcement_date: '',
   land_delivery_date: '', end_date: '', duration: '', initial_amount: "", client_initial_amount: '',
   coefficient: undefined, file_agreement: '', file_announcement: '', file_delivery: '', project_manager_name: '',
-  project_manager_contacts: '', contractor_user_id: '', engineer_user_id: '', manager_user_id: ''
+  project_manager_contacts: '', contractor_user_id: '', engineer_user_id: '', manager_user_id: '',tender_id:'',
 }
 
 

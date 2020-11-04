@@ -28,7 +28,7 @@ class notif_zamin extends Component {
 
         ];
       getAllItem("Report/dash", { reportId: 'notif_zamin'}).then((response) => {
-            let data = response.data.filter(a=>a.diff>0);
+            let data = response.data.filter(a=>a.diff>0).map((a,i)=>({...a,id:i}));
             this.setState({
                 isFetching: false, rows: data, columns,
             });

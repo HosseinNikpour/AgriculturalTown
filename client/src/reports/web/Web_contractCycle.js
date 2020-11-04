@@ -49,7 +49,7 @@ class ReportWeb1 extends Component {
 
         Promise.all([getAllItem("Report/Webs", { reportId: 'Web_contractCycle', reportFilter: f }),
         getAllItem('BaseInfo/vw')]).then((response) => {
-            let data = response[0].data;
+            let data = response[0].data.map((a,i)=>({...a,id:i}));
             let cycles = response[1].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
             cycles.push({ key: -100, label: 'همه موارد', value: -100 })
             this.setState({

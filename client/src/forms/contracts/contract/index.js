@@ -50,7 +50,7 @@ class Town extends Component {
             let users = response[4].data.map(a => { return { key: a.id, label: a.username, value: a.id, roleId: a.role_id } });
             let Agreements = response[5].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
             let operationType = response[1].data.filter(a => a.groupid === 12).map(a => { return { key: a.id, label: a.title, value: a.id } });
-            let tenders = response[7].data.map(a => { return { key: a.id, label: a.tender_no, value: a.id,} });
+            let tenders = response[7].data.filter(a=>a.tender_no).map(a => { return { key: a.id, label: a.tender_no, value: a.id,} });
             let data = response[0].data;
 
 
@@ -539,7 +539,7 @@ class Town extends Component {
 
                                         <div className="col-4">
                                                 <div className="form-group">
-                                                    <label htmlFor="tender_id" className={this.state.errors.town_id ? "error-lable" : ''}>شماره مناقصه</label>
+                                                    <label htmlFor="tender_id" className={this.state.errors.tender_id ? "error-lable" : ''}>شماره مناقصه</label>
                                                     <Select  {...selectDefaultProp} disabled={this.state.status === 'display'} options={this.state.tenders}
                                                         className={this.state.errors.tender_id ? "form-control error-control" : 'form-control'}
                                                         value={this.state.obj.tender_id} onSelect={(values) => this.selectChange("tender_id", values)} />

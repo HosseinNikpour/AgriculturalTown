@@ -25,7 +25,7 @@ g2j(con.contract_date+ 1) as contract_date ,
 co.title as company,
 g2j(con.land_delivery_date+1) as con_land_delivery_date,
 con.duration,
-g2j(con.land_delivery_date+ 1) as con_end_date,
+g2j(con.land_delivery_date+ con.duration+1) as con_end_date,
  (select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id )  as  ex_total_duration,
 (select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_end_date ,
 town.gross_area,
@@ -147,12 +147,12 @@ from contract as c left join town  as t on t.id= c.town_id
 where land_delivery_date is null and announcement_date is not null
 order by diff desc`},
 
-{key:'notif_extension',query:`select c.id,c.title as contract,c.contract_no,t.title as town,b.title as province,com.title as company, DATE_PART('day',now() - coalesce((select end_date  from extension as e where e.contract_id=c.id order by no_id desc limit 1),c.end_date)) as diff 
+{key:'notif_extension',query:`select c.id,c.title as contract,c.contract_no,t.title as town,b.title as province,com.title as company, DATE_PART('day',now() - coalesce((select end_date  from extension as e where e.contract_id=c.id order by no_id desc limit 1),c.land_delivery_date+ c.duration+1)) as diff 
 from contract as c left join town  as t on t.id= c.town_id
         left join baseinfo as b on t.province_id=b.id
         left join company as com on com.id=c.company_id
 where (select  state_id  from  contract_cycle  where contract_Id=c.id order by date desc limit 1)=211
-	and DATE_PART('day',now() - coalesce((select end_date  from extension as e where e.contract_id=c.id order by no_id desc limit 1),c.end_date))>0
+	and DATE_PART('day',now() - coalesce((select end_date  from extension as e where e.contract_id=c.id order by no_id desc limit 1),c.land_delivery_date+ c.duration+1))>0
 order by diff desc`},
 
 {key:'notif_pishraft',query:` select c.id,c.title as contract,c.contract_no,t.title as town,b.title as province,com.title as company,sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end) as actual,

@@ -28,14 +28,14 @@ class notif_pishraft extends Component {
                   props: {
                     style: { background: parseInt(text) >30 ? "red":'white' }
                   },
-                  children: <div>{text}</div>
+                  children: <div  style={{ fontSize: '24px' }}>{text.toFixed(0)}</div>
                 };
               }},
            
 
         ];
       getAllItem("Report/dash", { reportId: 'notif_pishraft'}).then((response) => {
-            let data = response.data;
+            let data = response.data.map((a,i)=>({...a,id:i}));
             data=data.map(a=>({...a,diff:a.plan-a.actual}));
             data=data.filter(a=>a.diff>10);
             this.setState({

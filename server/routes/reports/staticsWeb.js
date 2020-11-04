@@ -37,7 +37,7 @@ const queries = [
      where contract_Id=con.id order by Invoice_Contractor.no_id desc limit 1)
 	 `},
  
-   { key: 'Web_invoice_consultant', query:`select	
+{ key: 'Web_invoice_consultant', query:`select	
    b9.title as province,
    town.title as town,
    Ag.title,
@@ -104,7 +104,7 @@ const queries = [
       -- and Ag.id=
      `},
 
-     { key: 'Web_insurance', query:`select town.title as town ,con.title,con.contract_no,co.title as company,
+{ key: 'Web_insurance', query:`select town.title as town ,con.title,con.contract_no,co.title as company,
      g2j(con.land_delivery_date+ 1)as land_delivery_date ,
      g2j(con.end_date+ 1) as end_date ,
      g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date)) as date_end_extension ,
@@ -122,10 +122,6 @@ const queries = [
                 LEFT JOIN insurance_Appendix as insApp  ON  ins.contract_id =insApp.contract_id
                 LEFT JOIN company as co  ON con.company_id =co.id
                 LEFT JOIN town  ON con.town_id =town.id `},
-
-             
-
-
 
  { key: 'Web_contractCycle', query:`select town.title as town, con.title,con.contract_no,co.title as company, b3.title as status_title,con.duration,
              (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration))  as  ex_total_duration ,
@@ -171,48 +167,49 @@ const queries = [
                                                     LEFT JOIN baseinfo b3 ON  tn.service_type_id = b3.id
                                                   LEFT JOIN baseinfo b5 ON  tn.commission_result_id = b5.id
                                                   LEFT JOIN contract  ON tn.id =contract.tender_id
-                                                 LEFT JOIN company as co  ON contract.company_id =co.id
+                                                  LEFT JOIN Agreement  ON tn.id =Agreement.tender_id
+                                                  LEFT JOIN company as co  ON contract.company_id =co.id
                                                 LEFT JOIN baseinfo b8 ON town.province_id = b8.id
                                 where 1=1 `},
 
-{ key: 'Web_contract', query:` select  town.title as town,con.title, con.contract_no,
-                g2j(con.contract_date+ 1) as contract_date ,
-                (coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount))/1000000  as contract_new_price,
-               co.title as company,
-               (select  b3.title from contract_cycle LEFT JOIN baseinfo b3 ON contract_cycle.state_id= b3.id  where contract_Id=con.id order by contract_cycle.id desc limit 1) as state_id ,
-                g2j(con.land_delivery_date) as con_land_delivery_date,
-               (select total_duration from extension  where contract_Id=con.id order by no_id desc limit 1) as ex_total_duration ,
-               (select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_end_date ,
-              
-               (select  round(sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end)::numeric, 2)
-                 from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
-               ,(select sum(d.current_done) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
-                 where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
-              from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
-                  where c.id=con.id
-              group by c.title) as  pishraft_phisical , 
-                  
-               
-                round((select manager_price from invoice_Consultant where contract_Id=Ag.id order by invoice_Consultant.id desc limit 1)/
-                (select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)as  pishraft_mali,
-                b1.title as monitoring_agreement,
-                Ag.contract_no as ag_contract_no,
-                g2j(Ag.contract_date) as ag_contract_date,
-                g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=Ag.id order by end_date desc limit 1) , Ag.end_date)) as  agex_end_date ,
-                b2.title as study_agreement_id
-               
-               From contract as con  LEFT JOIN town  ON con.town_id =town.id
-                    LEFT JOIN company as co  ON con.company_id =co.id
-                      LEFT JOIN agreement as ag  ON con.monitoring_agreement_id =Ag.id
-                    LEFT JOIN baseinfo b1 ON con.monitoring_agreement_id = b1.id
-                     LEFT JOIN baseinfo b2 ON con.study_agreement_id = b2.id
-                     `
+{ key: 'Web_contract', query:`  select  town.title as town,con.title, con.contract_no,
+g2j(con.contract_date+ 1) as contract_date ,
+(coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount))/1000000  as contract_new_price,
+co.title as company,
+(select  b3.title from contract_cycle LEFT JOIN baseinfo b3 ON contract_cycle.state_id= b3.id  where contract_Id=con.id order by contract_cycle.id desc limit 1) as state_id ,
+g2j(con.land_delivery_date+1) as con_land_delivery_date,
+(coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration))  as  ex_total_duration ,
+(select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_end_date ,
+
+(select  round(sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end)::numeric, 2)
+ from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
+,(select sum(d.current_done) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
+ where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
+from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
+  where c.id=con.id
+group by c.title) as  pishraft_phisical , 
+  
+
+round((select manager_price from invoice_Contractor where contract_Id=con.id order by invoice_Contractor.no_id desc limit 1)/
+(select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)as  pishraft_mali,
+co1.title as company_monitoring_agreement,
+Ag.contract_no as contract_no_monitoring_agreement,
+g2j(Ag.contract_date) as ag_contract_date_monitoring_agreement,
+g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=Ag.id order by end_date desc limit 1) , Ag.end_date)) as  agex_end_date ,
+ co2.title as company_study_agreement,
+ag_2.contract_no  as contract_no_study_agreement,
+g2j(ag_2.contract_date ) as contract_date_study_agreement
+
+
+From contract as con  LEFT JOIN town  ON con.town_id =town.id
+       LEFT JOIN company as co  ON con.company_id =co.id
+       LEFT JOIN agreement as ag  ON con.monitoring_agreement_id =Ag.id
+LEFT JOIN agreement as ag_2  ON con.study_agreement_id =ag_2.id
+LEFT JOIN company as co1  ON co1.id = ag.company_id
+LEFT JOIN company as co2  ON co2.id =ag_2.company_id `
               ,filter:` where (select  state_id  from  contract_cycle  where contract_Id=con.id order by date desc limit 1)=*sid*`},
 
-
-
-     
-        { key: 'Web_Document', query:`select 
+{ key: 'Web_Document', query:`select 
               town.file_dxf,
             town.file_kmz,
             town.file_plan,

@@ -27,7 +27,7 @@ class notif_insurance extends Component {
 
         ];
       getAllItem("Report/dash", { reportId: 'notif_insurance'}).then((response) => {
-            let data = response.data;
+            let data = response.data.map((a,i)=>({...a,id:i}));;
             this.setState({
                 isFetching: false, rows: data, columns,
             });
