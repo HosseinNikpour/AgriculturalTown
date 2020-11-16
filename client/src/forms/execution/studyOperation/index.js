@@ -308,13 +308,18 @@ class StudyOperation extends Component {
                                                             <td><label className='tableSpan'>{item.weight}</label></td>
                                                             <td><input name="percent_done" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                 value={item.percent_done} type='number' disabled={this.state.status === 'display'} /></td>
-                                                            <td><label className='tableSpan'>{(parseFloat(item.percent_done) * parseFloat(item.weight))}</label></td>
+                                                            <td><label className='tableSpan'>{(parseFloat(item.percent_done) * parseFloat(item.weight)/100)}</label></td>
                                                             <td><input name="percent_approve" className="form-control" onChange={(e) => this.handleChange(e, i)}
                                                                 value={item.percent_approve} type='number' disabled={this.state.status === 'display'} /></td>
-                                                            <td><label className='tableSpan'>{(parseFloat(item.percent_approve) * parseFloat(item.weight))}</label></td>
+                                                            <td><label className='tableSpan'>{(parseFloat(item.percent_approve) * parseFloat(item.weight)/100)}</label></td>
                                                         </tr>
+                                                       
                                                     })}
-
+                                                        <tr>
+                                                        <td></td><td colspan='2'>جمع</td>
+                                                        <td></td><td>{this.state.tableData.reduce((a, b) => a + ((parseFloat(b.percent_done) * parseFloat(b.weight)/100) || 0), 0)}</td>
+                                                        <td></td><td>{this.state.tableData.reduce((a, b) => a + ((parseFloat(b.percent_approve) * parseFloat(b.weight)/100) || 0), 0)}</td>
+                                                        </tr>
                                                 </tbody>
                                             </table>
                                             {this.state.status !== 'display' && <input type="button" className="btn btn-primary" style={{ margin: "10px" }} onClick={this.saveBtnClick} value="ذخیره" />}

@@ -4,10 +4,11 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "Weekly_Operation";
 
-let baseQuery=`select w.*,p.title AS period,c.title AS contract,u.name AS "current_user"
-    FROM weekly_operation w LEFT JOIN period p ON w.period_id = p.id
-                            LEFT JOIN contract c ON w.contract_id = c.id
-                            LEFT JOIN "user" u ON w.current_user_id = u.id `;
+let baseQuery=`select w.*,p.title AS period,c.title AS contract,u.name AS "current_user",c.contract_no,co.title as company
+                FROM weekly_operation w LEFT JOIN period p ON w.period_id = p.id
+                        LEFT JOIN contract c ON w.contract_id = c.id
+                        LEFT JOIN "user" u ON w.current_user_id = u.id
+                        LEFT JOIN company co ON c.company_id = co.id `;
 
 router.get(`/`, function (req, res) {
     let query = ` ${baseQuery} order by period_id desc  `;

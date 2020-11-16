@@ -87,7 +87,7 @@ class SubMenu extends Component {
                     <li className={this.menuClassNames(1)} onClick={() => this.menuHandleClick(1)}> <Link to="/report-excel" >گزارشات اکسلی</Link></li>
                     <li className={this.menuClassNames(2)} onClick={() => this.menuHandleClick(2)}> <Link to="/report-web" >گزارشات آنلاین</Link></li>
                     {/* <li className={this.menuClassNames(3)} onClick={() => this.menuHandleClick(3)}> <Link to="/report-table" >گزارشات جدولی</Link></li> */}
-                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/report-dashboard" >داشبرد پیمان</Link></li>
+                    <li className={this.menuClassNames(4)} onClick={() => this.menuHandleClick(4)}> <Link to="/report-dashboard" >داشبورد پیمان</Link></li>
                 </ul>)
                  case 7:
                     return (<ul>

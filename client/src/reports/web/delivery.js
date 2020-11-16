@@ -25,7 +25,8 @@ class ReportDelivery extends Component {
                     type: 'column'
                 },
                 title: {
-                    text: 'نمودار تعداد پیمانها به تفکیک سال'
+                    
+                    text:'<span style="font-size: 1.5rem">نمودار تعداد پیمانها به تفکیک سال</span>'
                 },
                 xAxis: {
                     categories: []
@@ -51,7 +52,7 @@ class ReportDelivery extends Component {
                 },
                 series: [{
                     name: 'تعداد پیمان',
-                    color: 'orange',
+                    color: '#b3afaf',
                    // borderColor:'#ffffff',
                     data: [],
                     pointPadding: 0.35,

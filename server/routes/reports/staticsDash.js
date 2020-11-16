@@ -101,23 +101,23 @@ LEFT JOIN baseinfo b2 ON  wbs.unit_id= b2.id
 	  where contract_id=*cid*`},
 
 {key:'delivery',query:`select substring(g2j(announcement_date),1,4) as year,count(announcement_date) as count,'contract' as type
-from (select c.id,announcement_date,town_id  from contract as c join town as t on c.town_id=t.id where 1=1 *where* ) as tmp
+from (select c.id,announcement_date,town_id  from contract as c join town as t on c.town_id=t.id where 1=1  ) as tmp
 where announcement_date is not null group by 1
 UNION ALL
-select substring(g2j(commision_date),1,4) as year,count(commision_date) as count,'temp_delivery' as type
-from temp_delivery join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1 *where* ) as tmp on temp_delivery.contract_id=tmp.id 
+select substring(g2j(announcement_date),1,4) as year,count(commision_date) as count,'temp_delivery' as type
+from temp_delivery join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1 ) as tmp on temp_delivery.contract_id=tmp.id 
 where commision_date is not null group by 1
 UNION ALL
-select substring(g2j(commision_date),1,4) as year,count(commision_date) as count,'delivery' as type
-from delivery join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1 *where* )as tmp on delivery.contract_id=tmp.id
+select substring(g2j(announcement_date),1,4) as year,count(commision_date) as count,'delivery' as type
+from delivery join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1  )as tmp on delivery.contract_id=tmp.id
 where commision_date is not null group by 1
 union All
-select substring(g2j(date),1,4) as year,count(date) as count,'ended' as type
-FROM public.contract_cycle join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1 *where* )as tmp on contract_cycle.contract_id=tmp.id where state_id=217 and  date is not null group by 1
+select substring(g2j(announcement_date),1,4) as year,count(announcement_date) as count,'ended' as type
+FROM public.contract_cycle join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1  )as tmp on contract_cycle.contract_id=tmp.id where state_id=217  group by 1
 union All
-select substring(g2j(date),1,4) as year,count(date) as count,'cancel' as type
-FROM public.contract_cycle join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1 *where* )as tmp on contract_cycle.contract_id=tmp.id where state_id=219 and  date is not null group by 1 order by 1
-`},
+select substring(g2j(announcement_date),1,4) as year,count(announcement_date) as count,'cancel' as type
+FROM public.contract_cycle join (select c.id,announcement_date,town_id from contract as c join town as t on c.town_id=t.id where 1=1  )as tmp on contract_cycle.contract_id=tmp.id where state_id=219   group by 1 
+order by 1`},
 
 {key:'notif_invoice',query:`select tb.*,c.title as contract,c.contract_no,t.title as town,b.title as province,com.title as company,b2.title as no
 

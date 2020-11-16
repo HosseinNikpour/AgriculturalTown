@@ -4,8 +4,9 @@ const router = express.Router();
 const func = require('../../functions/index');
 const name = "Study_Operation";
 
-let baseQuery=`select w.*,c.title AS contract
-    FROM study_operation w LEFT JOIN agreement c ON w.contract_id = c.id
+let baseQuery=`select w.*,c.title AS contract, c.contract_no,co.title as company
+FROM study_operation w LEFT JOIN agreement c ON w.contract_id = c.id
+                        LEFT JOIN company co ON c.company_id = co.id
                            `;
 
 router.get(`/`, function (req, res) {

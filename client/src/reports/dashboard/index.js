@@ -34,7 +34,7 @@ class DashboardExecute extends Component {
                         text: 'درصد پیشرغت'
                     },
                     min: 0,
-                    max: 100
+                    max: 125
                 },
                 xAxis: {
                     categories: [],
@@ -49,24 +49,12 @@ class DashboardExecute extends Component {
                         connectNulls: true,
                         dataLabels: {
                             enabled: true
-                        },
-                      //  enableMouseTracking: false,
-                    },
-                   // spline: {
-                        // connectNulls: true,
-                        // dataLabels: {
-                        //     enabled: true
-                        // } 
-                        // }
+                        },                    
+                    },                  
                 },
                  tooltip: {
                     enabled: false
-                //     useHTML: true,
-                //     formatter: function () {
-
-                //         return this.x;
-                //     }
-                 },
+                                },
                 series: [{
                     name: 'برنامه',
                     data: [],
@@ -84,6 +72,8 @@ class DashboardExecute extends Component {
                 ]
             }
         }
+        this.cycleChange = this.cycleChange.bind(this);
+      //  console.log('hellow')
     }
     fetchData() {
         Promise.all([getAllItem("Report/dash", { reportId: 'exec', p_cid: this.state.selectedContract }),
@@ -175,18 +165,24 @@ class DashboardExecute extends Component {
         }).catch((error) => console.log(error))
     }
     componentDidMount() {
-        Promise.all([getAllItem('contract/vw'), getAllItem('period')]).then((response) => {
+        Promise.all([getAllItem('contract/vw_state'), getAllItem('period'), getAllItem('BaseInfo/vw')]).then((response) => {
 
-            let contracts = response[0].data.map(a => { return { key: a.id, label: a.contract_no + ' - ' + a.company, value: a.id, title: a.title } });
+            let contracts = response[0].data.map(a => { return { key: a.id, label:a.town+' - '+ a.contract_no + ' - ' + a.company, value: a.id, title: a.title ,state:a.state_id} });
             let periods = response[1].data.map(a => { return { key: a.id, label: a.title, value: a.id, start_date: a.start_date, end_date: a.end_date } });
             let x = periods.filter(a => moment(a.start_date).isSameOrBefore(moment(), 'day') && moment(a.end_date).isSameOrAfter(moment(), 'day'))
-
+            let cycles = response[2].data.filter(a => a.groupid === 23).map(a => { return { key: a.id, label: a.title, value: a.id } });
+            cycles.push({ key: -100, label: 'همه موارد', value: -100 })
             this.setState({
-                isFetching: false, contracts, periods, selectedPeriod: x[0] ? x[0].key : undefined
+                isFetching: false,orgContracts:contracts, contracts, periods, selectedPeriod: x[0] ? x[0].key : undefined,cycles
             });
         }).catch((error) => console.log(error))
     }
-
+    cycleChange(value){
+      let  contracts=this.state.orgContracts;
+      if(value>0)
+          contracts=contracts.filter(a=>a.state==value);
+      this.setState({contracts});
+    }
     render() {
         const { isFetching } = this.state;
         if (isFetching) {
@@ -202,13 +198,19 @@ class DashboardExecute extends Component {
                                 <div className="card-header">
                                     <div className="row">
                                         <div className="col" style={{ fontSize: '30px' }}>
-                                            داشبورد اجرا
+                                        داشبورد پیمان
                                         </div>
 
                                     </div>
                                 </div>
                                 <div className="card-body">
                                     <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                    <lable>چرخه عمر پیمان : </lable>
+                                        {/* <select value={this.state.selectedCycle} onChange={(values) => this.cycleChange( values)}>
+                                            {this.state.cycles.map((x) => <option key={x.key} value={x.value}>{x.label} </option>)}
+                                        </select> */}
+                                        <Select  {...selectDefaultProp} options={this.state.cycles} className='form-control' style={{ width: '150px' }}
+                                            onChange={(e)=>this.cycleChange(e)} />
                                         <lable> پیمان : </lable>
                                         <Select  {...selectDefaultProp} options={this.state.contracts} className='form-control' style={{ width: '400px' }}
                                             value={this.state.selectedContract} onSelect={(e) => this.setState({ selectedContract: e })} />

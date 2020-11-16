@@ -28,7 +28,7 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
 
 
  
-            { key: 'contract', query:` 
+   { key: 'contract', query:` 
             select 
             b9.title as province,
             town.title as town,con.title,
@@ -41,9 +41,9 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
             (select g2j(date+ 1) from contract_cycle  where contract_Id=con.id order by contract_cycle.id desc limit 1 ) as cc_date,
              g2j(con.contract_date+ 1) as contract_date ,
             
-             con.signification_letter_no,
+             con.signification_letter_no as letter_no ,
              g2j(con.announcement_date+ 1) as con_announcement_date ,
-             g2j(con.land_delivery_date) as con_land_delivery_date,g2j(con.end_date+ 1) as con_end_date,
+             g2j(con.land_delivery_date+1) as con_land_delivery_date,g2j(con.end_date+ 1) as con_end_date,
              (select  g2j(end_date+ 1) from extension  where contract_Id=con.id order by no_id  desc limit 1) as ex_end_date , 
              (select  g2j(commision_date+ 1) from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date desc limit 1) as td_commision_date,
              (select  g2j(commision_date+ 1) from Delivery  where contract_Id=con.id order by  Delivery.commision_date desc limit 1) as D_commision_date,
@@ -98,9 +98,10 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
              (select  free_letter_number from Delivery  where contract_Id=con.id order by Delivery.commision_date desc limit 1) as D_free_letter_number,
              (select  free_price from Delivery  where contract_Id=con.id order by Delivery.commision_date desc limit 1) as D_free_price,
                      
-            (select d.cumulative_done from weekly_operation_plan as m join weekly_operation_plan_detail as d on m.id=d.parent_id where m.contract_id=con.id 
-                   and m.plan_id=(select max(plan_id) from weekly_operation_plan where contract_id=con.id) 
-                     and d.period_id=(select id from period where start_date<=now()::date and end_date>=now()::date)) as  pishraft_Barnameh,
+             (select d.cumulative_done from weekly_operation_plan as m join weekly_operation_plan_detail as d on m.id=d.parent_id where m.contract_id=con.id 
+                  and m.plan_id=(select max(plan_id) from weekly_operation_plan where contract_id=con.id) 
+                   and( d.period_id=(select id from period where start_date<=now()::date and end_date>=now()::date) 
+ 		         or	(d.period_id< (select id from period where start_date<=now()::date and end_date>=now()::date))and d.cumulative_done=100))as pishraft_Barnameh,
             
              
 			 (select round(sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end)::numeric, 2) 
@@ -123,7 +124,8 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
 
 
      
-                 { key: 'agreement', query:`
+              
+         { key: 'agreement', query:`
                  select b9.title as province,
                  town.title as town,
                  Ag.title,
@@ -133,13 +135,12 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
                 (select  co.title from  company as co  where Ag.colleague1_id=co.id order by co.id desc limit 1) as  colleague1,
                 (select  co.title from  company as co  where Ag.colleague2_id=co.id order by co.id desc limit 1) as  colleague2,
                  b2.title as contract_type,
-              (select  tender_no from tender where Ag.tender_id=tender.id order by tender.id desc limit 1) as tender_no ,  
+                (select  tender_no from tender where Ag.tender_id=tender.id order by tender.id desc limit 1) as tender_no ,  
                 (select  b3.title from project_cycle LEFT JOIN baseinfo b3 ON project_cycle.state_id= b3.id  where 
-                       contract_Id=Ag.id order by project_cycle.id desc limit 1) as state_id ,
-                  
-                (select g2j(date+ 1) from project_cycle  where contract_Id=Ag.id order by project_cycle.id desc limit 1 ) as PC_date,
+                                  contract_Id=Ag.id order by project_cycle.id desc limit 1) as state_id ,
+				(select g2j(date+ 1) from project_cycle  where contract_Id=Ag.id order by project_cycle.id desc limit 1 ) as PC_date,
                  g2j(Ag.contract_date+ 1) as contract_date ,
-                 Ag.file_announcement,
+               
                  g2j(Ag.announcement_date+ 1) as Ag_announcement_date ,
                  g2j(Ag.end_date+ 1) as Ag_end_date,
                  g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=Ag.id order by end_date desc limit 1) , Ag.end_date)) as  DateEndextension,
@@ -157,11 +158,10 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
                   Ag.mapping_surface,
                   Ag.mapping_surface_final,
                    
-				   (select  round(sum(weight*percent_approve)/100::numeric, 2) from study_operation_detail as d join study_operation as m on m.id=d.parent_id  
-			               where m.contract_id=ag.id  and m.report_date=(select max(report_date) from study_operation where contract_id=ag.id)) as  pishraftphsical,
+				
                  (select  b4.title from invoice_Consultant LEFT JOIN baseinfo b4 ON invoice_Consultant.no_id= b4.id where contract_Id=Ag.id order by invoice_Consultant.no_id desc limit 1) as  MaxInvoice,
                 (select  b5.title from invoice_Consultant_pay  LEFT JOIN baseinfo b5 ON invoice_Consultant_pay.no_id= b5.id where contract_Id=Ag.id order by invoice_Consultant_pay.no_id desc limit 1) as  MaxInvoicePay,
-                 (select  g2j(end_date+ 1) from invoice_Consultant where contract_Id=Ag.id order by invoice_Consultant.no_id desc limit 1) as end_date, 
+              
                  (select manager_price from invoice_Consultant where contract_Id=Ag.id order by invoice_Consultant.no_id desc limit 1) as manager_price,
                  (select price from invoice_Consultant_pay where contract_Id=Ag.id order by invoice_Consultant_pay.no_id desc limit 1) as price,
                  Ag.project_manager_name,
@@ -180,12 +180,12 @@ from Town  LEFT JOIN baseinfo b1 ON Town.province_id = b1.id
                   
                 
                   Ag.land_delivery_date ::date - (coalesce((select report_date from Study_Operation where contract_Id=Ag.id order by Study_Operation.id ASc limit 1) ,current_date))::date as land_deliveryToDate,
-             (select g2j(report_date) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id ASc limit 1) as start_date_Operation ,
-             (select g2j(report_date) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id Desc limit 1) as end_date_Operation ,  
+             (select g2j(report_date+1) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id ASc limit 1) as start_date_Operation ,
+             (select g2j(report_date+1) from Study_Operation where contract_Id=Ag.id order by Study_Operation.id Desc limit 1) as end_date_Operation ,  
              DATE_PART('day', (coalesce((select  (end_date)  from extension  where contract_Id=Ag.id order by end_date desc limit 1 ),Ag.end_date))- NOW())  as TimeToEnd,
-			 (select  g2j(end_date+ 1) from extension  where contract_Id=Ag.id order by no_id  desc limit 1) as ex_end_date , 
+			 
               DATE_PART('day',(Ag.announcement_date + Ag.duration)- NOW())as dateTest,
-			  g2j(Ag.record_letter_date+ 1),
+			
                Ag.record_letter_number,
               'http://192.168.4.4:8438'|| Ag.file_record as  file_record 
               
@@ -277,8 +277,7 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
 
 
 
-
-            { key: 'invoiceContractor', query:`        
+{ key: 'invoiceContractor', query:`        
             select
             b9.title as province,
              town.title as town ,
@@ -364,7 +363,7 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
 
 
             (select round( ROUND((select prev_price  from invoice_contractor_approve  LEFT JOIN baseinfo b10 ON invoice_contractor_approve.no_id= b10.id  where contract_Id=con.id and  b10.title=b5.title)::numeric, 2)/
-               ROUND((select  contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1)::numeric, 2)*100::numeric, 2))
+            ROUND((coalesce((select contract_new_price from value_Change  where contract_Id=con.id order by no_id desc limit 1) ,  con.initial_amount))::numeric, 2)*100::numeric, 2))
              as pishraft_percent_approve,
               
             (select round( ROUND((select manager_price  from invoice_contractor_pay LEFT JOIN baseinfo b9 ON invoice_contractor_pay.no_id= b9.id where contract_Id=con.id  and  b9.title=b5.title)::numeric, 2)/
@@ -380,22 +379,9 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
                 LEFT JOIN baseinfo b9 ON town.province_id = b9.id
                 LEFT JOIN baseinfo b5 ON inv.no_id= b5.id  `},
 																
-																
+          
 
-
-
-
-
-
-
-
-
-
-
-
-            
-
-                { key: 'invoiceConsultant', query:`
+         { key: 'invoiceConsultant', query:`
         
                 select
                 b9.title as province,
@@ -487,7 +473,7 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
                      LEFT JOIN baseinfo b5 ON inv.no_id= b5.id  `},
 
 
- { key: 'creditPredict', query:`      
+  { key: 'creditPredict', query:`      
                      select 
                       ROW_NUMBER () OVER (ORDER BY cp.id),
                       con.contract_no,
@@ -496,26 +482,15 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
                     g2j(cp.end_date+ 1) as endDate,
                     con.initial_amount,
                        Vc.contract_new_price,
-                    round((100*(Vc.new_work +(Vc.increase_price - Vc.decrease_price))/con.initial_amount) ::numeric,2) as change_price_percent, 
                      cp.invoice_paid_price,
                     cp.invoice_paid_period,
                     g2j(invoice_paid_date+ 1) as invoice_paid_date ,
                     cp.invoice_approved_price,
                     cp.invoice_approved_period,
                     g2j(invoice_approved_date+ 1) as invoice_approved_date ,
-                  cp.start_date::date - cp.invoice_approved_date ::date as TimePast,   
                   cp.price_until_now,
-                    cp.start_date ::date-(coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date)) ::date  as  TimeStartUntilEnd,
-                   cp.price_until_end,
-                    cp.price_until_now+cp.price_until_end+cp.invoice_approved_price as estimation_initial_amount,
-                       round(     
-                      ROUND((cp.price_until_now+cp.price_until_end+(select price from invoice_contractor_pay where contract_Id=con.id order by invoice_contractor_pay.no_id desc limit 1))::numeric, 2)
-                           /
-                     ROUND((con.initial_amount)::numeric, 2)
-                              *100::numeric, 2) as PerecentIncDec
-                        
-                        
-               
+                   cp.price_until_end
+                  
                        From  credit_Predict as cp
                              LEFT JOIN contract  as con ON cp.contract_id =con.id
                          LEFT JOIN value_Change  as Vc ON cp.contract_id =Vc.contract_id`},
@@ -623,121 +598,117 @@ From tender as tn  LEFT JOIN town  ON tn.town_id =town.id
 
 
 
-           { key: 'insurance', query:` 
-                   select
-                     b4.title as province,
-                     town.title as town ,
-                     con.title,
-                     (select STRING_AGG(title, ', ') from baseinfo where  id= ANY (ARRAY[con.operation_type_id])) as operation_type,
-                     con.contract_no, 
-                     co.title as company,
-                     g2j(con.contract_date+ 1) as contract_date,
-                     g2j(con.land_delivery_date+ 1)as land_delivery_date ,
-                    con.duration,
-                    g2j(con.end_date) as end_date ,
-                   (select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) as Sumextension, 
-   
-                   g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date)) as DateEndextension ,
-                     ins.insurance_no,
-                     (select  b5.title from insurance LEFT JOIN baseinfo b5 ON insurance.insurance_company_id= b5.id  where 
-                    contract_Id=con.id order by insurance.id desc limit 1) as insurance_company ,
-      
-                     ins.fund,
-                     (select  b3.title from insurance LEFT JOIN baseinfo b3 ON insurance.insurance_type_id= b3.id  where 
-                       contract_Id=con.id order by insurance.id desc limit 1) as insurance_type_id ,
-                     g2j(ins.start_date+ 1) as ins_start_date,
-                     g2j(ins.end_date+ 1) as ins_end_date,
-                     (select STRING_AGG(title, ', ') from baseinfo where  id= ANY (ARRAY[ins.buy_close_id])) as buy_close,
-                     ins.price,
-                     ins.file_contract,
-                     insApp.insurance_id,
-                     g2j(insApp.start_date+ 1) as insApp_start_date ,
-                     g2j(insApp.end_date+ 1) as insApp_end_date ,
-                     insApp.price as price_2,
-                     insApp.file_contract file_contractas ,
-                      g2j(coalesce((select end_date from insurance_Appendix where contract_id=con.id order by end_date desc limit 1) , ins.end_date)) as DateExpire ,
-                    
-            g2j(coalesce((select end_date from insurance_Appendix where contract_id=con.id order by end_date desc limit 1) , ins.end_date))::date -
-             g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date))::date  as
-            TimeToExpire 
-  
-  From insurance as ins  LEFT JOIN contract as con  ON  ins.contract_id =con.id
-                      LEFT JOIN insurance_Appendix as insApp  ON  ins.contract_id =insApp.contract_id
-                       LEFT JOIN baseinfo b2 ON con.contract_type_id = b2.id 
-                       LEFT JOIN company as co  ON con.company_id =co.id
-                          LEFT JOIN town  ON con.town_id =town.id
-                       LEFT JOIN baseinfo b4 ON town.province_id = b4.id
-             `},
-  
+        { key: 'insurance', query:` 
+              select
+                b4.title as province,
+                town.title as town ,
+                con.title,
+                (select STRING_AGG(title, ', ') from baseinfo where  id= ANY (ARRAY[con.operation_type_id])) as operation_type,
+                con.contract_no, 
+                co.title as company,
+                g2j(con.contract_date+ 1) as contract_date,
+                g2j(con.land_delivery_date+ 1)as land_delivery_date ,
+               con.duration,
+               g2j(con.end_date+ 1) as end_date ,
+              (select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) as Sumextension, 
+
+              g2j(coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date)) as DateEndextension ,
+                ins.insurance_no,
+                (select  b5.title from insurance LEFT JOIN baseinfo b5 ON insurance.insurance_company_id= b5.id  where 
+               contract_Id=con.id order by insurance.id desc limit 1) as insurance_company ,
+ 
+                ins.fund,
+                (select  b3.title from insurance LEFT JOIN baseinfo b3 ON insurance.insurance_type_id= b3.id  where 
+                  contract_Id=con.id order by insurance.id desc limit 1) as insurance_type_id ,
+                g2j(ins.start_date+ 1) as ins_start_date,
+                g2j(ins.end_date+ 1) as ins_end_date,
+                (select STRING_AGG(title, ', ') from baseinfo where  id= ANY (ARRAY[ins.buy_close_id])) as buy_close,
+                ins.price,
+                ins.file_contract,
+                insApp.insurance_id,
+                g2j(insApp.start_date+ 1) as insApp_start_date ,
+                g2j(insApp.end_date+ 1) as insApp_end_date ,
+                insApp.price as price_2,
+                insApp.file_contract file_contractas ,
+                 g2j(coalesce((select end_date from insurance_Appendix where contract_id=con.id order by end_date desc limit 1) , ins.end_date)) as DateExpire ,
+               
+      (coalesce((select end_date from insurance_Appendix where contract_id=con.id order by end_date desc limit 1) , ins.end_date))::date -
+        (coalesce((select end_date from Extension where type_id=2 and contract_id=con.id order by end_date desc limit 1) , con.end_date))::date  as
+       TimeToExpire 
+
+From insurance as ins  LEFT JOIN contract as con  ON  ins.contract_id =con.id
+                 LEFT JOIN insurance_Appendix as insApp  ON  ins.contract_id =insApp.contract_id
+                  LEFT JOIN baseinfo b2 ON con.contract_type_id = b2.id 
+                  LEFT JOIN company as co  ON con.company_id =co.id
+                     LEFT JOIN town  ON con.town_id =town.id
+                  LEFT JOIN baseinfo b4 ON town.province_id = b4.id
+        `},
+
 
 
          
-             { key: 'contractCycle', query:` 
-             select
-               ROW_NUMBER () OVER (ORDER BY cc.id),
-                b3.title as province,
-                town.title as town,
-               con.title,
-              con.contract_no,
-              co.title as company,
-              con.duration,
-			        (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration))  as  ex_total_duration ,
-             con.warranty_duration,
-             (select  g2j(commission_date+ 1)  from tender  where tender.Id=con.tender_id order by tender.id  desc limit 1) as tender_commission_date , 
-             (select  commission_date  from tender  where tender.Id=con.tender_id  order by tender.id  desc limit 1)::date- (coalesce (con.announcement_date ,current_date)) ::date as CommissionToAnnouncement,	
-                   
-             g2j(con.announcement_date+ 1) as announcement_date  ,
-             con.land_delivery_date::date - (coalesce (con.announcement_date ,current_date)) ::date as AnnouncementToland_delivery,
-             g2j(con.land_delivery_date+ 1),
-               
-     
-           (select (Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-                where contract_Id=con.id order by weekly_Operation.id ASC limit 1)::date -(con.land_delivery_date)::date as land_deliveryToDate,
-           (select g2j(Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-                where contract_Id=con.id order by weekly_Operation.id ASC limit 1) as start_date_Operation ,
-      
-          (select g2j(Period.end_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
-                where contract_Id=con.id order by weekly_Operation.id desc limit 1) as end_date_Operation ,
-                
-        '*****' as ee,
-               
- 
-          (select  round(sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end)::numeric, 2)
-                from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
-              ,(select sum(d.current_done) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
-                where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
-               from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
-                 where c.id=con.id
-                   group by c.title) as  pishraft_phisical ,
- 
-      DATE_PART('day', (coalesce((select  (end_date)  from extension  where contract_Id=con.id order by end_date desc limit 1 ),con.end_date))- NOW())  as re,
-      g2j(con.land_delivery_date  + (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration)) * interval '1 day')  as ex_end_date ,			 
-     
-      '*****' as CE,
-      
-      (select  g2j(commision_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_commision_date ,
-                
-      (select case  with_defect  when  TRUE  then   'بله' when  FALSE   then   'خیر'  end  as td_with_defect    from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1),
-      (select  g2j(remove_defect_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_remove_defect_date ,
-      (select  g2j(elimination_defects_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_elimination_defects_date ,
- 
-      '*****' as ll,
+     { key: 'contractCycle', query:`select ROW_NUMBER () OVER (ORDER BY cc.id),
+        b3.title as province,
+        town.title as town,
+       con.title,
+      con.contract_no,
+      co.title as company,
+      con.duration,
+      (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration))  as  ex_total_duration ,
+     con.warranty_duration,
+     (select  g2j(commission_date+ 1)  from tender  where tender.Id=con.tender_id order by tender.id  desc limit 1) as tender_commission_date , 
+     (select  commission_date  from tender  where tender.Id=con.tender_id  order by tender.id  desc limit 1)::date- (coalesce (con.announcement_date ,current_date)) ::date as CommissionToAnnouncement,	
+           
+     g2j(con.announcement_date+ 1) as announcement_date  ,
+     con.land_delivery_date::date - (coalesce (con.announcement_date ,current_date)) ::date as AnnouncementToland_delivery,
+     g2j(con.land_delivery_date+ 1),
+       
 
-       g2j( con.warranty_duration + con.announcement_date)  as Datewarranty,
-      
-       '*****' as nn,
-            
-      (select  g2j(commision_date+ 1)  from Delivery  where contract_Id=con.id order by Delivery.commision_date  desc limit 1) as tm_commision_date ,
-      (select  g2j(warranty_letter_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as tm_warranty_letter_date ,
-      (select  g2j(free_letter_date+ 1)  from  Delivery  where contract_Id=con.id order by  Delivery.commision_date  desc limit 1) as D_free_letter_date 
-               
- 
- 
-                            From contract_cycle  as cc 
-                            LEFT JOIN contract  as con ON cc.contract_id =con.id
-                            LEFT JOIN town  ON con.town_id =town.id
-                             LEFT JOIN company as co  ON con.company_id =co.id
-                             LEFT JOIN baseinfo b3 ON town.province_id = b3.id`},
+   (select (Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
+        where contract_Id=con.id order by weekly_Operation.id ASC limit 1)::date -(con.land_delivery_date)::date as land_deliveryToDate,
+   (select g2j(Period.start_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
+        where contract_Id=con.id order by weekly_Operation.id ASC limit 1) as start_date_Operation ,
+
+  (select g2j(Period.end_date) from weekly_Operation LEFT JOIN Period  ON weekly_Operation.period_id=Period.id
+        where contract_Id=con.id order by weekly_Operation.id desc limit 1) as end_date_Operation ,
+        
+   (select d.cumulative_done from weekly_operation_plan as m join weekly_operation_plan_detail as d on m.id=d.parent_id where m.contract_id=con.id 
+             and m.plan_id=(select max(plan_id) from weekly_operation_plan where contract_id=con.id) 
+              and( d.period_id=(select id from period where start_date<=now()::date and end_date>=now()::date) 
+         or	(d.period_id< (select id from period where start_date<=now()::date and end_date>=now()::date))and d.cumulative_done=100))as pishraft_Barnameh,
+       
+
+  (select  round(sum(CASE WHEN x.value_change<>0 then ((x.done/x.value_change)*wieght)else 0 end)::numeric, 2)
+        from contract as c left join(select w.contract_id,b1.title as operation,b2.title as unit  ,wieght,value_change
+      ,(select sum(d.current_done) from weekly_operation as m left join weekly_operation_detail as d on m.id=d.parent_id
+        where m.contract_id=w.contract_id and d.operation=b1.title and d.unit=b2.title) as done
+       from wbs as w join operation as b1 on w.operation_id= b1.id join baseinfo as b2 on w.unit_id=b2.id) as x on c.id=x.contract_id
+         where c.id=con.id
+           group by c.title) as  pishraft_phisical ,
+
+DATE_PART('day', (coalesce((select  (end_date)  from extension  where contract_Id=con.id order by end_date desc limit 1 ),con.end_date))- NOW())  as re,
+g2j(con.land_delivery_date  + (coalesce (con.duration +(select sUM(duration) from extension  where contract_Id=con.id GROUP BY  contract_Id ) ,con.duration)) * interval '1 day')  as ex_end_date ,			 
+
+DATE_PART('day',NOW()- (select  (commision_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1)) as commision_end_date,
+
+(select  g2j(commision_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_commision_date ,
+        
+(select case  with_defect  when  TRUE  then   'بله' when  FALSE   then   'خیر'  end  as td_with_defect    from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1),
+(select  g2j(remove_defect_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_remove_defect_date ,
+(select  g2j(elimination_defects_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as td_elimination_defects_date ,
+
+(select  g2j(commision_date+ 1)  from Delivery  where contract_Id=con.id order by Delivery.commision_date  desc limit 1) as tm_commision_date ,
+(select  g2j(warranty_letter_date+ 1)  from temp_Delivery  where contract_Id=con.id order by temp_Delivery.commision_date  desc limit 1) as tm_warranty_letter_date ,
+(select  g2j(free_letter_date+ 1)  from  Delivery  where contract_Id=con.id order by  Delivery.commision_date  desc limit 1) as D_free_letter_date 
+       
+
+
+                    From contract_cycle  as cc 
+                    LEFT JOIN contract  as con ON cc.contract_id =con.id
+                    LEFT JOIN town  ON con.town_id =town.id
+                     LEFT JOIN company as co  ON con.company_id =co.id
+                     LEFT JOIN baseinfo b3 ON town.province_id = b3.id`},
+
  
  
                                 

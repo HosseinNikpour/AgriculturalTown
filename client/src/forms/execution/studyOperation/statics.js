@@ -1,6 +1,8 @@
 import moment from 'moment-jalaali';
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه' }, 
+    { dataIndex: 'contract_no',key: 'contract_no', title: 'شماره قرارداد' }, 
+    { dataIndex: 'company',key: 'company', title: 'طرف قرارداد' }, 
     { dataIndex: 'contract',key: 'contract', title: 'قرارداد' }, 
     { dataIndex: 'report_date',key: 'report_date', title: 'تاریخ گزارش' , render: function (text) { return  text&&moment.isMoment(text)?text.format('jYYYY/jMM/jDD'):'' }  },
    

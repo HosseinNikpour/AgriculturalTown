@@ -1,6 +1,8 @@
 
 export const columns = [
     { dataIndex: 'id',key: 'id', title: 'شناسه' }, 
+    { dataIndex: 'contract_no',key: 'contract_no', title: 'شماره قرارداد' }, 
+    { dataIndex: 'company',key: 'company', title: 'طرف قرارداد' }, 
     { dataIndex: 'contract',key: 'contract', title: 'پیمان' }, 
     { dataIndex: 'period',key: 'period', title: 'دوره' }, 
     { dataIndex: 'status',key: 'status', title: 'وضعیت' }, 

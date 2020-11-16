@@ -18,7 +18,7 @@ const ReportExcels = (props) => {
         { title: 'پیشرفت مطالعات', value: 'studyOperation' },
         { title: 'بیمه', value: 'insurance' },
        { title: 'چرخه عمر پیمان', value: 'contractCycle' },
-       { title: 'چرخه عمر قرارداد', value: 'projectCycle' },
+    //    { title: 'چرخه عمر قرارداد', value: 'projectCycle' },
 
         
     ]
